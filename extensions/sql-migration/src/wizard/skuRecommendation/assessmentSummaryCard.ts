@@ -418,6 +418,10 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 			if (hasRecommendations(this.migrationStateModel)) {
 				const generateProvisioningScriptDialog = new GenerateProvisioningScriptDialog(this.migrationStateModel, this.migrationTargetType);
 				await generateProvisioningScriptDialog.openDialog();
+
+				if (this.migrationTargetType === MigrationTargetType.SQLDB) {
+					await vscode.window.showInformationMessage(constants.DISPLAY_ARM_TEMPLATE_LIMIT);
+				}
 			}
 		});
 

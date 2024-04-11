@@ -21,7 +21,7 @@ export class GenerateProvisioningScriptDialog {
 
 	private _disposables: vscode.Disposable[] = [];
 	private _armTemplateTextBox!: azdata.TextComponent;
-	private _armTemplateText!: string;
+	private _armTemplateText: string | undefined;
 
 	constructor(public model: MigrationStateModel, public _targetType: utils.MigrationTargetType) { }
 
@@ -100,17 +100,18 @@ export class GenerateProvisioningScriptDialog {
 		saveTemplateButton.onDidClick(async () => {
 			const folder = await utils.promptUserForFolder();
 			if (folder) {
-				if (this._armTemplateText) {
-					let templateName = utils.generateTemplatePath(this.model, this._targetType);
-					let destinationFilePath = path.join(folder, templateName);
-					try {
-						fs.writeFileSync(destinationFilePath!, this._armTemplateText);
-						void vscode.window.showInformationMessage(constants.SAVE_TEMPLATE_SUCCESS);
+				const templates = this.model._armTemplateResult.templates!;
+				try {
+					for (let i = 0; i < templates.length; i++) {
+						let templateName = utils.generateTemplatePath(this.model, this._targetType, i + 1);
+						let destinationFilePath = path.join(folder, templateName);
+						fs.writeFileSync(destinationFilePath!, this._armTemplateText!);
 					}
-					catch (e) {
-						logError(TelemetryViews.ProvisioningScriptWizard, 'ArmTemplateSavetoLocalError', e);
-						void vscode.window.showErrorMessage(constants.SAVE_TEMPLATE_FAIL);
-					}
+					void vscode.window.showInformationMessage(constants.SAVE_TEMPLATE_SUCCESS);
+				}
+				catch (e) {
+					logError(TelemetryViews.ProvisioningScriptWizard, 'ArmTemplateSavetoLocalError', e);
+					void vscode.window.showErrorMessage(constants.SAVE_TEMPLATE_FAIL);
 				}
 			}
 		});
@@ -164,8 +165,8 @@ export class GenerateProvisioningScriptDialog {
 	}
 
 	private async displayArmTemplate(): Promise<void> {
-		this._armTemplateTextBox.value = this.model._armTemplateResult.template ?
-			this.model._armTemplateResult.template :
+		this._armTemplateTextBox.value = this.model._armTemplateResult.templates ?
+			this.model._armTemplateResult.templates[0] :
 			this.model._armTemplateResult.generateTemplateError?.message;
 	}
 
@@ -194,7 +195,7 @@ export class GenerateProvisioningScriptDialog {
 				logError(TelemetryViews.ProvisioningScriptWizard, 'ProvisioningScriptGenerationError', error);
 			}
 			else {
-				this._armTemplateText = this.model._armTemplateResult.template!;
+				this._armTemplateText = this.model._armTemplateResult.templates![0];
 			}
 
 			await this.displayArmTemplate();
