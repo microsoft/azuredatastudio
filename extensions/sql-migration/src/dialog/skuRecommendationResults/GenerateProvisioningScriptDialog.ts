@@ -120,7 +120,7 @@ export class GenerateProvisioningScriptDialog {
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
 				label: constants.UPLOAD_TEMPLATE_TO_AZURE,
-				width: 127,
+				width: 180,
 				height: 36,
 				iconHeight: 16,
 				iconWidth: 16,
