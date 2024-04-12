@@ -169,7 +169,7 @@ export class GenerateProvisioningScriptDialog {
 			this.model._armTemplateResult.templates[0] :
 			this.model._armTemplateResult.generateTemplateError?.message;
 
-		if (this.model._armTemplateResult.templates?.length! > 1 && this.model._targetType === utils.MigrationTargetType.SQLDB) {
+		if (this.model._armTemplateResult.templates?.length! > 1 && this._targetType === utils.MigrationTargetType.SQLDB) {
 			await vscode.window.showInformationMessage(constants.DISPLAY_ARM_TEMPLATE_LIMIT);
 		}
 	}
