@@ -587,31 +587,30 @@ export class SelectStorageAccountDialog {
 		const storageKeys = await getStorageAccountAccessKeys(this._azureAccount, this._targetSubscription, this._storageAccount);
 		const accountName = this._storageAccount.name;
 		const containerName = this._blobContainer.name;
-		const blobName = utils.generateTemplatePath(this.migrationStateModel, this._targetType);
-
+		const templates = this.migrationStateModel._armTemplateResult.templates!;
 		const sharedKeyCredential = new StorageSharedKeyCredential(this._storageAccount.name, storageKeys.keyName1);
 
 		const sasToken = generateBlobSASQueryParameters({
 			containerName,
-			blobName,
 			permissions: BlobSASPermissions.parse("racwd"),
 			expiresOn: new Date(new Date().valueOf() + 86400),
 		},
 			sharedKeyCredential
 		).toString();
 
-		const sasUrl = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
 		try {
-			const blockBlobClient = new BlockBlobClient(sasUrl);
-			const template = this.migrationStateModel._armTemplateResult.template!;
-			if (template) {
-				await blockBlobClient.upload(template, template.length);
-				void vscode.window.showInformationMessage(constants.UPLOAD_TEMPLATE_SUCCESS);
+			for (let i = 0; i < templates.length; i++) {
+				const blobName = utils.generateTemplatePath(this.migrationStateModel, this._targetType, i + 1);
+				const sasUrl = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
+				const blockBlobClient = new BlockBlobClient(sasUrl);
+				await blockBlobClient.upload(templates[i], templates[i].length);
 			}
+			void vscode.window.showInformationMessage(constants.UPLOAD_TEMPLATE_SUCCESS);
 		}
 		catch (e) {
 			logError(TelemetryViews.UploadArmTemplateDialog, 'ArmTemplateUploadError', e);
 			void vscode.window.showErrorMessage(constants.UPLOAD_TEMPLATE_FAIL);
 		}
+
 	}
 }
