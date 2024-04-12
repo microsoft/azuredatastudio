@@ -102,7 +102,7 @@ export class GenerateProvisioningScriptDialog {
 			if (folder) {
 				const templates = this.model._armTemplateResult.templates!;
 				try {
-					for (let i = 0; i < templates.length; i++) {
+					for (let i = 0; i < templates?.length; i++) {
 						let templateName = utils.generateTemplatePath(this.model, this._targetType, i + 1);
 						let destinationFilePath = path.join(folder, templateName);
 						fs.writeFileSync(destinationFilePath!, this._armTemplateText!);
@@ -168,6 +168,10 @@ export class GenerateProvisioningScriptDialog {
 		this._armTemplateTextBox.value = this.model._armTemplateResult.templates ?
 			this.model._armTemplateResult.templates[0] :
 			this.model._armTemplateResult.generateTemplateError?.message;
+
+		if (this.model._armTemplateResult.templates?.length! > 1 && this.model._targetType === utils.MigrationTargetType.SQLDB) {
+			await vscode.window.showInformationMessage(constants.DISPLAY_ARM_TEMPLATE_LIMIT);
+		}
 	}
 
 	public async openDialog() {
