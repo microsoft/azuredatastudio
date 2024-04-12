@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import { MigrationStateModel } from '../../models/stateMachine';
