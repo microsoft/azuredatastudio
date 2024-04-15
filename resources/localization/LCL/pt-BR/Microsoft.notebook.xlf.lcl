@@ -1020,39 +1020,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePython.existingInstall" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePython.editLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Use existing Python installation]]></Val>
+          <Val><![CDATA[Edit]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Usar a instalação existente do Python]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePython.installationType" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Installation Type]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Tipo de Instalação]]></Val>
+            <Val><![CDATA[Editar]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePython.locationTextBoxText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Python Install Location]]></Val>
+          <Val><![CDATA[Python Location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Localização da Instalação do Python]]></Val>
+            <Val><![CDATA[Local do Python]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePython.newInstall" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New Python installation]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nova instalação do Python]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Python Install Location]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1079,15 +1064,6 @@
           <Val><![CDATA[{0} (Custom)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[{0} (Personalizado)]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePythyon.defaultPathLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} (Default)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} (Padrão)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1530,29 +1506,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.dontAskAgain" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Don't Ask Again]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Não perguntar novamente]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgDependenciesInstallationFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing Notebook dependencies failed with error: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Falha na instalação das dependências do Notebook com o erro: {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgDownloadPython" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Downloading local python for platform: {0} to {1}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Baixando o Python local para a plataforma: {0} a {1}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1602,96 +1560,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonDirectoryError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Error while creating python installation directory]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Erro ao criar o diretório de instalação do Python]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonDownloadComplete" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Python download is complete]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[O download do Python está concluído]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonDownloadError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Error while downloading python setup]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Erro ao baixar a configuração do Python]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonDownloadPending" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Downloading python package]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Baixando o pacote Python]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonRunningError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Não é possível substituir uma instalação do Python existente enquanto o Python está em execução. Feche todos os notebooks ativos antes de prosseguir.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonUnpackError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Error while unpacking python bundle]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Erro ao descompactar o pacote Python]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonUnpackPending" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Unpacking python package]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Descompactando o pacote Python]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonVersionUpdatePrompt" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Python {0} is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python {0} now?]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[O Python {0} agora está disponível no Azure Data Studio. A versão atual do Python (3.6.6) estará sem suporte em dezembro de 2021. Deseja atualizar para o Python {0} agora?]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonVersionUpdateWarning" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Python {0} will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[O Python {0} será instalado e substituirá o Python 3.6.6. Alguns pacotes podem não ser mais compatíveis com a nova versão ou talvez precisem ser reinstalados. Um bloco de anotações será criado para ajudá-lo a reinstalar todos os pacotes pip. Deseja continuar com a atualização agora?]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgShutdownNotebookSessions" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Active Python notebook sessions will be shutdown in order to update. Would you like to proceed now?]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[As sessões ativas do bloco de anotações do Python serão encerradas para serem atualizadas. Deseja continuar agora?]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgTaskName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing Notebook dependencies]]></Val>
@@ -1706,24 +1574,6 @@
           <Val><![CDATA[Another Python installation is currently in progress. Waiting for it to complete.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Outra instalação do Python está em andamento no momento. Esperando a conclusão.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.no" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[No]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Não]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.yes" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Yes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Sim]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2163,18 +2013,6 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Obtenha o guia do SQL Server 2019 localizado]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/package.title.ProvidedBooks" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Provided Jupyter Books]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Livros Jupyter fornecidos]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Provided Books]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

@@ -9538,6 +9538,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.target.provisioning.template.display.limit" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A single ARM template has a deployment limitation of a maximum 50 Azure SQL Databases. The template for the first 50 databases is displayed below. To view all templates, save the template JSON file in a local storage or Azure Blob storage.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[單一 ARM 範本的部署限制上限為 50 Azure SQL 資料庫。前 50 個資料庫的範本顯示如下。若要檢視所有範本，請將範本 JSON 檔案儲存在本機儲存體或 Azure Blob 儲存體中。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.target.provisioning.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save Template]]></Val>
@@ -9594,10 +9603,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.target.upload.to.azure" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Upload to Azure]]></Val>
+          <Val><![CDATA[Save to Azure blob container]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[上傳到 Azure]]></Val>
+            <Val><![CDATA[儲存至 Azure Blob 容器]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Upload to Azure]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
