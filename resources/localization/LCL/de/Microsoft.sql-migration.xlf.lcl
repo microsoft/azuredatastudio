@@ -9538,6 +9538,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.target.provisioning.template.display.limit" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A single ARM template has a deployment limitation of a maximum 50 Azure SQL Databases. The template for the first 50 databases is displayed below. To view all templates, save the template JSON file in a local storage or Azure Blob storage.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Für eine einzelne ARM-Vorlage gilt eine Bereitstellungsbeschränkung von maximal 50 Azure SQL-Datenbanken. Die Vorlage für die ersten 50 Datenbanken wird unten angezeigt. Um alle Vorlagen anzuzeigen, speichern Sie die JSON-Vorlagendatei in einem lokalen Speicher oder Azure Blob Storage.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.target.provisioning.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save Template]]></Val>
@@ -9594,10 +9603,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.target.upload.to.azure" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Upload to Azure]]></Val>
+          <Val><![CDATA[Save to Azure blob container]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[In Azure hochladen]]></Val>
+            <Val><![CDATA[Speichern in Azure-Blob-Container]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Upload to Azure]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
