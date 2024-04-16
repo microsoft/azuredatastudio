@@ -18,7 +18,8 @@ export class ConfigurePathPage extends BasePage {
 	private pythonLocationDropdown: azdata.DropDownComponent;
 	private pythonDropdownLoader: azdata.LoadingComponent;
 
-	private usingCustomPath: boolean = false;
+	private usingCustomPath = false;
+	private noPathsFound = false;
 
 	public async initialize(): Promise<boolean> {
 		let wizardDescription: string;
@@ -116,6 +117,7 @@ export class ConfigurePathPage extends BasePage {
 						name: path.installDir
 					};
 				});
+				this.noPathsFound = false;
 			} else {
 				dropdownValues = [];
 			}
@@ -127,11 +129,13 @@ export class ConfigurePathPage extends BasePage {
 					displayName: localize('configurePythyon.existingInstance', "{0} (Current Python Instance)", this.model.pythonLocation),
 					name: this.model.pythonLocation
 				});
+				this.noPathsFound = false;
 			} else if (dropdownValues.length === 0) {
 				dropdownValues = [{
 					displayName: localize('configurePythyon.noVersionsFound', "No supported Python versions found."),
 					name: ''
 				}];
+				this.noPathsFound = true;
 			}
 
 			this.usingCustomPath = false;
@@ -166,7 +170,12 @@ export class ConfigurePathPage extends BasePage {
 			if (this.usingCustomPath) {
 				existingValues[0] = newValue;
 			} else {
-				existingValues.unshift(newValue);
+				if (this.noPathsFound) {
+					// Replace "No paths found" placeholder
+					existingValues[0] = newValue;
+				} else {
+					existingValues.unshift(newValue);
+				}
 				this.usingCustomPath = true;
 			}
 
