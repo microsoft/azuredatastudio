@@ -478,7 +478,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			const response = (await this.migrationService.getArmTemplate(skuRecommendationReportFilePath))!
 			if (response) {
 				this._armTemplateResult = {
-					template: response
+					templates: response
 				};
 			}
 		}
@@ -1499,7 +1499,7 @@ export interface SkuRecommendation {
 }
 
 export interface ArmTemplate {
-	template?: string;
+	templates?: string[];
 	generateTemplateError?: Error;
 }
 

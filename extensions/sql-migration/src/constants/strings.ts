@@ -260,11 +260,12 @@ export const IMPORT_PERFORMANCE_DATA = localize('sql.migration.sku.import.perfor
 export const IMPORT_PERFORMANCE_DATA_DIALOG_DESCRIPTION = localize('sql.migration.sku.import.performance.data.dialog.description', "Import this data file from an existing folder, if you have already collected it using Data Migration Assistant.");
 export const IMPORT_PERFORMANCE_DATA_DIALOG_HELPER_MESSAGE = localize('sql.migration.sku.import.performance.data.dialog.helper.message', "Select a folder on your local drive");
 export const IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FOLDER = localize('sql.migration.sku.import.performance.data.dialog.open.folder', "Select a folder");
-export const UPLOAD_TEMPLATE_TO_AZURE = localize('sql.migration.target.upload.to.azure', "Upload to Azure");
+export const UPLOAD_TEMPLATE_TO_AZURE = localize('sql.migration.target.upload.to.azure', "Save to Azure blob container");
 export const TARGET_PROVISIONING_TITLE = localize('sql.migration.target.provisioning.title', "Save Template");
 export const GENERATE_ARM_TEMPLATE = localize('sql.migration.target.provisioning.generate.template', "Generate Template");
 export const CLOSE_DIALOG = localize('sql.migration.target.provisioning.close', "Close");
 export const TARGET_PROVISIONING_DESCRIPTION = localize('sql.migration.target.provisioning.description', "Below is the ARM script for the recommended target SKU. You can save the script as template.");
+export const DISPLAY_ARM_TEMPLATE_LIMIT = localize('sql.migration.target.provisioning.template.display.limit', "A single ARM template has a deployment limitation of a maximum 50 Azure SQL Databases. The template for the first 50 databases is displayed below. To view all templates, save the template JSON file in a local storage or Azure Blob storage.")
 
 // allow-any-unicode-next-line
 export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click 'Start data collection' button above to get started.");

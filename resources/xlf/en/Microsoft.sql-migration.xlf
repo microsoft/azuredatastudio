@@ -58,6 +58,9 @@
     <trans-unit id="sql.migration.resource.group.description">
       <source xml:lang="en">A resource group is a container that holds related resources for an Azure solution.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.target.provisioning.template.display.limit">
+      <source xml:lang="en">A single ARM template has a deployment limitation of a maximum 50 Azure SQL Databases. The template for the first 50 databases is displayed below. To view all templates, save the template JSON file in a local storage or Azure Blob storage.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.pre.req.2">
       <source xml:lang="en">A source SQL Server database(s) running on on-premises, or on SQL Server on Azure Virtual Machine or any virtual machine running in the cloud (private, public).</source>
     </trans-unit>
@@ -2275,6 +2278,9 @@
     <trans-unit id="sql.ir.save.script">
       <source xml:lang="en">Save script</source>
     </trans-unit>
+    <trans-unit id="sql.migration.target.upload.to.azure">
+      <source xml:lang="en">Save to Azure blob container</source>
+    </trans-unit>
     <trans-unit id="sql.migration.saved.assessment.result">
       <source xml:lang="en">Saved session</source>
     </trans-unit>
@@ -3036,9 +3042,6 @@
     </trans-unit>
     <trans-unit id="sql.migration.sku.parameters.update">
       <source xml:lang="en">Update</source>
-    </trans-unit>
-    <trans-unit id="sql.migration.target.upload.to.azure">
-      <source xml:lang="en">Upload to Azure</source>
     </trans-unit>
     <trans-unit id="sql.migration.status.uploadingfullbackup">
       <source xml:lang="en">Uploading full backup</source>
