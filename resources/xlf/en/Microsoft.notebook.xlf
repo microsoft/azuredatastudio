@@ -282,9 +282,6 @@
     <trans-unit id="configurePython.browseButtonText">
       <source xml:lang="en">Browse</source>
     </trans-unit>
-    <trans-unit id="configurePython.editLabel">
-      <source xml:lang="en">Edit</source>
-    </trans-unit>
     <trans-unit id="configurePythyon.noVersionsFound">
       <source xml:lang="en">No supported Python versions found.</source>
     </trans-unit>
@@ -294,14 +291,14 @@
     <trans-unit id="configurePython.locationTextBoxText">
       <source xml:lang="en">Python Location</source>
     </trans-unit>
-    <trans-unit id="configurePython.pythonConfigured">
-      <source xml:lang="en">Python runtime configured!</source>
-    </trans-unit>
     <trans-unit id="configurePython.selectFileLabel">
       <source xml:lang="en">Select</source>
     </trans-unit>
     <trans-unit id="configurePython.descriptionWithKernel">
       <source xml:lang="en">The &apos;{0}&apos; kernel requires a Python runtime to be configured and dependencies to be installed.</source>
+    </trans-unit>
+    <trans-unit id="configurePythyon.existingInstance">
+      <source xml:lang="en">{0} (Current Python Instance)</source>
     </trans-unit>
     <trans-unit id="configurePythyon.customPathLabel">
       <source xml:lang="en">{0} (Custom)</source>
