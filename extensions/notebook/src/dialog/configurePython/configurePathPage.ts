@@ -18,8 +18,8 @@ export class ConfigurePathPage extends BasePage {
 	private pythonLocationDropdown: azdata.DropDownComponent;
 	private pythonDropdownLoader: azdata.LoadingComponent;
 
-	private selectInstallEnabled: boolean;
-	private usingCustomPath: boolean = false;
+	private usingCustomPath = false;
+	private noPathsFound = false;
 
 	public async initialize(): Promise<boolean> {
 		let wizardDescription: string;
@@ -46,7 +46,7 @@ export class ConfigurePathPage extends BasePage {
 		this.pythonDropdownLoader = this.view.modelBuilder.loadingComponent()
 			.withItem(this.pythonLocationDropdown)
 			.withProps({
-				loading: false
+				loading: true
 			})
 			.component();
 		let browseButton = this.view.modelBuilder.button()
@@ -71,46 +71,6 @@ export class ConfigurePathPage extends BasePage {
 				clickable: false
 			}).component();
 
-		let allParentItems = [selectInstallContainer];
-		if (this.model.pythonLocation) {
-			let installedPathTextBox = this.view.modelBuilder.inputBox().withProps({
-				value: this.model.pythonLocation,
-				enabled: false,
-				width: '400px'
-			}).component();
-			let editPathButton = this.view.modelBuilder.button().withProps({
-				label: localize('configurePython.editLabel', "Edit"),
-				width: '70px',
-				secondary: true
-			}).component();
-			let editPathForm = this.view.modelBuilder.formContainer()
-				.withFormItems([{
-					title: localize('configurePython.pythonConfigured', "Python runtime configured!"),
-					component: installedPathTextBox
-				}, {
-					title: '',
-					component: editPathButton
-				}]).component();
-
-			let editPathContainer = this.view.modelBuilder.divContainer()
-				.withItems([editPathForm])
-				.withProps({
-					clickable: false
-				}).component();
-			allParentItems.push(editPathContainer);
-
-			editPathButton.onDidClick(async () => {
-				editPathContainer.display = 'none';
-				selectInstallContainer.display = 'block';
-				this.selectInstallEnabled = true;
-			});
-			selectInstallContainer.display = 'none';
-
-			this.selectInstallEnabled = false;
-		} else {
-			this.selectInstallEnabled = true;
-		}
-
 		let parentContainer = this.view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' }).component();
 		parentContainer.addItem(wizardDescriptionLabel, {
@@ -118,7 +78,7 @@ export class ConfigurePathPage extends BasePage {
 				'padding': '0px 30px 0px 30px'
 			}
 		});
-		parentContainer.addItems(allParentItems);
+		parentContainer.addItem(selectInstallContainer);
 
 		await this.view.initializeModel(parentContainer);
 		await this.updatePythonPathsDropdown();
@@ -133,15 +93,14 @@ export class ConfigurePathPage extends BasePage {
 		if (this.pythonDropdownLoader.loading) {
 			return false;
 		}
-		if (this.selectInstallEnabled) {
-			let pythonLocation = utils.getDropdownValue(this.pythonLocationDropdown);
-			if (!pythonLocation || pythonLocation.length === 0) {
-				this.instance.showErrorMessage(this.instance.InvalidLocationMsg);
-				return false;
-			}
 
-			this.model.pythonLocation = pythonLocation;
+		let pythonLocation = utils.getDropdownValue(this.pythonLocationDropdown);
+		if (!pythonLocation || pythonLocation.length === 0) {
+			this.instance.showErrorMessage(this.instance.InvalidLocationMsg);
+			return false;
 		}
+
+		this.model.pythonLocation = pythonLocation;
 		return true;
 	}
 
@@ -151,18 +110,32 @@ export class ConfigurePathPage extends BasePage {
 		try {
 			let dropdownValues: azdata.CategoryValue[];
 			let pythonPaths = await this.model.pythonPathLookup.getSuggestions();
-			if (pythonPaths && pythonPaths.length > 0) {
+			if (pythonPaths?.length > 0) {
 				dropdownValues = pythonPaths.map(path => {
 					return {
 						displayName: localize('configurePythyon.dropdownPathLabel', "{0} (Python {1})", path.installDir, path.version),
 						name: path.installDir
 					};
 				});
+				this.noPathsFound = false;
 			} else {
+				dropdownValues = [];
+			}
+
+			if (this.model.pythonLocation) {
+				// Filter out other matching path entries if they're already present
+				dropdownValues = dropdownValues.filter(val => val.name !== this.model.pythonLocation);
+				dropdownValues.unshift({
+					displayName: localize('configurePythyon.existingInstance', "{0} (Current Python Instance)", this.model.pythonLocation),
+					name: this.model.pythonLocation
+				});
+				this.noPathsFound = false;
+			} else if (dropdownValues.length === 0) {
 				dropdownValues = [{
 					displayName: localize('configurePythyon.noVersionsFound', "No supported Python versions found."),
 					name: ''
 				}];
+				this.noPathsFound = true;
 			}
 
 			this.usingCustomPath = false;
@@ -197,7 +170,12 @@ export class ConfigurePathPage extends BasePage {
 			if (this.usingCustomPath) {
 				existingValues[0] = newValue;
 			} else {
-				existingValues.unshift(newValue);
+				if (this.noPathsFound) {
+					// Replace "No paths found" placeholder
+					existingValues[0] = newValue;
+				} else {
+					existingValues.unshift(newValue);
+				}
 				this.usingCustomPath = true;
 			}
 
