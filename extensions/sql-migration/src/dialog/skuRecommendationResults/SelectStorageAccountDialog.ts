@@ -12,7 +12,7 @@ import * as utils from '../../api/utils';
 import { StorageAccount } from '../../api/azure';
 import { logError, TelemetryViews } from '../../telemetry';
 import { MigrationStateModel } from '../../models/stateMachine';
-import { BlockBlobClient, BlobSASPermissions, generateBlobSASQueryParameters, BlobServiceClient, SASProtocol, ContainerClient } from '@azure/storage-blob';
+import { BlockBlobClient, BlobSASPermissions, generateBlobSASQueryParameters, BlobServiceClient, SASProtocol } from '@azure/storage-blob';
 import { MigrationTargetType } from '../../api/utils';
 import { DefaultAzureCredential } from '@azure/identity';
 
