@@ -12,9 +12,9 @@ import * as utils from '../../api/utils';
 import { StorageAccount } from '../../api/azure';
 import { logError, TelemetryViews } from '../../telemetry';
 import { MigrationStateModel } from '../../models/stateMachine';
-import { StorageSharedKeyCredential, BlockBlobClient, BlobSASPermissions, generateBlobSASQueryParameters } from '@azure/storage-blob';
-import { getStorageAccountAccessKeys } from '../../api/azure';
+import { BlockBlobClient, BlobSASPermissions, generateBlobSASQueryParameters, BlobServiceClient, SASProtocol, ContainerClient } from '@azure/storage-blob';
 import { MigrationTargetType } from '../../api/utils';
+import { DefaultAzureCredential } from '@azure/identity';
 
 const INPUT_COMPONENT_WIDTH = '100%';
 const STYLE_HIDE = { 'display': 'none' };
@@ -584,26 +584,50 @@ export class SelectStorageAccountDialog {
 	}
 
 	private async uploadTemplate(): Promise<void> {
-		const storageKeys = await getStorageAccountAccessKeys(this._azureAccount, this._targetSubscription, this._storageAccount);
 		const accountName = this._storageAccount.name;
 		const containerName = this._blobContainer.name;
 		const templates = this.migrationStateModel._armTemplateResult.templates!;
-		const sharedKeyCredential = new StorageSharedKeyCredential(this._storageAccount.name, storageKeys.keyName1);
 
-		const sasToken = generateBlobSASQueryParameters({
-			containerName,
-			permissions: BlobSASPermissions.parse("racwd"),
-			expiresOn: new Date(new Date().valueOf() + 86400),
-		},
-			sharedKeyCredential
-		).toString();
+		const TEN_MINUTES = 10 * 60 * 1000;
+		const NOW = new Date();
+
+		const TEN_MINUTES_BEFORE_NOW = new Date(NOW.valueOf() - TEN_MINUTES);
+		const TEN_MINUTES_AFTER_NOW = new Date(NOW.valueOf() + TEN_MINUTES);
+
+		const blobServiceClient = new BlobServiceClient(
+			`https://${accountName}.blob.core.windows.net`,
+			new DefaultAzureCredential()
+		);
+
+		const userDelegationKey = await blobServiceClient.getUserDelegationKey(
+			TEN_MINUTES_BEFORE_NOW,
+			TEN_MINUTES_AFTER_NOW
+		);
+
+		const blobPermissions = "cw";
 
 		try {
 			for (let i = 0; i < templates.length; i++) {
 				const blobName = utils.generateTemplatePath(this.migrationStateModel, this._targetType, i + 1);
+				const sasOptions = {
+					blobName,
+					containerName,
+					permissions: BlobSASPermissions.parse(blobPermissions),
+					protocol: SASProtocol.HttpsAndHttp,
+					startsOn: TEN_MINUTES_BEFORE_NOW,
+					expiresOn: TEN_MINUTES_AFTER_NOW
+				};
+
+				const sasToken = generateBlobSASQueryParameters(
+					sasOptions,
+					userDelegationKey,
+					accountName
+				).toString();
+
 				const sasUrl = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
 				const blockBlobClient = new BlockBlobClient(sasUrl);
 				await blockBlobClient.upload(templates[i], templates[i].length);
+
 			}
 			void vscode.window.showInformationMessage(constants.UPLOAD_TEMPLATE_SUCCESS);
 		}
