@@ -613,7 +613,7 @@ export class SelectStorageAccountDialog {
 					blobName,
 					containerName,
 					permissions: BlobSASPermissions.parse(blobPermissions),
-					protocol: SASProtocol.HttpsAndHttp,
+					protocol: SASProtocol.Https,
 					startsOn: TEN_MINUTES_BEFORE_NOW,
 					expiresOn: TEN_MINUTES_AFTER_NOW
 				};
