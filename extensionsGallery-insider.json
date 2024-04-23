@@ -5162,14 +5162,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.0.0",
-							"lastUpdated": "08/23/2023",
+							"version": "1.0.3",
+							"lastUpdated": "04/23/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/lozn00/AzureSQLProcConvertSQL/raw/master/StoredProcedureConverter-0.0.1.vsix"
+									"source": "https://github.com/lozn00/AzureSQLProcConvertSQL/raw/master/StoredProcedureConverter-1.0.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
