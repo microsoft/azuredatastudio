@@ -23,7 +23,9 @@ import * as contracts from '../service/contracts';
 import { CssStyles } from 'azdata';
 import { DeclarativeTableCellValue } from 'azdata';
 import path = require('path');
-import { spawn } from "child_process"
+import { spawn } from "child_process";
+import { DefaultAzureCredential } from '@azure/identity';
+import { ContainerSASPermissions, generateBlobSASQueryParameters, BlobServiceClient, SASProtocol, ContainerClient } from '@azure/storage-blob';
 
 export type TargetServerType = azure.SqlVMServer | azureResource.AzureSqlManagedInstance | azure.AzureSqlDatabaseServer;
 
@@ -1047,14 +1049,13 @@ export async function getBlobLastBackupFileNames(account?: Account, subscription
 	let lastFileNames: azureResource.Blob[] = [];
 	try {
 		if (account && subscription && storageAccount && blobContainer) {
-			const blobs = await azure.getBlobs(account, subscription, storageAccount, blobContainer.name);
+			const containerClient = await getContainerClient(storageAccount.name, blobContainer.name);
 
-			blobs.forEach(blob => {
-				// only show at most one folder deep
+			for await (const blob of containerClient.listBlobsFlat()) {
 				if ((blob.name.split('/').length === 1 || blob.name.split('/').length === 2) && !lastFileNames.includes(blob)) {
 					lastFileNames.push(blob);
 				}
-			});
+			}
 		}
 	} catch (e) {
 		logError(TelemetryViews.Utils, 'utils.getBlobLastBackupFileNames', e);
@@ -1067,9 +1068,8 @@ export async function getBlobFolders(account?: Account, subscription?: azureReso
 	let folders: string[] = [];
 	try {
 		if (account && subscription && storageAccount && blobContainer) {
-			const blobs = await azure.getBlobs(account, subscription, storageAccount, blobContainer.name);
-
-			blobs.forEach(blob => {
+			const containerClient = await getContainerClient(storageAccount.name, blobContainer.name);
+			for await (const blob of containerClient.listBlobsFlat()) {
 				let folder: string = '';
 
 				if (blob.name.split('/').length === 1) {
@@ -1081,7 +1081,7 @@ export async function getBlobFolders(account?: Account, subscription?: azureReso
 				if (folder && !folders.includes(folder)) {
 					folders.push(folder);
 				}
-			});
+			}
 		}
 	} catch (e) {
 		logError(TelemetryViews.Utils, 'utils.getBlobLastBackupFolders', e);
@@ -1676,5 +1676,43 @@ export async function refreshIntegrationRuntimeTable(_view: ModelView, _integrat
 		});
 		await _integrationRuntimeTable.setDataValues(data);
 	}
+}
+
+export async function getContainerClient(storageAccount: string, containerName: string): Promise<ContainerClient> {
+	const TEN_MINUTES = 10 * 60 * 1000;
+	const NOW = new Date();
+
+	const TEN_MINUTES_BEFORE_NOW = new Date(NOW.valueOf() - TEN_MINUTES);
+	const TEN_MINUTES_AFTER_NOW = new Date(NOW.valueOf() + TEN_MINUTES);
+
+	const blobServiceClient = new BlobServiceClient(
+		`https://${storageAccount}.blob.core.windows.net`,
+		new DefaultAzureCredential()
+	);
+
+	const userDelegationKey = await blobServiceClient.getUserDelegationKey(
+		TEN_MINUTES_BEFORE_NOW,
+		TEN_MINUTES_AFTER_NOW
+	);
+
+	const containerPermissions = "l";
+
+	const sasOptions = {
+		containerName,
+		permissions: ContainerSASPermissions.parse(containerPermissions),
+		protocol: SASProtocol.Https,
+		startsOn: TEN_MINUTES_BEFORE_NOW,
+		expiresOn: TEN_MINUTES_AFTER_NOW
+	};
+
+	const sasToken = generateBlobSASQueryParameters(
+		sasOptions,
+		userDelegationKey,
+		storageAccount
+	).toString();
+
+	const sasUrl = `https://${storageAccount}.blob.core.windows.net/${containerName}?${sasToken}`;
+	const containerClient = new ContainerClient(sasUrl);
+	return containerClient;
 }
 
