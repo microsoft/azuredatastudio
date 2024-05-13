@@ -845,7 +845,7 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <source xml:lang="en">Files</source>
         <target state="translated">Fichiers</target>
       </trans-unit>
-      <trans-unit id="objectManagement.optionsSectionHeader">
+      <trans-unit id="objectManagement.filesSectionHeader">
         <source xml:lang="en">Files</source>
         <target state="translated">Fichiers</target>
       </trans-unit>
@@ -1204,6 +1204,10 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
       <trans-unit id="objectManagement.optimizeAdHocWorkloadsLabel">
         <source xml:lang="en">Optimize Ad Hoc Workloads</source>
         <target state="translated">Optimiser les charges de travail ad hoc</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.optionsSectionHeader">
+        <source xml:lang="en">Options</source>
+        <target state="translated">Options</target>
       </trans-unit>
       <trans-unit id="objectManagement.restoreDatabase.restorePlan.originalFileNameText">
         <source xml:lang="en">Original File Name</source>
@@ -2668,7 +2672,7 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.strict">
         <source xml:lang="en">Strict (supported for SQL Server 2022 and Azure SQL)</source>
-        <target state="new">Strict (supported for SQL Server 2022 and Azure SQL)</target>
+        <target state="translated">Strict (pris en charge pour SQL Server 2022 et Azure SQL)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.currentLanguage.description">
         <source xml:lang="en">The SQL Server language record name</source>

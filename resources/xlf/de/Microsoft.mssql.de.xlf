@@ -845,7 +845,7 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
         <source xml:lang="en">Files</source>
         <target state="translated">Dateien</target>
       </trans-unit>
-      <trans-unit id="objectManagement.optionsSectionHeader">
+      <trans-unit id="objectManagement.filesSectionHeader">
         <source xml:lang="en">Files</source>
         <target state="translated">Dateien</target>
       </trans-unit>
@@ -1204,6 +1204,10 @@ Hinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und 
       <trans-unit id="objectManagement.optimizeAdHocWorkloadsLabel">
         <source xml:lang="en">Optimize Ad Hoc Workloads</source>
         <target state="translated">Ad-hoc-Workloads optimieren</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.optionsSectionHeader">
+        <source xml:lang="en">Options</source>
+        <target state="translated">Optionen</target>
       </trans-unit>
       <trans-unit id="objectManagement.restoreDatabase.restorePlan.originalFileNameText">
         <source xml:lang="en">Original File Name</source>

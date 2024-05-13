@@ -78,6 +78,10 @@
         <source xml:lang="en">A resource group is a container that holds related resources for an Azure solution.</source>
         <target state="translated">Un groupe de ressources est un conteneur qui inclut les ressources associées à une solution Azure.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.target.provisioning.template.display.limit">
+        <source xml:lang="en">A single ARM template has a deployment limitation of a maximum 50 Azure SQL Databases. The template for the first 50 databases is displayed below. To view all templates, save the template JSON file in a local storage or Azure Blob storage.</source>
+        <target state="translated">Un modèle ARM unique a une limite de déploiement de 50 bases de données Azure SQL maximum. Le modèle des 50 premières bases de données est affiché ci-dessous. Pour afficher tous les modèles, enregistrez le fichier JSON de modèle dans un stockage local ou un stockage Blob Azure.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.pre.req.2">
         <source xml:lang="en">A source SQL Server database(s) running on on-premises, or on SQL Server on Azure Virtual Machine or any virtual machine running in the cloud (private, public).</source>
         <target state="translated">Une ou plusieurs bases de données SQL Server sources s’exécutant localement ou sur SQL Server sur une machine virtuelle Azure ou une machine virtuelle exécutée dans le cloud (privé, public).</target>
@@ -137,6 +141,10 @@
       <trans-unit id="sql.migration.all.fields.required">
         <source xml:lang="en">All fields are required.</source>
         <target state="translated">Tous les champs sont requis.</target>
+      </trans-unit>
+      <trans-unit id="sql.ir.version.mismatch">
+        <source xml:lang="en">All nodes should be on the same version to be configured</source>
+        <target state="translated">Tous les nœuds doivent être sur la même version pour être configurés</target>
       </trans-unit>
       <trans-unit id="sql.migration.all.source.tables.empty">
         <source xml:lang="en">All of source tables are empty. No table is available to select for data migration. But they are available for schema migration if they do not exist on target.</source>
@@ -279,8 +287,8 @@
         <target state="translated">Ordre croissant</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.assessment.xevents.title">
-        <source xml:lang="en">Assess extended event sessions</source>
-        <target state="translated">Évaluer les sessions d’événements étendues</target>
+        <source xml:lang="en">Assess Ad-hoc or dynamic SQL</source>
+        <target state="translated">Évaluer SQL ad hoc ou dynamique</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessed.dbs.label">
         <source xml:lang="en">Assessed databases: {0}</source>
@@ -382,6 +390,10 @@ For improved performance and high availability, you can register additional node
 
 Pour une performance améliorée et une disponibilité élevée, vous pouvez inscrire des nœuds supplémentaires. Voir ci-dessous pour les instructions d’inscription.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.service.ready.without.nodes">
+        <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the following node(s)</source>
+        <target state="translated">Azure Database Migration Service « {0} » est connecté au runtime d'intégration auto-hébergé exécuté sur le(s) nœud(s) suivant(s)</target>
+      </trans-unit>
       <trans-unit id="sql.migration.service.header">
         <source xml:lang="en">Azure Database Migration Service "{0}" details:`</source>
         <target state="translated">Détails Azure Database Migration Service « {0} » :</target>
@@ -397,6 +409,10 @@ See below for registration instructions.</source>
         <target state="translated">Azure Database Migration Service n’est pas inscrit. Azure Database Migration Service « {0} » doit être inscrit auprès d’un runtime d'intégration auto-hébergé sur n’importe quel nœud.
 
 Voir ci-dessous pour les instructions d’inscription.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.ir.container.description">
+        <source xml:lang="en">Azure Database Migration Service leverages Azure Data Factory's Self-hosted Integration Runtime to upload backups from on-premise network file share to Azure. Based on the selections on the previous page you will need to setup an Self-hosted Integration Runtime.</source>
+        <target state="translated">Azure Database Migration Service exploite Microsoft Integration Runtime d’Azure Data Factory pour télécharger des sauvegardes depuis le partage de fichiers réseau sur site vers Azure. Sur la base des sélections de la page précédente, vous devrez configurer Microsoft Integration Runtime.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.container.description1">
         <source xml:lang="en">Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to handle connectivity between source and target and upload backups from an on-premises network file share to Azure (if applicable).</source>
@@ -530,6 +546,10 @@ Voir ci-dessous pour les instructions d’inscription.</target>
         <source xml:lang="en">Azure region for your Azure SQL target. Only regions that contain a target eligible for migration will be shown.</source>
         <target state="translated">Région Azure pour votre cible Azure SQL. Seules les régions qui contiennent une cible éligible pour la migration sont affichées.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.storage.account.location">
+        <source xml:lang="en">Azure region for your Storage Account. Only regions that contain a storage account will be shown.</source>
+        <target state="translated">Région Azure pour votre compte de stockage. Seules les régions qui contiennent un compte de stockage sont affichées.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.summary.azure.storage">
         <source xml:lang="en">Azure storage</source>
         <target state="translated">Stockage Azure</target>
@@ -573,6 +593,10 @@ Voir ci-dessous pour les instructions d’inscription.</target>
       <trans-unit id="sql.migration.wizard.sku.all">
         <source xml:lang="en">Based on the assessment results, all {0} of your databases in an online state can be migrated to Azure SQL.</source>
         <target state="translated">En fonction des résultats de l’évaluation, toutes les {0} de vos bases de données dans un état en ligne peuvent être migrées vers Azure SQL.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.target.provisioning.description">
+        <source xml:lang="en">Below is the ARM script for the recommended target SKU. You can save the script as template.</source>
+        <target state="translated">Vous trouverez ci-dessous le script ARM pour la référence SKU cible recommandée. Vous pouvez enregistrer le script en tant que modèle.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.targetStorageConfiguration.info">
         <source xml:lang="en">Below is the target storage configuration required to meet your storage performance needs.</source>
@@ -786,6 +810,10 @@ Voir ci-dessous pour les instructions d’inscription.</target>
         <source xml:lang="en">Close</source>
         <target state="translated">Fermer</target>
       </trans-unit>
+      <trans-unit id="sql.migration.target.provisioning.close">
+        <source xml:lang="en">Close</source>
+        <target state="translated">Fermer</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.collectData.method">
         <source xml:lang="en">Collect performance data now</source>
         <target state="translated">Collectez les données de performance maintenant</target>
@@ -853,6 +881,18 @@ Voir ci-dessous pour les instructions d’inscription.</target>
       <trans-unit id="sql.migration.save.close.popup">
         <source xml:lang="en">Configuration saved. Performance data collection will remain running in the background. You can stop the collection when you want to.</source>
         <target state="translated">Configuration enregistrée. La collecte des données de performances continuera de s’exécuter en arrière-plan. Vous pouvez arrêter la collecte quand vous le souhaitez.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.configure.ir">
+        <source xml:lang="en">Configure Integration Runtime</source>
+        <target state="translated">Configurer Microsoft Integration Runtime</target>
+      </trans-unit>
+      <trans-unit id="sql.ir.configure.manually">
+        <source xml:lang="en">Configure manually </source>
+        <target state="translated">Configurer manuellement </target>
+      </trans-unit>
+      <trans-unit id="sql.ir.configure.powershellscript">
+        <source xml:lang="en">Configure using PowerShell script </source>
+        <target state="translated">Configurer à l’aide d’un script PowerShell </target>
       </trans-unit>
       <trans-unit id="sql.migration.connection.label">
         <source xml:lang="en">Connect</source>
@@ -1198,6 +1238,10 @@ Voir ci-dessous pour les instructions d’inscription.</target>
         <source xml:lang="en">Details copied</source>
         <target state="translated">Détails copiés</target>
       </trans-unit>
+      <trans-unit id="sql.migration.validate.ir.error.message">
+        <source xml:lang="en">Details for {0} are mandatory and missing.</source>
+        <target state="translated">Les détails des {0} sont obligatoires et manquants.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.field.label.deteected.files">
         <source xml:lang="en">Detected files</source>
         <target state="translated">Fichiers détectés</target>
@@ -1354,6 +1398,10 @@ Voir ci-dessous pour les instructions d’inscription.</target>
         <source xml:lang="en">Enter the credentials for the source SQL Server instance. These credentials will be used while migrating databases to Azure SQL.</source>
         <target state="translated">Entrez les informations d’identification de l’instance de SQL Server source. Ces informations d’identification seront utilisées lors de la migration des bases de données vers Azure SQL.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.select.storage.account.heading">
+        <source xml:lang="en">Enter the details below to select the Azure Storage account and save the script as template</source>
+        <target state="translated">Entrez les détails ci-dessous pour sélectionner le compte de stockage Azure et enregistrer le script en tant que modèle</target>
+      </trans-unit>
       <trans-unit id="sql.migration.services.container.description">
         <source xml:lang="en">Enter the information below to add a new Azure Database Migration Service.</source>
         <target state="translated">Entrez les informations ci-dessous pour ajouter une nouvelle Azure Database Migration Service.</target>
@@ -1434,6 +1482,14 @@ Actuellement, migration des rôles de serveur, établissement des mappages de se
         <source xml:lang="en">Establishing user mappings failed</source>
         <target state="translated">Échec de l’établissement du mappage d'utilisateur</target>
       </trans-unit>
+      <trans-unit id="sql.ir.powershellscript">
+        <source xml:lang="en">Execute script </source>
+        <target state="translated">Exécuter le script </target>
+      </trans-unit>
+      <trans-unit id="sql.ir.executing.powershellscript">
+        <source xml:lang="en">Execution started and monitor the PowerShell window opened. </source>
+        <target state="translated">L’exécution a démarré et surveille la fenêtre PowerShell ouverte. </target>
+      </trans-unit>
       <trans-unit id="sql.migration.support.resources.description">
         <source xml:lang="en">Explore documentation</source>
         <target state="translated">Explorer la documentation</target>
@@ -1489,6 +1545,14 @@ Actuellement, migration des rôles de serveur, établissement des mappages de se
       <trans-unit id="sql.migration.dms.provision.failed">
         <source xml:lang="en">Failed to provision a Database Migration Service. Wait a few minutes and then try again.</source>
         <target state="translated">Échec de la mise en service d’un Database Migration Service. Patientez quelques minutes, puis réessayez.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.target.provisioning.save.template.fail">
+        <source xml:lang="en">Failed to save ARM Template</source>
+        <target state="translated">Échec de l’enregistrement du modèle ARM</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.target.provisioning.upload.template.fail">
+        <source xml:lang="en">Failed to upload ARM Template</source>
+        <target state="translated">Échec du chargement du modèle ARM</target>
       </trans-unit>
       <trans-unit id="sql.migration.tab.button.feedback.description">
         <source xml:lang="en">Feedback</source>
@@ -1575,8 +1639,8 @@ Actuellement, migration des rôles de serveur, établissement des mappages de se
         <target state="translated">Pour les serveurs cibles exécutant SQL Server 2014 ou une version antérieure, vous devez stocker vos sauvegardes de base de données dans un conteneur Azure Storage Blob au lieu de les charger à l’aide de l’option de partage réseau. En outre, vous devez stocker les fichiers de sauvegarde sous forme d’objets blob de pages, car les objets blob de blocs sont pris en charge uniquement pour les cibles qui exécutent SQL Server 2016 ou version ultérieure. En savoir plus : {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.assessment.xevents.description">
-        <source xml:lang="en">For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer. {0}</source>
-        <target state="translated">Pour les bases de données sélectionnées, fournissez éventuellement des fichiers de session d’événements étendus pour évaluer les requêtes SQL ad hoc ou dynamiques, ou les instructions DML lancées via la couche données de l’application. {0}</target>
+        <source xml:lang="en">For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer.</source>
+        <target state="translated">Pour les bases de données sélectionnées, fournissez éventuellement des fichiers de session d'événements étendus pour évaluer les requêtes SQL ad hoc ou dynamiques ou toute instruction DML initiée via la couche de données d'application.</target>
       </trans-unit>
       <trans-unit id="sql.migration.full.backup.files">
         <source xml:lang="en">Full backup file(s)</source>
@@ -1589,6 +1653,10 @@ Actuellement, migration des rôles de serveur, établissement des mappages de se
       <trans-unit id="sql.migration.sku.azureConfiguration.generalPurpose">
         <source xml:lang="en">General purpose</source>
         <target state="translated">Usage général</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.target.provisioning.generate.template">
+        <source xml:lang="en">Generate Template</source>
+        <target state="translated">Générer un modèle</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.generatingscript">
         <source xml:lang="en">Generating script</source>
@@ -1654,9 +1722,25 @@ Actuellement, migration des rôles de serveur, établissement des mappages de se
         <source xml:lang="en">I have already migrated my certificates and private keys to the target.</source>
         <target state="translated">J'ai déjà migré mes certificats et clés privées vers la cible.</target>
       </trans-unit>
+      <trans-unit id="sql.ir.local.ir.definition">
+        <source xml:lang="en">I want to setup self-hosted integration runtime on another Windows machine that is not my local machine.</source>
+        <target state="translated">Je souhaite configurer le runtime d'intégration auto-hébergé sur une autre machine Windows qui n'est pas ma machine locale.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.io.memory.requirement">
         <source xml:lang="en">IO latency requirement</source>
         <target state="translated">Exigence de latence d’E/S</target>
+      </trans-unit>
+      <trans-unit id="sql.ir.ip.address">
+        <source xml:lang="en">IP address</source>
+        <target state="translated">Adresse IP</target>
+      </trans-unit>
+      <trans-unit id="sql.ir.config.type">
+        <source xml:lang="en">IR configuration type</source>
+        <target state="translated">Type de configuration IR</target>
+      </trans-unit>
+      <trans-unit id="sql.ir.ir.version">
+        <source xml:lang="en">IR version</source>
+        <target state="translated">Version du runtime d’intégration</target>
       </trans-unit>
       <trans-unit id="sql.migration.empty.table.subtext">
         <source xml:lang="en">If results were expected, verify the connection to the SQL Server instance.</source>
@@ -1693,6 +1777,10 @@ Actuellement, migration des rôles de serveur, établissement des mappages de se
       <trans-unit id="sql.migration.sku.import.performance.data.dialog.description">
         <source xml:lang="en">Import this data file from an existing folder, if you have already collected it using Data Migration Assistant.</source>
         <target state="translated">Importez ce fichier de données à partir d'un dossier existant, si vous l'avez déjà collecté à l'aide de Data Migration Assistant.</target>
+      </trans-unit>
+      <trans-unit id="sql.ir.important">
+        <source xml:lang="en">Important</source>
+        <target state="translated">Important</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.migration.migration.mode.tool.tip">
         <source xml:lang="en">In Azure Database Migration Service, you can migrate your databases offline or while they are online. In an offline migration, application downtime starts when the migration starts. To limit downtime to the time it takes you to cut over to the new environment after the migration, use an online migration.</source>
@@ -1925,6 +2013,14 @@ Cliquez sur « Exécuter la validation » pour vérifier que les exigences son
       <trans-unit id="sql.migration.field.label.mi.restore.state">
         <source xml:lang="en">Managed instance restore state</source>
         <target state="translated">État de restauration de Managed Instance</target>
+      </trans-unit>
+      <trans-unit id="sql.ir.manual.ir.collapsed">
+        <source xml:lang="en">Manual IR configuration collapsed</source>
+        <target state="translated">Configuration du runtime d’intégration manuel réduite</target>
+      </trans-unit>
+      <trans-unit id="sql.ir.manual.ir.expanded">
+        <source xml:lang="en">Manual IR configuration expanded</source>
+        <target state="translated">Configuration IR manuelle étendue</target>
       </trans-unit>
       <trans-unit id="sql.migration.map.target.heading">
         <source xml:lang="en">Map selected source databases to target databases for migration</source>
@@ -2250,6 +2346,10 @@ Cliquez sur « Exécuter la validation » pour vérifier que les exigences son
         <source xml:lang="en">Next</source>
         <target state="translated">Suivant</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.nextGenGeneralPurpose">
+        <source xml:lang="en">Next-gen General Purpose</source>
+        <target state="translated">La nouvelle génération d’appareils à usage général</target>
+      </trans-unit>
       <trans-unit id="sql.migration.no">
         <source xml:lang="en">No</source>
         <target state="translated">Non</target>
@@ -2318,6 +2418,10 @@ Cliquez sur « Exécuter la validation » pour vérifier que les exigences son
         <source xml:lang="en">No managed instances found.</source>
         <target state="translated">Aucune instance managée trouvée.</target>
       </trans-unit>
+      <trans-unit id="sql.ir.no.node.found">
+        <source xml:lang="en">No node found</source>
+        <target state="translated">Aucun nœud trouvé</target>
+      </trans-unit>
       <trans-unit id="sql.migration.no.pending.backups">
         <source xml:lang="en">No pending backups. Click refresh to check current status.</source>
         <target state="translated">Aucune sauvegarde en attente. Cliquez sur Actualiser pour vérifier l’état actuel.</target>
@@ -2353,6 +2457,10 @@ Cliquez sur « Exécuter la validation » pour vérifier que les exigences son
       <trans-unit id="sql.migration.no.virtualMachine.found">
         <source xml:lang="en">No virtual machines found.</source>
         <target state="translated">Aucune machine virtuelle trouvée.</target>
+      </trans-unit>
+      <trans-unit id="sql.ir.node.name">
+        <source xml:lang="en">Node name</source>
+        <target state="translated">Nom du nœud</target>
       </trans-unit>
       <trans-unit id="sql.migration.restore.status.none">
         <source xml:lang="en">None</source>
@@ -2390,6 +2498,10 @@ Cliquez sur « Exécuter la validation » pour vérifier que les exigences son
         <source xml:lang="en">Not started</source>
         <target state="translated">Non démarré</target>
       </trans-unit>
+      <trans-unit id="sql.ir.recommended.link">
+        <source xml:lang="en">Note: Refer Self-hosted IR recommendations</source>
+        <target state="translated">Remarque : consulter les recommandations du runtime d’IR auto-hébergé</target>
+      </trans-unit>
       <trans-unit id="sql.migration.backup.file.number.of.stripes">
         <source xml:lang="en">Number of stripes</source>
         <target state="translated">Nombre de franges</target>
@@ -2425,6 +2537,10 @@ Cliquez sur « Exécuter la validation » pour vérifier que les exigences son
       <trans-unit id="sql.migration.database.migration.mode.offline.label">
         <source xml:lang="en">Offline migration</source>
         <target state="translated">Migration hors connexion</target>
+      </trans-unit>
+      <trans-unit id="sql.ir.powershellscript.definition">
+        <source xml:lang="en">Once executed in powershell, the unique script shown below will download, and install the self-hosted integration runtime and register it with the Azure Database Migration Service. You will need to have PowerShell installed on the target machine.</source>
+        <target state="translated">Une fois exécuté dans PowerShell, le script unique présenté ci-dessous téléchargera et installera le runtime d'intégration auto-hébergé et l'enregistrera auprès d’Azure Database Migration Service. Vous devrez avoir PowerShell installé sur la machine cible.</target>
       </trans-unit>
       <trans-unit id="sql.migration.online">
         <source xml:lang="en">Online</source>
@@ -2522,6 +2638,18 @@ Cliquez sur « Exécuter la validation » pour vérifier que les exigences son
         <source xml:lang="en">Port</source>
         <target state="translated">Port</target>
       </trans-unit>
+      <trans-unit id="sql.ir.powershell.script.saved">
+        <source xml:lang="en">PowerShell script saved</source>
+        <target state="translated">Script PowerShell enregistré</target>
+      </trans-unit>
+      <trans-unit id="sql.ir.ps.script.collapsed">
+        <source xml:lang="en">Powershell script collapsed</source>
+        <target state="translated">Le script Powershell s'est effondré</target>
+      </trans-unit>
+      <trans-unit id="sql.ir.ps.script.expanded">
+        <source xml:lang="en">Powershell script expanded</source>
+        <target state="translated">Script PowerShell développé</target>
+      </trans-unit>
       <trans-unit id="sql.migration.status.prefetchobjects">
         <source xml:lang="en">Prefetch objects</source>
         <target state="translated">Pré-récupérer des objets</target>
@@ -2541,6 +2669,10 @@ Cliquez sur « Exécuter la validation » pour vérifier que les exigences son
       <trans-unit id="sql.migration.copy.status.preparingforcopy">
         <source xml:lang="en">Preparing</source>
         <target state="translated">Préparation</target>
+      </trans-unit>
+      <trans-unit id="sql.ir.powershell.prereq">
+        <source xml:lang="en">Prerequisite: Need PowerShell with execute as admin privileges. </source>
+        <target state="translated">Prérequis : Vous avez besoin de PowerShell avec des privilèges d’exécution en tant qu’administrateur. </target>
       </trans-unit>
       <trans-unit id="sql.login.migration.status.page.previous.button.title">
         <source xml:lang="en">Previous (Disabled)</source>
@@ -2695,6 +2827,10 @@ Cliquez sur « Exécuter la validation » pour vérifier que les exigences son
         <target state="translated">L’actualisation de la liste de connexions a réussi. Connexions sources trouvées {0}, connexions cibles trouvées {1}</target>
       </trans-unit>
       <trans-unit id="sql.migration.resourceGroups">
+        <source xml:lang="en">Resource group</source>
+        <target state="translated">Groupe de ressources</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.storage.account.resource.group.label">
         <source xml:lang="en">Resource group</source>
         <target state="translated">Groupe de ressources</target>
       </trans-unit>
@@ -2902,6 +3038,14 @@ Cliquez sur « Exécuter la validation » pour vérifier que les exigences son
         <source xml:lang="en">SQL tempdb</source>
         <target state="translated">base de données SQL</target>
       </trans-unit>
+      <trans-unit id="sql.migration.target.provisioning.save">
+        <source xml:lang="en">Save</source>
+        <target state="translated">Enregistrer</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.target.provisioning.title">
+        <source xml:lang="en">Save Template</source>
+        <target state="translated">Enregistrer le modèle</target>
+      </trans-unit>
       <trans-unit id="sql.migration.save.close">
         <source xml:lang="en">Save and close</source>
         <target state="translated">Enregistrer et fermer</target>
@@ -2913,6 +3057,14 @@ Cliquez sur « Exécuter la validation » pour vérifier que les exigences son
       <trans-unit id="sql.migration.save.recommendation.report">
         <source xml:lang="en">Save recommendation report</source>
         <target state="translated">Enregistrer le rapport de recommandation</target>
+      </trans-unit>
+      <trans-unit id="sql.ir.save.script">
+        <source xml:lang="en">Save script</source>
+        <target state="translated">Enregistrer le script</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.target.upload.to.azure">
+        <source xml:lang="en">Save to Azure blob container</source>
+        <target state="translated">Enregistrer dans un conteneur blob Azure</target>
       </trans-unit>
       <trans-unit id="sql.migration.saved.assessment.result">
         <source xml:lang="en">Saved session</source>
@@ -3010,6 +3162,10 @@ Cliquez sur « Exécuter la validation » pour vérifier que les exigences son
         <source xml:lang="en">Select</source>
         <target state="translated">Sélectionner</target>
       </trans-unit>
+      <trans-unit id="sql.migration.select.storage.account.title">
+        <source xml:lang="en">Select Azure Storage Account</source>
+        <target state="translated">Sélectionner le compte de stockage Azure</target>
+      </trans-unit>
       <trans-unit id="sql.migration.select.service.title">
         <source xml:lang="en">Select Database Migration Service</source>
         <target state="translated">Sélectionner Database Migration Service</target>
@@ -3029,6 +3185,10 @@ Cliquez sur « Exécuter la validation » pour vérifier que les exigences son
       <trans-unit id="sql.migration.status.select.service.MESSAGE">
         <source xml:lang="en">Select a Database Migration Service to monitor migrations.</source>
         <target state="translated">Sélectionnez un Database Migration Service pour surveiller les migrations.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.select.storage.select.a.storage.account">
+        <source xml:lang="en">Select a Storage Account</source>
+        <target state="translated">Sélectionner un compte de stockage</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.container.select">
         <source xml:lang="en">Select a blob container value first.</source>
@@ -3418,7 +3578,11 @@ Cliquez sur « Exécuter la validation » pour vérifier que les exigences son
         <source xml:lang="en">Storage</source>
         <target state="translated">Stockage</target>
       </trans-unit>
-      <trans-unit id="sql.migration.storage.account">
+      <trans-unit id="sql.migration.select.storage.account.label">
+        <source xml:lang="en">Storage Account</source>
+        <target state="translated">Compte de stockage</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.storage.account.details.label">
         <source xml:lang="en">Storage account</source>
         <target state="translated">Compte de stockage</target>
       </trans-unit>
@@ -3445,6 +3609,10 @@ Cliquez sur « Exécuter la validation » pour vérifier que les exigences son
       <trans-unit id="sql.migration.sku.subscription">
         <source xml:lang="en">Subscription name for your Azure SQL target</source>
         <target state="translated">Nom de l’abonnement pour votre cible Azure SQL</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.storage.account.subscription">
+        <source xml:lang="en">Subscription name for your Storage Account</source>
+        <target state="translated">Nom de l’abonnement pour votre compte de stockage</target>
       </trans-unit>
       <trans-unit id="sql.migration.state.succeeded">
         <source xml:lang="en">Succeeded</source>
@@ -3629,6 +3797,14 @@ Cliquez sur « Exécuter la validation » pour vérifier que les exigences son
       <trans-unit id="sql.migration.target.version">
         <source xml:lang="en">Target version</source>
         <target state="translated">Version cible</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.target.provisioning.save.template.success">
+        <source xml:lang="en">Template saved successfully</source>
+        <target state="translated">Enregistrement du modèle réussi</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.target.provisioning.upload.template.success">
+        <source xml:lang="en">Template uploaded successfully</source>
+        <target state="translated">Le modèle a été chargé avec succès</target>
       </trans-unit>
       <trans-unit id="sql.migration.test.connection">
         <source xml:lang="en">Test connection</source>
@@ -3926,9 +4102,21 @@ Toutefois, il est autorisé à poursuivre la migration du schéma et Azure Datab
         <source xml:lang="en">User account</source>
         <target state="translated">Compte utilisateur</target>
       </trans-unit>
+      <trans-unit id="sql.migration.network.share.user.account.label">
+        <source xml:lang="en">User account</source>
+        <target state="translated">Compte utilisateur</target>
+      </trans-unit>
       <trans-unit id="sql.migration.username">
         <source xml:lang="en">User name</source>
         <target state="translated">Nom d'utilisateur</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.assessment.qds.label">
+        <source xml:lang="en">Using Query Data Store (this option is available for Microsoft SQL Server 2016 and later)</source>
+        <target state="translated">Utilisation du Magasin de données des requêtes (cette option est disponible pour Microsoft SQL Server 2016 et versions ultérieures)</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.assessment.xevents.label">
+        <source xml:lang="en">Using extended event session</source>
+        <target state="translated">Utilisation d’une session d’événements étendue</target>
       </trans-unit>
       <trans-unit id="sql.migration.starting.login">
         <source xml:lang="en">Validating and migrating logins are in progress</source>
@@ -4090,6 +4278,10 @@ Si les noms de la source et de la base de données ne sont pas identiques, il es
         <source xml:lang="en">When uploading database backups to your blob container, ensure that backup files from different databases are stored in separate folders. Only the root of the container and folders at most one level deep are supported.</source>
         <target state="translated">Lorsque vous chargez des sauvegardes de base de données dans votre conteneur d'objets blob, assurez-vous que les fichiers de sauvegarde de différentes bases de données sont stockés dans des dossiers distincts. Seule la racine du conteneur et les dossiers d'au plus un niveau de profondeur sont pris en charge.</target>
       </trans-unit>
+      <trans-unit id="sql.ir.local.ir.setup.note">
+        <source xml:lang="en">When you click 'execute script', the PowerShell script below will automatically download self-hosted integration runtime software, install, and register it with your Azure Database Migration Service. To check the connection status of the IR, go back to the previous screen and refresh. </source>
+        <target state="translated">Lorsque vous cliquez sur « exécuter le script », le script PowerShell ci-dessous télécharge automatiquement le logiciel d'exécution d'intégration auto-hébergé, l'installe et l'enregistre auprès de votre Database Migration Service Azure. Pour vérifier l’état de connexion du runtime d’intégration, revenez à l’écran précédent et actualisez. </target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.data.collection.popup.message.label">
         <source xml:lang="en">Where do you want to save collected data?</source>
         <target state="translated">Où souhaitez-vous sauvegarder les données collectées ?</target>
@@ -4137,6 +4329,14 @@ Si les noms de la source et de la base de données ne sont pas identiques, il es
       <trans-unit id="sql.migration.sku.resource.port">
         <source xml:lang="en">Your Azure SQL target resource port number : 0 - 65535</source>
         <target state="translated">Votre Azure SQL numéro de port de ressource cible : 0 - 65535</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.storage.account.blob.container">
+        <source xml:lang="en">Your Blob Container name</source>
+        <target state="translated">Nom de votre conteneur Blob</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.storage.account">
+        <source xml:lang="en">Your Storage Account name</source>
+        <target state="translated">Votre nom de compte de stockage</target>
       </trans-unit>
       <trans-unit id="sql.migration.pre.req.4">
         <source xml:lang="en">Your database backup location details, either a network file share or an Azure Blob Storage container (not required for Azure SQL Database targets).</source>
