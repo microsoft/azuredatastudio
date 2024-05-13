@@ -108,17 +108,13 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "Examinar",
-			"configurePython.installationType": "Tipo de instalación",
-			"configurePython.newInstall": "Nueva instalación de Python",
 			"configurePythyon.noVersionsFound": "No se ha encontrado ninguna versión de Python compatible.",
 			"configurePython.descriptionWithoutKernel": "Los kernel del cuaderno requieren que se configure un entorno de ejecución de Python y que se instalen dependencias.",
-			"configurePython.locationTextBoxText": "Ubicación de la instalación de Python",
-			"configurePython.pythonConfigured": "El entorno de ejecución de Python se ha configurado.",
+			"configurePython.locationTextBoxText": "Ubicación de Python",
 			"configurePython.selectFileLabel": "Seleccionar",
 			"configurePython.descriptionWithKernel": "El kernel de \"{0}\" requiere que se configure un entorno de ejecución de Python y que se instalen dependencias.",
-			"configurePython.existingInstall": "Usar la instalación de Python existente",
+			"configurePythyon.existingInstance": "{0} (Instancia de Python actual)",
 			"configurePythyon.customPathLabel": "{0} (personalizada)",
-			"configurePythyon.defaultPathLabel": "{0} (predeterminada)",
 			"configurePythyon.dropdownPathLabel": "{0} ({1} de Python)"
 		},
 		"dist/dialog/configurePython/configurePythonWizard": {
@@ -190,28 +186,14 @@
 			"errNotebookUriMissing": "Se requiere una ruta de acceso del cuaderno"
 		},
 		"dist/jupyter/jupyterServerInstallation": {
-			"msgShutdownNotebookSessions": "Las sesiones del cuaderno de Python activas se cerrarán para poder actualizarse. ¿Desea continuar ahora?",
 			"msgWaitingForInstall": "Otra instalación de Python está actualmente en curso. Esperando a que se complete.",
-			"msgPythonRunningError": "No se puede sobrescribir una instalación de Python existente mientras Python se está ejecutando. Cierre los cuadernos activos antes de continuar.",
-			"dontAskAgain": "No volver a preguntar",
-			"msgDownloadPython": "Descargando Python local para la plataforma: {0} a {1}",
-			"msgPythonDownloadPending": "Descargando paquete de Python",
 			"msgGetPythonUserDirFailed": "Se ha encontrado un error al obtener la ruta de acceso del usuario de Python: {0}",
 			"msgPackageRetrievalFailed": "Se ha encontrado un error al intentar recuperar la lista de paquetes instalados: {0}",
-			"msgPythonDirectoryError": "Error al crear el directorio de instalación de Python",
-			"msgPythonDownloadError": "Error al descargar la configuración de Python",
-			"msgPythonUnpackError": "Error al desempaquetar el paquete de Python",
 			"msgTaskName": "Instalando dependencias de Notebook",
 			"msgDependenciesInstallationFailed": "Error al instalar las dependencias de Notebook: {0}",
 			"msgInstallPkgStart": "Instalando dependencias de Notebook, consulte la vista Tareas para obtener más información",
-			"no": "No",
 			"msgInstallPkgFinish": "La instalación de las dependencias de Notebook se ha completado",
-			"msgInstallPkgProgress": "La instalación de dependencias de Notebook está en curso",
-			"msgPythonDownloadComplete": "La descarga de Python está completa",
-			"msgPythonVersionUpdatePrompt": "Python {0} ya está disponible en Azure Data Studio. La versión actual de Python (3.6.6) dejará de recibir soporte en diciembre de 2021. ¿Le gustaría actualizar a Python {0} ahora?",
-			"msgPythonVersionUpdateWarning": "Se instalará Python {0} y reemplazará a Python 3.6.6. Es posible que algunos paquetes ya no sean compatibles con la nueva versión o que sea necesario volver a instalarlos. Se creará un cuaderno para ayudarle a reinstalar todos los paquetes de PIP. ¿Desea continuar con la actualización ahora?",
-			"msgPythonUnpackPending": "Desempaquetando paquete de Python",
-			"yes": "Sí"
+			"msgInstallPkgProgress": "La instalación de dependencias de Notebook está en curso"
 		},
 		"dist/jupyter/jupyterServerManager": {
 			"shutdownError": "Error en el apagado del servidor de Notebook: {0}"

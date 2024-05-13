@@ -108,17 +108,13 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "Обзор",
-			"configurePython.installationType": "Тип установки",
-			"configurePython.newInstall": "Новая установка Python",
 			"configurePythyon.noVersionsFound": "Поддерживаемые версии Python не найдены.",
 			"configurePython.descriptionWithoutKernel": "Для ядер записных книжек требуется настроить среду выполнения Python и установить зависимости.",
-			"configurePython.locationTextBoxText": "Расположение установки Python",
-			"configurePython.pythonConfigured": "Среда выполнения Python настроена.",
+			"configurePython.locationTextBoxText": "Расположение Python",
 			"configurePython.selectFileLabel": "Выбрать",
 			"configurePython.descriptionWithKernel": "Для ядра \"{0}\" требуется настроить среду выполнения Python и установить зависимости.",
-			"configurePython.existingInstall": "Использовать существующую установку Python",
+			"configurePythyon.existingInstance": "{0} (текущий экземпляр Python)",
 			"configurePythyon.customPathLabel": "{0} (пользовательский)",
-			"configurePythyon.defaultPathLabel": "{0} (по умолчанию)",
 			"configurePythyon.dropdownPathLabel": "{0} (Python {1})"
 		},
 		"dist/dialog/configurePython/configurePythonWizard": {
@@ -190,28 +186,14 @@
 			"errNotebookUriMissing": "Требуется путь к записной книжке"
 		},
 		"dist/jupyter/jupyterServerInstallation": {
-			"msgShutdownNotebookSessions": "Сеансы активных записных книжек Python будут завершены, чтобы обновить их. Хотите продолжить?",
 			"msgWaitingForInstall": "Сейчас выполняется другая установка Python. Дождитесь ее завершения.",
-			"msgPythonRunningError": "Не удается перезаписать существующую установку Python во время работы Python. Прежде чем продолжить, закройте все активные записные книжки.",
-			"dontAskAgain": "Больше не спрашивать",
-			"msgDownloadPython": "Скачивание локального Python для платформы: {0} в {1}",
-			"msgPythonDownloadPending": "Идет скачивание пакета Python",
 			"msgGetPythonUserDirFailed": "Обнаружена ошибка при получении пути пользователя Python: {0}",
 			"msgPackageRetrievalFailed": "Произошла ошибка при попытке получить список установленных пакетов: {0}",
-			"msgPythonDirectoryError": "Ошибка при создании каталога установки Python",
-			"msgPythonDownloadError": "Ошибка при скачивании программы установки Python",
-			"msgPythonUnpackError": "Ошибка при распаковке пакета Python",
 			"msgTaskName": "Идет установка зависимостей Notebook",
 			"msgDependenciesInstallationFailed": "Установка зависимостей Notebook завершилась с ошибкой: {0}",
 			"msgInstallPkgStart": "Идет установка зависимостей Notebook, дополнительные сведения см. в представлении задач",
-			"no": "Нет",
 			"msgInstallPkgFinish": "Установка зависимостей Notebook завершена",
-			"msgInstallPkgProgress": "Выполняется установка зависимостей Notebook",
-			"msgPythonDownloadComplete": "Скачивание Python завершено",
-			"msgPythonVersionUpdatePrompt": "{0} Python доступна в Azure Data Studio. Текущая версия Python (3.6.6) не поддерживается в декабре 2021. Вы хотите обновить {0} Python сейчас?",
-			"msgPythonVersionUpdateWarning": "Будет установлен {0} Python, который заменит 3.6.6 Python. Некоторые пакеты могут быть несовместимы с новой версией или требуют переустановки. Будет создана Записная книжка, которая поможет вам переустановить все пакеты PIP. Вы хотите продолжить обновление сейчас?",
-			"msgPythonUnpackPending": "Распаковка пакета Python",
-			"yes": "Да"
+			"msgInstallPkgProgress": "Выполняется установка зависимостей Notebook"
 		},
 		"dist/jupyter/jupyterServerManager": {
 			"shutdownError": "Сбой при завершении работы сервера Notebook: {0}"

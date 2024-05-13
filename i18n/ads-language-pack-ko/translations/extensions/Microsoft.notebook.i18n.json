@@ -108,17 +108,13 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "찾아보기",
-			"configurePython.installationType": "설치 유형",
-			"configurePython.newInstall": "새 Python 설치",
 			"configurePythyon.noVersionsFound": "지원되는 Python 버전을 찾을 수 없습니다.",
 			"configurePython.descriptionWithoutKernel": "Notebook 커널에서는 Python 런타임을 구성하고 종속성을 설치해야 합니다.",
-			"configurePython.locationTextBoxText": "Python 설치 위치",
-			"configurePython.pythonConfigured": "Python 런타임이 구성되었습니다.",
+			"configurePython.locationTextBoxText": "Python 위치",
 			"configurePython.selectFileLabel": "선택",
 			"configurePython.descriptionWithKernel": "‘{0}’ 커널을 사용하려면 Python 런타임을 구성하고 종속성을 설치해야 합니다.",
-			"configurePython.existingInstall": "기존 Python 설치 사용",
+			"configurePythyon.existingInstance": "{0} (현재 Python 인스턴스)",
 			"configurePythyon.customPathLabel": "{0}(사용자 지정)",
-			"configurePythyon.defaultPathLabel": "{0}(기본값)",
 			"configurePythyon.dropdownPathLabel": "{0}(Python {1})"
 		},
 		"dist/dialog/configurePython/configurePythonWizard": {
@@ -190,28 +186,14 @@
 			"errNotebookUriMissing": "Notebook 경로는 필수입니다."
 		},
 		"dist/jupyter/jupyterServerInstallation": {
-			"msgShutdownNotebookSessions": "업데이트를 하기 위해 활성 Python Notebook 세션이 종료됩니다. 지금 계속하시겠습니까?",
 			"msgWaitingForInstall": "현재 다른 Python 설치를 진행 중입니다. 완료될 때까지 기다립니다.",
-			"msgPythonRunningError": "Python이 실행되는 동안 기존 Python 설치를 덮어쓸 수 없습니다. 계속하기 전에 활성 Notebook을 닫으세요.",
-			"dontAskAgain": "다시 묻지 않음",
-			"msgDownloadPython": "{0} 플랫폼용 로컬 python을 {1}(으)로 다운로드하는 중",
-			"msgPythonDownloadPending": "Python 패키지 다운로드 중",
 			"msgGetPythonUserDirFailed": "Python 사용자 경로를 가져올 때 오류가 발생했습니다. {0}",
 			"msgPackageRetrievalFailed": "설치된 패키지 목록을 검색하는 동안 오류가 발생했습니다. {0}",
-			"msgPythonDirectoryError": "Python 설치 디렉터리를 만드는 동안 오류가 발생했습니다.",
-			"msgPythonDownloadError": "Python 설정을 다운로드하는 동안 오류가 발생했습니다.",
-			"msgPythonUnpackError": "Python 번들 압축을 푸는 동안 오류가 발생했습니다.",
 			"msgTaskName": "Notebook 종속성 설치 중",
 			"msgDependenciesInstallationFailed": "오류: {0}(을) 나타내며 Notebook 종속성 설치에 실패했습니다.",
 			"msgInstallPkgStart": "Notebook 종속성을 설치하는 중입니다. 자세한 내용은 작업 보기를 참조하세요.",
-			"no": "아니요",
 			"msgInstallPkgFinish": "Notebook 종속성 설치를 완료했습니다.",
-			"msgInstallPkgProgress": "Notebook 종속성 설치가 진행 중입니다.",
-			"msgPythonDownloadComplete": "Python 다운로드가 완료되었습니다.",
-			"msgPythonVersionUpdatePrompt": "이제 python {0}에서 Azure Data Studio를 사용할 수 있습니다. 현재 Python 버전(3.6.6)은 2021년 12월에 지원되지 않습니다. 지금 Python {0}을(를) 업데이트하시겠습니까?",
-			"msgPythonVersionUpdateWarning": "Python {0}이(가) 설치되고 Python 3.6.6을 대체합니다. 일부 패키지는 더 이상 새 버전과 호환되지 않거나 다시 설치해야 할 수 있습니다. 모든 pip 패키지를 다시 설치하는 데 도움이 되는 전자 필기장이 만들어집니다. 지금 업데이트를 계속하시겠습니까?",
-			"msgPythonUnpackPending": "Python 패키지 압축을 푸는 중",
-			"yes": "네"
+			"msgInstallPkgProgress": "Notebook 종속성 설치가 진행 중입니다."
 		},
 		"dist/jupyter/jupyterServerManager": {
 			"shutdownError": "Notebook 서버 종료 실패: {0}"

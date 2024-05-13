@@ -108,17 +108,13 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "浏览",
-			"configurePython.installationType": "安装类型",
-			"configurePython.newInstall": "新 Python 安装",
 			"configurePythyon.noVersionsFound": "找不到支持的 Python 版本。",
 			"configurePython.descriptionWithoutKernel": "笔记本内核要求配置 Python 运行时并安装依赖项。",
-			"configurePython.locationTextBoxText": "Python 安装位置",
-			"configurePython.pythonConfigured": "Python 运行时已配置!",
+			"configurePython.locationTextBoxText": "Python 位置",
 			"configurePython.selectFileLabel": "选择",
 			"configurePython.descriptionWithKernel": "\"{0}\" 内核要求配置 Python 运行时并安装依赖项。",
-			"configurePython.existingInstall": "使用现有 Python 安装",
+			"configurePythyon.existingInstance": "{0} (当前 Python 实例)",
 			"configurePythyon.customPathLabel": "{0} (自定义)",
-			"configurePythyon.defaultPathLabel": "{0} (默认)",
 			"configurePythyon.dropdownPathLabel": "{0} (Python {1})"
 		},
 		"dist/dialog/configurePython/configurePythonWizard": {
@@ -190,28 +186,14 @@
 			"errNotebookUriMissing": "需要笔记本路径"
 		},
 		"dist/jupyter/jupyterServerInstallation": {
-			"msgShutdownNotebookSessions": "将关闭活动 Python 笔记本会话以进行更新。是否要立即继续?",
 			"msgWaitingForInstall": "另一个 Python 安装正在进行中。请等待它完成。",
-			"msgPythonRunningError": "在 Python 运行时无法覆盖现有 Python 安装。请关闭所有活动笔记本，再继续操作。",
-			"dontAskAgain": "不再询问",
-			"msgDownloadPython": "正在将平台 {0} 的本地 python 下载到 {1}",
-			"msgPythonDownloadPending": "正在下载 python 包",
 			"msgGetPythonUserDirFailed": "获取 Python 用户路径时遇到错误: {0}",
 			"msgPackageRetrievalFailed": "尝试检索已安装的包列表时遇到错误: {0}",
-			"msgPythonDirectoryError": "创建 python 安装目录时出错",
-			"msgPythonDownloadError": "下载 python 安装程序时出错",
-			"msgPythonUnpackError": "解压 Python 捆绑包时出错",
 			"msgTaskName": "正在安装笔记本依赖项",
 			"msgDependenciesInstallationFailed": "安装笔记本依赖项失败，错误: {0}",
 			"msgInstallPkgStart": "正在安装笔记本依赖项；有关详细信息，请参阅“任务”视图",
-			"no": "否",
 			"msgInstallPkgFinish": "笔记本依赖项安装完毕",
-			"msgInstallPkgProgress": "正在安装笔记本依赖项",
-			"msgPythonDownloadComplete": "Python 下载完毕",
-			"msgPythonVersionUpdatePrompt": "Python {0} 现已在 Azure Data Studio 中提供。当前 Python 版本 (3.6.6) 将于 2021 年 12 月不再受支持。是否要立即更新到 Python {0}?",
-			"msgPythonVersionUpdateWarning": "将安装 Python {0} ，并将替换 Python 3.6.6。某些包可能不再与新版本兼容，或者可能需要重新安装。将创建一个笔记本来帮助你重新安装所有 pip 包。是否要立即继续更新?",
-			"msgPythonUnpackPending": "正在解压 python 包",
-			"yes": "是"
+			"msgInstallPkgProgress": "正在安装笔记本依赖项"
 		},
 		"dist/jupyter/jupyterServerManager": {
 			"shutdownError": "关闭笔记本服务器失败: {0}"

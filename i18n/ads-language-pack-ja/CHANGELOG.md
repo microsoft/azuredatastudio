@@ -2,7 +2,8 @@
 All notable changes to the "ads-language-pack-ja" language pack will be documented in this file.
 
 ## [Released]
-* February 23, 2023 - Release for Azure Data Studio 1.48
+* May 13, 2024 - Release for Azure Data Studio 1.49
+* February 23, 2024 - Release for Azure Data Studio 1.48
 * October 31, 2023 - Release for Azure Data Studio 1.47
 * September 14, 2023 - Release for Azure Data Studio 1.46
 * July 10, 2023 - Release for Azure Data Studio 1.45

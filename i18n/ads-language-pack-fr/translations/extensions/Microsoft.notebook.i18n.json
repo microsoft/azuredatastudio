@@ -108,17 +108,13 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "Parcourir",
-			"configurePython.installationType": "Type d'installation",
-			"configurePython.newInstall": "Nouvelle installation de Python",
 			"configurePythyon.noVersionsFound": "Aucune version de Python prise en charge.",
 			"configurePython.descriptionWithoutKernel": "Les noyaux de notebook nécessitent la configuration d'un runtime Python et l'installation de dépendances.",
-			"configurePython.locationTextBoxText": "Emplacement d'installation de Python",
-			"configurePython.pythonConfigured": "Runtime python configuré !",
+			"configurePython.locationTextBoxText": "Emplacement Python",
 			"configurePython.selectFileLabel": "Sélectionner",
 			"configurePython.descriptionWithKernel": "Le noyau ’{0}’ nécessite la configuration d'un runtime Python et l'installation de dépendances.",
-			"configurePython.existingInstall": "Utiliser l'installation existante de Python",
+			"configurePythyon.existingInstance": "{0} (instance Python actuelle)",
 			"configurePythyon.customPathLabel": "{0} (Personnalisé)",
-			"configurePythyon.defaultPathLabel": "{0} (Par défaut)",
 			"configurePythyon.dropdownPathLabel": "{0} (Python {1})"
 		},
 		"dist/dialog/configurePython/configurePythonWizard": {
@@ -190,28 +186,14 @@
 			"errNotebookUriMissing": "Le chemin du notebook est obligatoire"
 		},
 		"dist/jupyter/jupyterServerInstallation": {
-			"msgShutdownNotebookSessions": "Les sessions de bloc-notes python actives seront arrêtées pour permettre la mise à jour. Voulez-vous continuer maintenant ?",
 			"msgWaitingForInstall": "Une autre installation de Python est actuellement en cours. En attente de la fin de l'installation.",
-			"msgPythonRunningError": "Impossible de remplacer une installation Python existante quand Python est en cours d'exécution. Fermez tous les notebooks actifs avant de continuer.",
-			"dontAskAgain": "Ne plus me poser la question",
-			"msgDownloadPython": "Téléchargement de la version locale de Python pour la plateforme : {0} dans {1}",
-			"msgPythonDownloadPending": "Téléchargement du package Python",
 			"msgGetPythonUserDirFailed": "Erreur pendant l'obtention du chemin de l'utilisateur Python : {0}",
 			"msgPackageRetrievalFailed": "Erreur pendant la tentative de récupération de la liste des packages installés : {0}",
-			"msgPythonDirectoryError": "Erreur de création du répertoire d'installation de Python",
-			"msgPythonDownloadError": "Erreur de téléchargement du programme d'installation de Python",
-			"msgPythonUnpackError": "Erreur de décompression du bundle Python",
 			"msgTaskName": "Installation des dépendances de notebook",
 			"msgDependenciesInstallationFailed": "L'installation des dépendances de notebook a échoué avec l'erreur : {0}",
 			"msgInstallPkgStart": "Installation des dépendances de notebook, consultez la vue Tâches pour plus d'informations",
-			"no": "Non",
 			"msgInstallPkgFinish": "L'installation des dépendances de notebook est terminée",
-			"msgInstallPkgProgress": "L'installation des dépendances de notebook est en cours",
-			"msgPythonDownloadComplete": "Le téléchargement de Python est terminé",
-			"msgPythonVersionUpdatePrompt": "Python {0} est désormais disponible dans Azure Data Studio. La version actuelle de Python (3.6.6) n’est plus prise en charge en décembre 2021. Voulez-vous effectuer une mise à jour vers python {0} maintenant ?",
-			"msgPythonVersionUpdateWarning": "Python {0} sera installé et va remplacer python 3.6.6. Certains packages ne sont peut-être plus compatibles avec la nouvelle version ou doivent peut-être être réinstallés. Un bloc-notes va être créé pour vous aider à réinstaller tous les packages PIP. Voulez-vous continuer la mise à jour maintenant ?",
-			"msgPythonUnpackPending": "Décompression du package Python",
-			"yes": "Oui"
+			"msgInstallPkgProgress": "L'installation des dépendances de notebook est en cours"
 		},
 		"dist/jupyter/jupyterServerManager": {
 			"shutdownError": "L'arrêt du serveur de notebook a échoué : {0}"
