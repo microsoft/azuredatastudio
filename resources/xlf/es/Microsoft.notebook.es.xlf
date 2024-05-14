@@ -384,14 +384,6 @@ Se ha cambiado el nombre del archivo a {2} para evitar la pérdida de datos.</ta
         <source xml:lang="en">Browse</source>
         <target state="translated">Examinar</target>
       </trans-unit>
-      <trans-unit id="configurePython.installationType">
-        <source xml:lang="en">Installation Type</source>
-        <target state="translated">Tipo de instalación</target>
-      </trans-unit>
-      <trans-unit id="configurePython.newInstall">
-        <source xml:lang="en">New Python installation</source>
-        <target state="translated">Nueva instalación de Python</target>
-      </trans-unit>
       <trans-unit id="configurePythyon.noVersionsFound">
         <source xml:lang="en">No supported Python versions found.</source>
         <target state="translated">No se ha encontrado ninguna versión de Python compatible.</target>
@@ -401,12 +393,8 @@ Se ha cambiado el nombre del archivo a {2} para evitar la pérdida de datos.</ta
         <target state="translated">Los kernel del cuaderno requieren que se configure un entorno de ejecución de Python y que se instalen dependencias.</target>
       </trans-unit>
       <trans-unit id="configurePython.locationTextBoxText">
-        <source xml:lang="en">Python Install Location</source>
-        <target state="translated">Ubicación de la instalación de Python</target>
-      </trans-unit>
-      <trans-unit id="configurePython.pythonConfigured">
-        <source xml:lang="en">Python runtime configured!</source>
-        <target state="translated">El entorno de ejecución de Python se ha configurado.</target>
+        <source xml:lang="en">Python Location</source>
+        <target state="translated">Ubicación de Python</target>
       </trans-unit>
       <trans-unit id="configurePython.selectFileLabel">
         <source xml:lang="en">Select</source>
@@ -416,17 +404,13 @@ Se ha cambiado el nombre del archivo a {2} para evitar la pérdida de datos.</ta
         <source xml:lang="en">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</source>
         <target state="translated">El kernel de "{0}" requiere que se configure un entorno de ejecución de Python y que se instalen dependencias.</target>
       </trans-unit>
-      <trans-unit id="configurePython.existingInstall">
-        <source xml:lang="en">Use existing Python installation</source>
-        <target state="translated">Usar la instalación de Python existente</target>
+      <trans-unit id="configurePythyon.existingInstance">
+        <source xml:lang="en">{0} (Current Python Instance)</source>
+        <target state="translated">{0} (Instancia de Python actual)</target>
       </trans-unit>
       <trans-unit id="configurePythyon.customPathLabel">
         <source xml:lang="en">{0} (Custom)</source>
         <target state="translated">{0} (personalizada)</target>
-      </trans-unit>
-      <trans-unit id="configurePythyon.defaultPathLabel">
-        <source xml:lang="en">{0} (Default)</source>
-        <target state="translated">{0} (predeterminada)</target>
       </trans-unit>
       <trans-unit id="configurePythyon.dropdownPathLabel">
         <source xml:lang="en">{0} (Python {1})</source>
@@ -676,29 +660,9 @@ Se ha cambiado el nombre del archivo a {2} para evitar la pérdida de datos.</ta
   </file>
   <file original="extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation" source-language="en" datatype="plaintext" target-language="es">
     <body>
-      <trans-unit id="msgShutdownNotebookSessions">
-        <source xml:lang="en">Active Python notebook sessions will be shutdown in order to update. Would you like to proceed now?</source>
-        <target state="translated">Las sesiones del cuaderno de Python activas se cerrarán para poder actualizarse. ¿Desea continuar ahora?</target>
-      </trans-unit>
       <trans-unit id="msgWaitingForInstall">
         <source xml:lang="en">Another Python installation is currently in progress. Waiting for it to complete.</source>
         <target state="translated">Otra instalación de Python está actualmente en curso. Esperando a que se complete.</target>
-      </trans-unit>
-      <trans-unit id="msgPythonRunningError">
-        <source xml:lang="en">Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.</source>
-        <target state="translated">No se puede sobrescribir una instalación de Python existente mientras Python se está ejecutando. Cierre los cuadernos activos antes de continuar.</target>
-      </trans-unit>
-      <trans-unit id="dontAskAgain">
-        <source xml:lang="en">Don't Ask Again</source>
-        <target state="translated">No volver a preguntar</target>
-      </trans-unit>
-      <trans-unit id="msgDownloadPython">
-        <source xml:lang="en">Downloading local python for platform: {0} to {1}</source>
-        <target state="translated">Descargando Python local para la plataforma: {0} a {1}</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadPending">
-        <source xml:lang="en">Downloading python package</source>
-        <target state="translated">Descargando paquete de Python</target>
       </trans-unit>
       <trans-unit id="msgGetPythonUserDirFailed">
         <source xml:lang="en">Encountered an error when getting Python user path: {0}</source>
@@ -707,18 +671,6 @@ Se ha cambiado el nombre del archivo a {2} para evitar la pérdida de datos.</ta
       <trans-unit id="msgPackageRetrievalFailed">
         <source xml:lang="en">Encountered an error when trying to retrieve list of installed packages: {0}</source>
         <target state="translated">Se ha encontrado un error al intentar recuperar la lista de paquetes instalados: {0}</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDirectoryError">
-        <source xml:lang="en">Error while creating python installation directory</source>
-        <target state="translated">Error al crear el directorio de instalación de Python</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadError">
-        <source xml:lang="en">Error while downloading python setup</source>
-        <target state="translated">Error al descargar la configuración de Python</target>
-      </trans-unit>
-      <trans-unit id="msgPythonUnpackError">
-        <source xml:lang="en">Error while unpacking python bundle</source>
-        <target state="translated">Error al desempaquetar el paquete de Python</target>
       </trans-unit>
       <trans-unit id="msgTaskName">
         <source xml:lang="en">Installing Notebook dependencies</source>
@@ -732,10 +684,6 @@ Se ha cambiado el nombre del archivo a {2} para evitar la pérdida de datos.</ta
         <source xml:lang="en">Installing Notebook dependencies, see Tasks view for more information</source>
         <target state="translated">Instalando dependencias de Notebook, consulte la vista Tareas para obtener más información</target>
       </trans-unit>
-      <trans-unit id="no">
-        <source xml:lang="en">No</source>
-        <target state="translated">No</target>
-      </trans-unit>
       <trans-unit id="msgInstallPkgFinish">
         <source xml:lang="en">Notebook dependencies installation is complete</source>
         <target state="translated">La instalación de las dependencias de Notebook se ha completado</target>
@@ -743,26 +691,6 @@ Se ha cambiado el nombre del archivo a {2} para evitar la pérdida de datos.</ta
       <trans-unit id="msgInstallPkgProgress">
         <source xml:lang="en">Notebook dependencies installation is in progress</source>
         <target state="translated">La instalación de dependencias de Notebook está en curso</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadComplete">
-        <source xml:lang="en">Python download is complete</source>
-        <target state="translated">La descarga de Python está completa</target>
-      </trans-unit>
-      <trans-unit id="msgPythonVersionUpdatePrompt">
-        <source xml:lang="en">Python {0} is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python {0} now?</source>
-        <target state="translated">Python {0} ya está disponible en Azure Data Studio. La versión actual de Python (3.6.6) dejará de recibir soporte en diciembre de 2021. ¿Le gustaría actualizar a Python {0} ahora?</target>
-      </trans-unit>
-      <trans-unit id="msgPythonVersionUpdateWarning">
-        <source xml:lang="en">Python {0} will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?</source>
-        <target state="translated">Se instalará Python {0} y reemplazará a Python 3.6.6. Es posible que algunos paquetes ya no sean compatibles con la nueva versión o que sea necesario volver a instalarlos. Se creará un cuaderno para ayudarle a reinstalar todos los paquetes de PIP. ¿Desea continuar con la actualización ahora?</target>
-      </trans-unit>
-      <trans-unit id="msgPythonUnpackPending">
-        <source xml:lang="en">Unpacking python package</source>
-        <target state="translated">Desempaquetando paquete de Python</target>
-      </trans-unit>
-      <trans-unit id="yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Sí</target>
       </trans-unit>
     </body>
   </file>

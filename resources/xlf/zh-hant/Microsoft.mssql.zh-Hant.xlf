@@ -845,7 +845,7 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Files</source>
         <target state="translated">檔案</target>
       </trans-unit>
-      <trans-unit id="objectManagement.optionsSectionHeader">
+      <trans-unit id="objectManagement.filesSectionHeader">
         <source xml:lang="en">Files</source>
         <target state="translated">檔案</target>
       </trans-unit>
@@ -1204,6 +1204,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.optimizeAdHocWorkloadsLabel">
         <source xml:lang="en">Optimize Ad Hoc Workloads</source>
         <target state="translated">針對臨機工作負載進行最佳化</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.optionsSectionHeader">
+        <source xml:lang="en">Options</source>
+        <target state="translated">選項</target>
       </trans-unit>
       <trans-unit id="objectManagement.restoreDatabase.restorePlan.originalFileNameText">
         <source xml:lang="en">Original File Name</source>
@@ -2668,7 +2672,7 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.strict">
         <source xml:lang="en">Strict (supported for SQL Server 2022 and Azure SQL)</source>
-        <target state="new">Strict (supported for SQL Server 2022 and Azure SQL)</target>
+        <target state="translated">嚴格 (支援 SQL Server 2022 和 Azure SQL)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.currentLanguage.description">
         <source xml:lang="en">The SQL Server language record name</source>

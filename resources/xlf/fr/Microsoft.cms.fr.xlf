@@ -480,7 +480,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.categoryValues.strict">
         <source xml:lang="en">Strict (supported for SQL Server 2022 and Azure SQL)</source>
-        <target state="new">Strict (supported for SQL Server 2022 and Azure SQL)</target>
+        <target state="translated">Strict (pris en charge pour SQL Server 2022 et Azure SQL)</target>
       </trans-unit>
       <trans-unit id="cms.description">
         <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>
