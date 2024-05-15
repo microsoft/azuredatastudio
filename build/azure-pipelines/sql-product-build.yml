@@ -134,9 +134,6 @@ stages:
         condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
         pool:
           name: mssqltools
-        dependsOn:
-        - Linux
-        - Windows
         steps:
         - template: win32/sql-product-test-win32.yml
         timeoutInMinutes: 90
