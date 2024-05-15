@@ -64,7 +64,6 @@ if (!LAUNCH_OPTION) {
 // if you install it to a different folder you will have to update the value of this variable
 const NOTEBOOK_PYTHON_INSTALL_PATH = path.join(os.homedir(), 'azuredatastudio-python');
 
-
 /**
  * ----------------------------------------------------------------------------------------------
  * You *DON'T* need to change the code below if you just need to run the integration tests.
@@ -81,74 +80,6 @@ if (!fs.existsSync(NOTEBOOK_PYTHON_INSTALL_PATH)) {
 	throw message;
 }
 
-const { DefaultAzureCredential } = require('@azure/identity');
-const { SecretClient } = require('@azure/keyvault-secrets');
-const child_process = require('child_process');
-
-// Name of the values that are stored in Azure Key Vault
-const AKV_URL = 'https://sqltoolssecretstore.vault.azure.net/';
-const SECRET_AZURE_SERVER = 'ads-integration-test-azure-server';
-const SECRET_AZURE_SERVER_USERNAME = 'ads-integration-test-azure-server-username';
-const SECRET_AZURE_SERVER_PASSWORD = 'ads-integration-test-azure-server-password';
-const SECRET_STANDALONE_SERVER = 'ads-integration-test-standalone-server';
-const SECRET_STANDALONE_SERVER_USERNAME = 'ads-integration-test-standalone-server-username';
-const SECRET_STANDALONE_SERVER_PASSWORD = 'ads-integration-test-standalone-server-password';
-const SECRET_STANDALONE_SERVER_2019 = 'ads-integration-test-standalone-server-2019';
-const SECRET_STANDALONE_SERVER_USERNAME_2019 = 'ads-integration-test-standalone-server-username-2019';
-const SECRET_STANDALONE_SERVER_PASSWORD_2019 = 'ads-integration-test-standalone-server-password-2019';
-
-// Environment variable names
-const ENVAR_AZURE_SERVER = 'AZURE_SQL';
-const ENVAR_AZURE_SERVER_USERNAME = 'AZURE_SQL_USERNAME';
-const ENVAR_AZURE_SERVER_PASSWORD = 'AZURE_SQL_PWD';
-const ENVAR_STANDALONE_SERVER = 'STANDALONE_SQL';
-const ENVAR_STANDALONE_SERVER_USERNAME = 'STANDALONE_SQL_USERNAME';
-const ENVAR_STANDALONE_SERVER_PASSWORD = 'STANDALONE_SQL_PWD';
-const ENVAR_STANDALONE_SERVER_2019 = 'STANDALONE_SQL_2019';
-const ENVAR_STANDALONE_SERVER_USERNAME_2019 = 'STANDALONE_SQL_USERNAME_2019';
-const ENVAR_STANDALONE_SERVER_PASSWORD_2019 = 'STANDALONE_SQL_PWD_2019';
-const ENVAR_PYTHON_INSTALL_PATH = 'PYTHON_TEST_PATH';
-const ENVAR_RUN_PYTHON3_TEST = 'RUN_PYTHON3_TEST';
-
-// Mapping between AKV secret and the environment variable names
-const SecretEnVarMapping = [];
-SecretEnVarMapping.push([SECRET_AZURE_SERVER, ENVAR_AZURE_SERVER]);
-SecretEnVarMapping.push([SECRET_AZURE_SERVER_PASSWORD, ENVAR_AZURE_SERVER_PASSWORD]);
-SecretEnVarMapping.push([SECRET_AZURE_SERVER_USERNAME, ENVAR_AZURE_SERVER_USERNAME]);
-SecretEnVarMapping.push([SECRET_STANDALONE_SERVER, ENVAR_STANDALONE_SERVER]);
-SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_PASSWORD, ENVAR_STANDALONE_SERVER_PASSWORD]);
-SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_USERNAME, ENVAR_STANDALONE_SERVER_USERNAME]);
-SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_2019, ENVAR_STANDALONE_SERVER_2019]);
-SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_USERNAME_2019, ENVAR_STANDALONE_SERVER_USERNAME_2019]);
-SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_PASSWORD_2019, ENVAR_STANDALONE_SERVER_PASSWORD_2019]);
-
 // Set the values that are not stored in AKV here
 process.env[ENVAR_PYTHON_INSTALL_PATH] = NOTEBOOK_PYTHON_INSTALL_PATH;
 process.env[ENVAR_RUN_PYTHON3_TEST] = '1';
-
-const credential = new DefaultAzureCredential();
-const client = new SecretClient(AKV_URL, credential);
-
-async function main() {
-	for (const entry of SecretEnVarMapping) {
-		const secretName = entry[0];
-		const environmentVariable = entry[1];
-		try {
-			const result = await client.getSecret(secretName);
-			console.log(`${secretName}: ${result.value}`);
-			process.env[environmentVariable] = result.value;
-		} catch (err) {
-			console.error('An error occured while retrieving the value for secret:' + secretName);
-			console.error(err);
-		}
-	}
-	console.log('Done reading values from Azure KeyVault!');
-	console.log(`Launching new window: ${LAUNCH_OPTION}...`);
-	if (LAUNCH_OPTION === LAUNCH_VSCODE) {
-		console.warn('Trying to launch vscode, make sure you have it set properly in the PATH environment variable');
-	}
-	child_process.execSync(LAUNCH_OPTION);
-	console.log('New window for running test has been opened.');
-}
-
-main();
