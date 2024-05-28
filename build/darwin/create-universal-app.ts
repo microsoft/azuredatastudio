@@ -60,6 +60,8 @@ async function main(buildDir?: string) {
 		console.debug(`Replacing file '${target}' with '${source}'`);
 		fs.copySync(source, target, { overwrite: true });
 	});
+
+	console.debug("ADS: making universal app...");
 	// {{SQL CARBON EDIT}} - END
 
 	await makeUniversalApp({
@@ -91,6 +93,7 @@ async function main(buildDir?: string) {
 	//   only in core modules since this code doesn't work with multiple found modules.
 	//   We're assuming here the intent is just to check a single file for validation and not
 	//   needing to check any others since this currently is ignoring all other native modules.
+	console.debug("ADS: Running lipo on universal app...")
 	const findOutput = await spawn('find', [outAppPath, '-name', 'keytar.node', '-regex', '.*node_modules.asar.unpacked.*',]);
 	const lipoOutput = await spawn('lipo', ['-archs', findOutput.replace(/\n$/, '')]);
 	if (lipoOutput.replace(/\n$/, '') !== 'x86_64 arm64') {
