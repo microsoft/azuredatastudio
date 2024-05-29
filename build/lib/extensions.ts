@@ -225,7 +225,7 @@ export function fromMarketplace(_serviceUrl: string, { name: extensionName, vers
 	const json = require('gulp-json-editor') as typeof import('gulp-json-editor');
 
 	const [_publisher, name] = extensionName.split('.'); // {{SQL CARBON EDIT}} We don't have the publisher in our path
-	const url = `https://sqlopsextensions.blob.core.windows.net/extensions/${name}/${name}-${version}.vsix`; // {{SQL CARBON EDIT}} Use our own download URL
+	const url = `https://randommmmmm.blob.core.windows.net/extensions/${name}/${name}-${version}.vsix`; // {{SQL CARBON EDIT}} Use our own download URL
 
 	fancyLog('Downloading extension:', ansiColors.yellow(`${extensionName}@${version}`), '...');
 
