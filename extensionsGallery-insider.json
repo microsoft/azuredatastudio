@@ -3857,14 +3857,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.6.1",
-							"lastUpdated": "05/13/2024",
+							"version": "0.6.2",
+							"lastUpdated": "05/30/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/pacoweb/extraSqlScriptAs/releases/tag/0.6.1"
+									"source": "https://github.com/pacoweb/extraSqlScriptAs/releases/tag/0.6.2"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
