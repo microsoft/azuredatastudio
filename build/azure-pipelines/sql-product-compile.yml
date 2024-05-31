@@ -12,7 +12,6 @@ steps:
   inputs:
     azureSubscription: 'ADS Pipelines'
     KeyVaultName: ado-secrets
-    SecretsFilter: 'github-distro-mixin-password'
 
 - script: |
     set -e

@@ -15,7 +15,6 @@ steps:
     inputs:
       azureSubscription: 'ADS Pipelines'
       KeyVaultName: ado-secrets
-      SecretsFilter: 'github-distro-mixin-password'
 
   - task: DownloadPipelineArtifact@2
     inputs:
