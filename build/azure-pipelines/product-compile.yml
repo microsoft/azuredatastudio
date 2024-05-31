@@ -15,7 +15,6 @@ steps:
       inputs:
         azureSubscription: "vscode-builds-subscription"
         KeyVaultName: vscode-build-secrets
-        SecretsFilter: "github-distro-mixin-password"
 
   - script: node build/setup-npm-registry.js $NPM_REGISTRY
     condition: and(succeeded(), ne(variables['NPM_REGISTRY'], 'none'))
@@ -69,7 +68,7 @@ steps:
     env:
       ELECTRON_SKIP_BINARY_DOWNLOAD: 1
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-      GITHUB_TOKEN: "$(github-distro-mixin-password)"
+      GITHUB_TOKEN: "$(Github-Mixin-Password)"
     displayName: Install dependencies
     condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
 
@@ -99,12 +98,12 @@ steps:
   - ${{ if eq(parameters.VSCODE_QUALITY, 'oss') }}:
     - script: yarn npm-run-all -lp core-ci-pr extensions-ci-pr hygiene eslint valid-layers-check vscode-dts-compile-check tsec-compile-check
       env:
-        GITHUB_TOKEN: "$(github-distro-mixin-password)"
+        GITHUB_TOKEN: "$(Github-Mixin-Password)"
       displayName: Compile & Hygiene
   - ${{ else }}:
     - script: yarn npm-run-all -lp core-ci extensions-ci hygiene eslint valid-layers-check vscode-dts-compile-check tsec-compile-check
       env:
-        GITHUB_TOKEN: "$(github-distro-mixin-password)"
+        GITHUB_TOKEN: "$(Github-Mixin-Password)"
       displayName: Compile & Hygiene
 
   - ${{ if ne(parameters.VSCODE_QUALITY, 'oss') }}:
@@ -149,7 +148,7 @@ steps:
 
     - script: yarn download-builtin-extensions-cg
       env:
-        GITHUB_TOKEN: "$(github-distro-mixin-password)"
+        GITHUB_TOKEN: "$(Github-Mixin-Password)"
       displayName: Built-in extensions component details
 
     - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
