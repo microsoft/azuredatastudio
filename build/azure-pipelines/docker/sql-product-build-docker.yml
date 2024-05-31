@@ -47,7 +47,7 @@ steps:
       CHILD_CONCURRENCY=1 yarn --frozen-lockfile
     displayName: Install dependencies
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1

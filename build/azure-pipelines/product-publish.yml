@@ -8,7 +8,6 @@ steps:
     inputs:
       azureSubscription: "vscode-builds-subscription"
       KeyVaultName: vscode-build-secrets
-      SecretsFilter: "github-distro-mixin-password"
 
   # allow-any-unicode-next-line
   - pwsh: Write-Host "##vso[build.addbuildtag]🚀"
@@ -63,7 +62,7 @@ steps:
 
   - pwsh: build/azure-pipelines/product-publish.ps1
     env:
-      GITHUB_TOKEN: "$(github-distro-mixin-password)"
+      GITHUB_TOKEN: "$(Github-Mixin-Password)"
       AZURE_TENANT_ID: "$(AZURE_TENANT_ID)"
       AZURE_CLIENT_ID: "$(AZURE_CLIENT_ID)"
       AZURE_CLIENT_SECRET: "$(AZURE_CLIENT_SECRET)"

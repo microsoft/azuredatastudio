@@ -81,7 +81,7 @@ steps:
       $env:CHILD_CONCURRENCY="1"
       exec { yarn --frozen-lockfile }
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
     condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
     displayName: Install dependencies
 
@@ -115,8 +115,8 @@ steps:
       exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-inno-updater" }
     displayName: Build
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
-      VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
+      VSCODE_MIXIN_PASSWORD: $(Github-Mixin-Password)
 
   - task: UniversalPackages@0
     displayName: Download SAW Python package

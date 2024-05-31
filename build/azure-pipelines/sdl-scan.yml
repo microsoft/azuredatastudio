@@ -61,7 +61,6 @@ stages:
             inputs:
               azureSubscription: "vscode-builds-subscription"
               KeyVaultName: vscode-build-secrets
-              SecretsFilter: "github-distro-mixin-password"
 
           - powershell: |
               . build/azure-pipelines/win32/exec.ps1
@@ -118,7 +117,7 @@ stages:
               retry { exec { yarn --frozen-lockfile --check-files } }
             env:
               PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-              GITHUB_TOKEN: "$(github-distro-mixin-password)"
+              GITHUB_TOKEN: "$(Github-Mixin-Password)"
               CHILD_CONCURRENCY: 1
             displayName: Install dependencies
 
@@ -139,7 +138,7 @@ stages:
 
           - powershell: yarn gulp "vscode-symbols-win32-$(VSCODE_ARCH)"
             env:
-              GITHUB_TOKEN: "$(github-distro-mixin-password)"
+              GITHUB_TOKEN: "$(Github-Mixin-Password)"
             displayName: Download Symbols
 
           - task: BinSkim@4
@@ -188,7 +187,6 @@ stages:
             inputs:
               azureSubscription: "vscode-builds-subscription"
               KeyVaultName: vscode-build-secrets
-              SecretsFilter: "github-distro-mixin-password"
 
           - script: |
               set -e
@@ -256,7 +254,7 @@ stages:
               done
             env:
               PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-              GITHUB_TOKEN: "$(github-distro-mixin-password)"
+              GITHUB_TOKEN: "$(Github-Mixin-Password)"
             displayName: Install dependencies
 
           - script: yarn --frozen-lockfile --check-files
@@ -275,7 +273,7 @@ stages:
 
           - script: yarn gulp vscode-symbols-linux-$(VSCODE_ARCH)
             env:
-              GITHUB_TOKEN: "$(github-distro-mixin-password)"
+              GITHUB_TOKEN: "$(Github-Mixin-Password)"
             displayName: Build
 
           - task: BinSkim@3

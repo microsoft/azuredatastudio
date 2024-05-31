@@ -28,7 +28,7 @@ steps:
       inputs:
         azureSubscription: "vscode-builds-subscription"
         KeyVaultName: vscode-build-secrets
-        SecretsFilter: "github-distro-mixin-password,macos-developer-certificate,macos-developer-certificate-key"
+        SecretsFilter: "macos-developer-certificate,macos-developer-certificate-key"
 
     - task: DownloadPipelineArtifact@2
       inputs:
@@ -90,7 +90,7 @@ steps:
     env:
       ELECTRON_SKIP_BINARY_DOWNLOAD: 1
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-      GITHUB_TOKEN: "$(github-distro-mixin-password)"
+      GITHUB_TOKEN: "$(Github-Mixin-Password)"
     displayName: Install dependencies
     condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
 
@@ -119,7 +119,7 @@ steps:
         yarn gulp vscode-darwin-$(VSCODE_ARCH)-min-ci
         echo "##vso[task.setvariable variable=BUILT_CLIENT]true"
       env:
-        GITHUB_TOKEN: "$(github-distro-mixin-password)"
+        GITHUB_TOKEN: "$(Github-Mixin-Password)"
       displayName: Build client
 
     - script: |
@@ -131,7 +131,7 @@ steps:
         (cd .. && zip -Xry $(Build.SourcesDirectory)/$ARCHIVE_PATH vscode-server-darwin-$(VSCODE_ARCH))
         echo "##vso[task.setvariable variable=SERVER_PATH]$ARCHIVE_PATH"
       env:
-        GITHUB_TOKEN: "$(github-distro-mixin-password)"
+        GITHUB_TOKEN: "$(Github-Mixin-Password)"
       displayName: Build server
 
     - script: |
@@ -143,13 +143,13 @@ steps:
         (cd .. && zip -Xry $(Build.SourcesDirectory)/$ARCHIVE_PATH vscode-server-darwin-$(VSCODE_ARCH)-web)
         echo "##vso[task.setvariable variable=WEB_PATH]$ARCHIVE_PATH"
       env:
-        GITHUB_TOKEN: "$(github-distro-mixin-password)"
+        GITHUB_TOKEN: "$(Github-Mixin-Password)"
       displayName: Build server (web)
 
   - ${{ else }}:
       - script: yarn gulp transpile-client-swc transpile-extensions
         env:
-          GITHUB_TOKEN: "$(github-distro-mixin-password)"
+          GITHUB_TOKEN: "$(Github-Mixin-Password)"
         displayName: Transpile
 
   - ${{ if or(eq(parameters.VSCODE_RUN_UNIT_TESTS, true), eq(parameters.VSCODE_RUN_INTEGRATION_TESTS, true), eq(parameters.VSCODE_RUN_SMOKE_TESTS, true)) }}:

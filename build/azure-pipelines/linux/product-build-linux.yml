@@ -140,7 +140,7 @@ steps:
         ELECTRON_SKIP_BINARY_DOWNLOAD: 1
         PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
         VSCODE_SKIP_NODE_VERSION_CHECK: 1
-        GITHUB_TOKEN: "$(github-distro-mixin-password)"
+        GITHUB_TOKEN: "$(Github-Mixin-Password)"
         VSCODE_HOST_MOUNT: "/mnt/vss/_work/1/s"
         ${{ if or(eq(parameters.VSCODE_ARCH, 'x64'), eq(parameters.VSCODE_ARCH, 'arm64')) }}:
           VSCODE_REMOTE_DEPENDENCIES_CONTAINER_NAME: vscodehub.azurecr.io/vscode-linux-build-agent:centos7-devtoolset8-$(VSCODE_ARCH)
@@ -172,7 +172,7 @@ steps:
         npm_config_arch: $(NPM_ARCH)
         ELECTRON_SKIP_BINARY_DOWNLOAD: 1
         PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-        GITHUB_TOKEN: "$(github-distro-mixin-password)"
+        GITHUB_TOKEN: "$(Github-Mixin-Password)"
       displayName: Install dependencies
       condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
 
@@ -198,7 +198,7 @@ steps:
         mkdir -p $(dirname $ARCHIVE_PATH)
         echo "##vso[task.setvariable variable=CLIENT_PATH]$ARCHIVE_PATH"
       env:
-        GITHUB_TOKEN: "$(github-distro-mixin-password)"
+        GITHUB_TOKEN: "$(Github-Mixin-Password)"
       displayName: Build client
 
     - ${{ if ne(parameters.VSCODE_CIBUILD, true) }}:
@@ -221,7 +221,7 @@ steps:
         set -e
         tar -czf $CLIENT_PATH -C .. VSCode-linux-$(VSCODE_ARCH)
       env:
-        GITHUB_TOKEN: "$(github-distro-mixin-password)"
+        GITHUB_TOKEN: "$(Github-Mixin-Password)"
       displayName: Archive client
 
     - script: |
@@ -233,7 +233,7 @@ steps:
         tar --owner=0 --group=0 -czf $ARCHIVE_PATH -C .. vscode-server-linux-$(VSCODE_ARCH)
         echo "##vso[task.setvariable variable=SERVER_PATH]$ARCHIVE_PATH"
       env:
-        GITHUB_TOKEN: "$(github-distro-mixin-password)"
+        GITHUB_TOKEN: "$(Github-Mixin-Password)"
       displayName: Build server
 
     - script: |
@@ -245,13 +245,13 @@ steps:
         tar --owner=0 --group=0 -czf $ARCHIVE_PATH -C .. vscode-server-linux-$(VSCODE_ARCH)-web
         echo "##vso[task.setvariable variable=WEB_PATH]$ARCHIVE_PATH"
       env:
-        GITHUB_TOKEN: "$(github-distro-mixin-password)"
+        GITHUB_TOKEN: "$(Github-Mixin-Password)"
       displayName: Build server (web)
 
   - ${{ else }}:
     - script: yarn gulp "transpile-client-swc" "transpile-extensions"
       env:
-        GITHUB_TOKEN: "$(github-distro-mixin-password)"
+        GITHUB_TOKEN: "$(Github-Mixin-Password)"
       displayName: Transpile
 
   - ${{ if or(eq(parameters.VSCODE_RUN_UNIT_TESTS, true), eq(parameters.VSCODE_RUN_INTEGRATION_TESTS, true), eq(parameters.VSCODE_RUN_SMOKE_TESTS, true)) }}:
