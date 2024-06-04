@@ -39,9 +39,11 @@ async function main(buildDir?: string) {
 	const x64STSDir = path.join(x64AppPath, stsPath);
 	const arm64STSDir = path.join(arm64AppPath, stsPath);
 	const targetSTSDirs = [x64STSDir, arm64STSDir];
+
 	// backup the STS folders to a temporary directory, later they will be copied to the universal app directory.
 	await fs.copy(x64STSDir, tempSTSDir);
 	await fs.copy(arm64STSDir, tempSTSDir);
+
 	// delete STS directories from both x64 ADS and arm64 ADS.
 	console.debug(`Removing SqlToolsService folders.`);
 	targetSTSDirs.forEach(async dir => {
@@ -96,9 +98,11 @@ async function main(buildDir?: string) {
 	}
 
 	// {{SQL CARBON EDIT}}
-	console.debug(`Copying SqlToolsService to the universal app folder.`);
+	console.debug(`Copying SqlToolsService to the universal app folder (${outAppPath})`);
 	await fs.copy(path.join(tempSTSDir, 'OSX'), path.join(outAppPath, stsPath, 'OSX'), { overwrite: true });
 	await fs.copy(path.join(tempSTSDir, 'OSX_ARM64'), path.join(outAppPath, stsPath, 'OSX_ARM64'), { overwrite: true });
+
+	console.debug(`Completed.  App located in: '${outAppPath}'`);
 }
 
 if (require.main === module) {
