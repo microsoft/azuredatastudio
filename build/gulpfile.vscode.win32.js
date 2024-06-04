@@ -210,9 +210,18 @@ function updateExeIconAndMetadata(arch) {
 		};
 
 		fancyLog(ansiColors.cyan('[Updating exe icon]'), JSON.stringify(patch, null, 2));
-		fancyLog(ansiColors.yellow(`[Sanity check 1: Check icon]`), fs.existsSync('resources/win32/code.ico'));
-		fancyLog(ansiColors.yellow(`[Sanity check 2: Check exe]`), fs.existsSync(path.join(buildPath(arch), 'azuredatastudio.exe')));
-		rcedit(path.join(buildPath('x64'), 'azuredatastudio.exe'), patch, cb);
+		fancyLog(ansiColors.yellow(`Checking if icon exists`), fs.existsSync('resources/win32/code.ico'));
+		fs.readdir(buildPath(arch), (err, files) => {
+			if (err) {
+				return cb(err);
+			}
+			files.forEach(file => {
+				if (file.startsWith('azuredatastudio') && file.endsWith('.exe')) {
+					fancyLog(ansiColors.cyan('[Patching exe]'), `Updating ${file}`);
+					rcedit(path.join(buildPath(arch), file), patch, cb);
+				}
+			});
+		});
 	};
 }
 
