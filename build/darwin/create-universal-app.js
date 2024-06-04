@@ -86,9 +86,10 @@ async function main(buildDir) {
         throw new Error(`Invalid arch, got : ${lipoOutput}`);
     }
     // {{SQL CARBON EDIT}}
-    console.debug(`Copying SqlToolsService to the universal app folder.`);
+	console.debug(`Copying SqlToolsService to the universal app folder (${outAppPath})`);
     await fs.copy(path.join(tempSTSDir, 'OSX'), path.join(outAppPath, stsPath, 'OSX'), { overwrite: true });
     await fs.copy(path.join(tempSTSDir, 'OSX_ARM64'), path.join(outAppPath, stsPath, 'OSX_ARM64'), { overwrite: true });
+	console.debug(`Completed.  App located in: '${outAppPath}'`);
 }
 if (require.main === module) {
     main(process.argv[2]).catch(err => {
