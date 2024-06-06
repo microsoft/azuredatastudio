@@ -5,6 +5,7 @@
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
+const { exec } = require('child_process');
 
 /**
  * Launch options
@@ -62,7 +63,7 @@ if (!LAUNCH_OPTION) {
 // How to install it:
 // Open ADS and run command 'Configure Python for Notebooks' command and install it to the default folder,
 // if you install it to a different folder you will have to update the value of this variable
-const NOTEBOOK_PYTHON_INSTALL_PATH = path.join(os.homedir(), 'azuredatastudio-python');
+const NOTEBOOK_PYTHON_INSTALL_PATH = "C:\\Users\\laurennathan\\AppData\\Local\\Programs\\Python\\Python311"
 
 /**
  * ----------------------------------------------------------------------------------------------
@@ -80,6 +81,28 @@ if (!fs.existsSync(NOTEBOOK_PYTHON_INSTALL_PATH)) {
 	throw message;
 }
 
+// Environment variable names
+const ENVAR_PYTHON_INSTALL_PATH = 'PYTHON_TEST_PATH';
+const ENVAR_RUN_PYTHON3_TEST = 'RUN_PYTHON3_TEST';
+
 // Set the values that are not stored in AKV here
 process.env[ENVAR_PYTHON_INSTALL_PATH] = NOTEBOOK_PYTHON_INSTALL_PATH;
 process.env[ENVAR_RUN_PYTHON3_TEST] = '1';
+
+// run the docker.ps1 powershell script, and wait for it to finish
+// show all output from the command
+const command = `powershell.exe -Command "Start-Process powershell.exe -ArgumentList '-Command \\"${__dirname}\\docker.ps1\\"' -Verb RunAs"`;
+
+// wait for exec and it's child processes to finish
+exec(command, (error, stderr) => {
+	if (error) {
+		console.error(`Error: ${error.message}`);
+		return;
+	}
+	if (stderr) {
+		console.error(`Stderr: ${stderr}`);
+		return;
+	}
+});
+
+console.log(`Running docker setup.`);
