@@ -15,7 +15,7 @@ import { IRequestService } from 'vs/platform/request/common/request';
 import { AvailableForDownload, DisablementReason, IUpdateService, State, StateType, UpdateType } from 'vs/platform/update/common/update';
 
 export function createUpdateURL(platform: string, quality: string, productService: IProductService): string {
-	return `${productService.updateUrl}/api/update/${platform}/${quality}/${productService.commit}`;
+	return `https://azuredatastudio-update-staging.azurewebsites.net/api/update/${platform}/${quality}/${productService.commit}`;
 }
 
 export type UpdateNotAvailableClassification = {
