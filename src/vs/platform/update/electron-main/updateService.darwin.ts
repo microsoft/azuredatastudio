@@ -16,7 +16,6 @@ import { IRequestService } from 'vs/platform/request/common/request';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IUpdate, State, StateType, UpdateType } from 'vs/platform/update/common/update';
 import { AbstractUpdateService, UpdateNotAvailableClassification } from 'vs/platform/update/electron-main/abstractUpdateService'; // {{SQL CARBON EDIT}}
-import { updateMetadataMacArmUrl, updateMetadataMacUniversalUrl, updateMetadataMacUrl } from 'vs/platform/update/electron-main/updateMetadataProvider'; // {{SQL CARBON EDIT}}
 
 export class DarwinUpdateService extends AbstractUpdateService implements IRelaunchHandler {
 
@@ -77,9 +76,9 @@ export class DarwinUpdateService extends AbstractUpdateService implements IRelau
 
 		// {{SQL CARBON EDIT}} - Use the metadata files from the Download Center as the update feed.
 		if (!this.productService.darwinUniversalAssetId) {
-			url = process.arch === 'x64' ? updateMetadataMacUrl : updateMetadataMacArmUrl;
+			url = process.arch === 'x64' ? this.productService.updateMetadataMacUrl : this.productService.updateMetadataMacArmUrl;
 		} else {
-			url = updateMetadataMacUniversalUrl;
+			url = this.productService.updateMetadataMacUniversalUrl;
 		}
 
 		try {

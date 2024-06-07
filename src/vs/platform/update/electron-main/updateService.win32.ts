@@ -24,7 +24,7 @@ import { asJson, IRequestService } from 'vs/platform/request/common/request';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { AvailableForDownload, DisablementReason, IUpdate, State, StateType, UpdateType } from 'vs/platform/update/common/update';
 import { AbstractUpdateService, createUpdateURL, UpdateNotAvailableClassification } from 'vs/platform/update/electron-main/abstractUpdateService';
-import { Build, getUpdateFromBuild, updateMetadataUrl } from 'vs/platform/update/electron-main/updateMetadataProvider'; // {{SQL CARBON EDIT}}
+import { Build, getUpdateFromBuild } from 'vs/platform/update/electron-main/updateMetadataProvider'; // {{SQL CARBON EDIT}}
 
 async function pollUntil(fn: () => boolean, millis = 1000): Promise<void> {
 	while (!fn()) {
@@ -123,7 +123,7 @@ export class Win32UpdateService extends AbstractUpdateService implements IRelaun
 		this.setState(State.CheckingForUpdates(context));
 
 		// {{SQL CARBON EDIT}} - Use the metadata files from the Download Center as the update feed.
-		this.requestService.request({ url: updateMetadataUrl }, CancellationToken.None)
+		this.requestService.request({ url: this.productService.updateMetadataUrl }, CancellationToken.None)
 			.then<Build | null>(asJson)
 			.then(build => {
 				let platform = 'win32';
