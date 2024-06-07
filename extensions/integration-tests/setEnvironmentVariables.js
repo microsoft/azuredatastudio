@@ -5,7 +5,7 @@
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
-const { exec } = require('child_process');
+const { exec, execSync } = require('child_process');
 
 /**
  * Launch options
@@ -63,7 +63,7 @@ if (!LAUNCH_OPTION) {
 // How to install it:
 // Open ADS and run command 'Configure Python for Notebooks' command and install it to the default folder,
 // if you install it to a different folder you will have to update the value of this variable
-const NOTEBOOK_PYTHON_INSTALL_PATH = "C:\\Users\\laurennathan\\AppData\\Local\\Programs\\Python\\Python311"
+const NOTEBOOK_PYTHON_INSTALL_PATH = path.join(os.homedir(), 'azuredatastudio-python');
 
 /**
  * ----------------------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ process.env[ENVAR_RUN_PYTHON3_TEST] = '1';
 
 // run the docker.ps1 powershell script, and wait for it to finish
 // show all output from the command
-const command = `powershell.exe -Command "Start-Process powershell.exe -ArgumentList '-Command \\"${__dirname}\\docker.ps1\\"' -Verb RunAs"`;
+const command = `powershell.exe -Command "Start-Process powershell.exe -ArgumentList '-Command \\"${__dirname}\\dockerInstall.ps1\\"' -Verb RunAs"`;
 
 // wait for exec and it's child processes to finish
 exec(command, (error, stderr) => {
@@ -106,3 +106,10 @@ exec(command, (error, stderr) => {
 });
 
 console.log(`Running docker setup.`);
+
+console.log(`Launching new window: ${LAUNCH_OPTION}...`);
+if (LAUNCH_OPTION === LAUNCH_VSCODE) {
+	console.warn('Trying to launch vscode, make sure you have it set properly in the PATH environment variable');
+}
+execSync(LAUNCH_OPTION);
+console.log('New window for running test has been opened.');
