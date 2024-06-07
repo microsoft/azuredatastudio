@@ -384,14 +384,6 @@
         <source xml:lang="en">Browse</source>
         <target state="translated">瀏覽</target>
       </trans-unit>
-      <trans-unit id="configurePython.installationType">
-        <source xml:lang="en">Installation Type</source>
-        <target state="translated">安裝類型</target>
-      </trans-unit>
-      <trans-unit id="configurePython.newInstall">
-        <source xml:lang="en">New Python installation</source>
-        <target state="translated">新增 Python 安裝</target>
-      </trans-unit>
       <trans-unit id="configurePythyon.noVersionsFound">
         <source xml:lang="en">No supported Python versions found.</source>
         <target state="translated">找不到支援的 Python 版本。</target>
@@ -401,12 +393,8 @@
         <target state="translated">Notebook 核心需要設定 Python 執行階段並安裝相依性。</target>
       </trans-unit>
       <trans-unit id="configurePython.locationTextBoxText">
-        <source xml:lang="en">Python Install Location</source>
-        <target state="translated">Python 安裝位置</target>
-      </trans-unit>
-      <trans-unit id="configurePython.pythonConfigured">
-        <source xml:lang="en">Python runtime configured!</source>
-        <target state="translated">已設定 Python 執行階段!</target>
+        <source xml:lang="en">Python Location</source>
+        <target state="translated">Python 位置</target>
       </trans-unit>
       <trans-unit id="configurePython.selectFileLabel">
         <source xml:lang="en">Select</source>
@@ -416,17 +404,13 @@
         <source xml:lang="en">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</source>
         <target state="translated">'{0}' 核心需要設定 Python 執行階段並安裝相依性。</target>
       </trans-unit>
-      <trans-unit id="configurePython.existingInstall">
-        <source xml:lang="en">Use existing Python installation</source>
-        <target state="translated">使用現有的 Python 安裝</target>
+      <trans-unit id="configurePythyon.existingInstance">
+        <source xml:lang="en">{0} (Current Python Instance)</source>
+        <target state="translated">{0} (目前的 Python 執行個體)</target>
       </trans-unit>
       <trans-unit id="configurePythyon.customPathLabel">
         <source xml:lang="en">{0} (Custom)</source>
         <target state="translated">{0} (自訂)</target>
-      </trans-unit>
-      <trans-unit id="configurePythyon.defaultPathLabel">
-        <source xml:lang="en">{0} (Default)</source>
-        <target state="translated">{0} (預設)</target>
       </trans-unit>
       <trans-unit id="configurePythyon.dropdownPathLabel">
         <source xml:lang="en">{0} (Python {1})</source>
@@ -676,29 +660,9 @@
   </file>
   <file original="extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
-      <trans-unit id="msgShutdownNotebookSessions">
-        <source xml:lang="en">Active Python notebook sessions will be shutdown in order to update. Would you like to proceed now?</source>
-        <target state="translated">為了進行更新，將關閉使用中的 Python 筆記本工作階段。您要立即繼續嗎?</target>
-      </trans-unit>
       <trans-unit id="msgWaitingForInstall">
         <source xml:lang="en">Another Python installation is currently in progress. Waiting for it to complete.</source>
         <target state="translated">目前在進行另一個 Python 安裝。請等它完成。</target>
-      </trans-unit>
-      <trans-unit id="msgPythonRunningError">
-        <source xml:lang="en">Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.</source>
-        <target state="translated">當 Python 正在執行時，無法覆寫現有的 Python 安裝。請先關閉所有使用中的筆記本再繼續。</target>
-      </trans-unit>
-      <trans-unit id="dontAskAgain">
-        <source xml:lang="en">Don't Ask Again</source>
-        <target state="translated">不要再詢問</target>
-      </trans-unit>
-      <trans-unit id="msgDownloadPython">
-        <source xml:lang="en">Downloading local python for platform: {0} to {1}</source>
-        <target state="translated">正在將平台的本機 python: {0} 下載至 {1}</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadPending">
-        <source xml:lang="en">Downloading python package</source>
-        <target state="translated">正在下載 python 套件</target>
       </trans-unit>
       <trans-unit id="msgGetPythonUserDirFailed">
         <source xml:lang="en">Encountered an error when getting Python user path: {0}</source>
@@ -707,18 +671,6 @@
       <trans-unit id="msgPackageRetrievalFailed">
         <source xml:lang="en">Encountered an error when trying to retrieve list of installed packages: {0}</source>
         <target state="translated">嘗試擷取已安裝套件的清單時發生錯誤: {0}</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDirectoryError">
-        <source xml:lang="en">Error while creating python installation directory</source>
-        <target state="translated">建立 python 安裝目錄時發生錯誤</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadError">
-        <source xml:lang="en">Error while downloading python setup</source>
-        <target state="translated">下載 python 設定時發生錯誤</target>
-      </trans-unit>
-      <trans-unit id="msgPythonUnpackError">
-        <source xml:lang="en">Error while unpacking python bundle</source>
-        <target state="translated">將 python 套件組合解壓縮時發生錯誤</target>
       </trans-unit>
       <trans-unit id="msgTaskName">
         <source xml:lang="en">Installing Notebook dependencies</source>
@@ -732,10 +684,6 @@
         <source xml:lang="en">Installing Notebook dependencies, see Tasks view for more information</source>
         <target state="translated">正在安裝 Notebook 相依性，請參閱 [工作] 檢視以取得詳細資訊</target>
       </trans-unit>
-      <trans-unit id="no">
-        <source xml:lang="en">No</source>
-        <target state="translated">否</target>
-      </trans-unit>
       <trans-unit id="msgInstallPkgFinish">
         <source xml:lang="en">Notebook dependencies installation is complete</source>
         <target state="translated">Notebook 相依性安裝完成</target>
@@ -743,26 +691,6 @@
       <trans-unit id="msgInstallPkgProgress">
         <source xml:lang="en">Notebook dependencies installation is in progress</source>
         <target state="translated">正在安裝 Notebook 相依性</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadComplete">
-        <source xml:lang="en">Python download is complete</source>
-        <target state="translated">Python 下載完成</target>
-      </trans-unit>
-      <trans-unit id="msgPythonVersionUpdatePrompt">
-        <source xml:lang="en">Python {0} is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python {0} now?</source>
-        <target state="translated">Azure Data Studio 現已提供 Python {0}。目前的 Python 版本 (3.6.6) 將在 2021 年 12 月時取消支援。您要立即更新為 Python {0} 嗎?</target>
-      </trans-unit>
-      <trans-unit id="msgPythonVersionUpdateWarning">
-        <source xml:lang="en">Python {0} will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?</source>
-        <target state="translated">將安裝 Python {0} 並取代 Python 3.6.6。某些套件可能不再與新版本相容，或可能需要重新安裝。將建立筆記本以協助您重新安裝所有 pip 套件。您要立即繼續更新嗎?</target>
-      </trans-unit>
-      <trans-unit id="msgPythonUnpackPending">
-        <source xml:lang="en">Unpacking python package</source>
-        <target state="translated">正在解壓縮 python 套件</target>
-      </trans-unit>
-      <trans-unit id="yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">是</target>
       </trans-unit>
     </body>
   </file>

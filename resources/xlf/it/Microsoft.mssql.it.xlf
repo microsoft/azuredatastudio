@@ -845,7 +845,7 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
         <source xml:lang="en">Files</source>
         <target state="translated">File</target>
       </trans-unit>
-      <trans-unit id="objectManagement.optionsSectionHeader">
+      <trans-unit id="objectManagement.filesSectionHeader">
         <source xml:lang="en">Files</source>
         <target state="translated">File</target>
       </trans-unit>
@@ -1205,6 +1205,10 @@ Nota: un certificato autofirmato offre solo una protezione limitata e non è una
       <trans-unit id="objectManagement.optimizeAdHocWorkloadsLabel">
         <source xml:lang="en">Optimize Ad Hoc Workloads</source>
         <target state="translated">Ottimizza carichi di lavoro ad hoc</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.optionsSectionHeader">
+        <source xml:lang="en">Options</source>
+        <target state="translated">Opzioni</target>
       </trans-unit>
       <trans-unit id="objectManagement.restoreDatabase.restorePlan.originalFileNameText">
         <source xml:lang="en">Original File Name</source>

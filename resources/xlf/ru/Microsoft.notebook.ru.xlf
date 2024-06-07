@@ -384,14 +384,6 @@
         <source xml:lang="en">Browse</source>
         <target state="translated">Обзор</target>
       </trans-unit>
-      <trans-unit id="configurePython.installationType">
-        <source xml:lang="en">Installation Type</source>
-        <target state="translated">Тип установки</target>
-      </trans-unit>
-      <trans-unit id="configurePython.newInstall">
-        <source xml:lang="en">New Python installation</source>
-        <target state="translated">Новая установка Python</target>
-      </trans-unit>
       <trans-unit id="configurePythyon.noVersionsFound">
         <source xml:lang="en">No supported Python versions found.</source>
         <target state="translated">Поддерживаемые версии Python не найдены.</target>
@@ -401,12 +393,8 @@
         <target state="translated">Для ядер записных книжек требуется настроить среду выполнения Python и установить зависимости.</target>
       </trans-unit>
       <trans-unit id="configurePython.locationTextBoxText">
-        <source xml:lang="en">Python Install Location</source>
-        <target state="translated">Расположение установки Python</target>
-      </trans-unit>
-      <trans-unit id="configurePython.pythonConfigured">
-        <source xml:lang="en">Python runtime configured!</source>
-        <target state="translated">Среда выполнения Python настроена.</target>
+        <source xml:lang="en">Python Location</source>
+        <target state="translated">Расположение Python</target>
       </trans-unit>
       <trans-unit id="configurePython.selectFileLabel">
         <source xml:lang="en">Select</source>
@@ -416,17 +404,13 @@
         <source xml:lang="en">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</source>
         <target state="translated">Для ядра "{0}" требуется настроить среду выполнения Python и установить зависимости.</target>
       </trans-unit>
-      <trans-unit id="configurePython.existingInstall">
-        <source xml:lang="en">Use existing Python installation</source>
-        <target state="translated">Использовать существующую установку Python</target>
+      <trans-unit id="configurePythyon.existingInstance">
+        <source xml:lang="en">{0} (Current Python Instance)</source>
+        <target state="translated">{0} (текущий экземпляр Python)</target>
       </trans-unit>
       <trans-unit id="configurePythyon.customPathLabel">
         <source xml:lang="en">{0} (Custom)</source>
         <target state="translated">{0} (пользовательский)</target>
-      </trans-unit>
-      <trans-unit id="configurePythyon.defaultPathLabel">
-        <source xml:lang="en">{0} (Default)</source>
-        <target state="translated">{0} (по умолчанию)</target>
       </trans-unit>
       <trans-unit id="configurePythyon.dropdownPathLabel">
         <source xml:lang="en">{0} (Python {1})</source>
@@ -676,29 +660,9 @@
   </file>
   <file original="extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="msgShutdownNotebookSessions">
-        <source xml:lang="en">Active Python notebook sessions will be shutdown in order to update. Would you like to proceed now?</source>
-        <target state="translated">Сеансы активных записных книжек Python будут завершены, чтобы обновить их. Хотите продолжить?</target>
-      </trans-unit>
       <trans-unit id="msgWaitingForInstall">
         <source xml:lang="en">Another Python installation is currently in progress. Waiting for it to complete.</source>
         <target state="translated">Сейчас выполняется другая установка Python. Дождитесь ее завершения.</target>
-      </trans-unit>
-      <trans-unit id="msgPythonRunningError">
-        <source xml:lang="en">Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.</source>
-        <target state="translated">Не удается перезаписать существующую установку Python во время работы Python. Прежде чем продолжить, закройте все активные записные книжки.</target>
-      </trans-unit>
-      <trans-unit id="dontAskAgain">
-        <source xml:lang="en">Don't Ask Again</source>
-        <target state="translated">Больше не спрашивать</target>
-      </trans-unit>
-      <trans-unit id="msgDownloadPython">
-        <source xml:lang="en">Downloading local python for platform: {0} to {1}</source>
-        <target state="translated">Скачивание локального Python для платформы: {0} в {1}</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadPending">
-        <source xml:lang="en">Downloading python package</source>
-        <target state="translated">Идет скачивание пакета Python</target>
       </trans-unit>
       <trans-unit id="msgGetPythonUserDirFailed">
         <source xml:lang="en">Encountered an error when getting Python user path: {0}</source>
@@ -707,18 +671,6 @@
       <trans-unit id="msgPackageRetrievalFailed">
         <source xml:lang="en">Encountered an error when trying to retrieve list of installed packages: {0}</source>
         <target state="translated">Произошла ошибка при попытке получить список установленных пакетов: {0}</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDirectoryError">
-        <source xml:lang="en">Error while creating python installation directory</source>
-        <target state="translated">Ошибка при создании каталога установки Python</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadError">
-        <source xml:lang="en">Error while downloading python setup</source>
-        <target state="translated">Ошибка при скачивании программы установки Python</target>
-      </trans-unit>
-      <trans-unit id="msgPythonUnpackError">
-        <source xml:lang="en">Error while unpacking python bundle</source>
-        <target state="translated">Ошибка при распаковке пакета Python</target>
       </trans-unit>
       <trans-unit id="msgTaskName">
         <source xml:lang="en">Installing Notebook dependencies</source>
@@ -732,10 +684,6 @@
         <source xml:lang="en">Installing Notebook dependencies, see Tasks view for more information</source>
         <target state="translated">Идет установка зависимостей Notebook, дополнительные сведения см. в представлении задач</target>
       </trans-unit>
-      <trans-unit id="no">
-        <source xml:lang="en">No</source>
-        <target state="translated">Нет</target>
-      </trans-unit>
       <trans-unit id="msgInstallPkgFinish">
         <source xml:lang="en">Notebook dependencies installation is complete</source>
         <target state="translated">Установка зависимостей Notebook завершена</target>
@@ -743,26 +691,6 @@
       <trans-unit id="msgInstallPkgProgress">
         <source xml:lang="en">Notebook dependencies installation is in progress</source>
         <target state="translated">Выполняется установка зависимостей Notebook</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadComplete">
-        <source xml:lang="en">Python download is complete</source>
-        <target state="translated">Скачивание Python завершено</target>
-      </trans-unit>
-      <trans-unit id="msgPythonVersionUpdatePrompt">
-        <source xml:lang="en">Python {0} is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python {0} now?</source>
-        <target state="translated">{0} Python доступна в Azure Data Studio. Текущая версия Python (3.6.6) не поддерживается в декабре 2021. Вы хотите обновить {0} Python сейчас?</target>
-      </trans-unit>
-      <trans-unit id="msgPythonVersionUpdateWarning">
-        <source xml:lang="en">Python {0} will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?</source>
-        <target state="translated">Будет установлен {0} Python, который заменит 3.6.6 Python. Некоторые пакеты могут быть несовместимы с новой версией или требуют переустановки. Будет создана Записная книжка, которая поможет вам переустановить все пакеты PIP. Вы хотите продолжить обновление сейчас?</target>
-      </trans-unit>
-      <trans-unit id="msgPythonUnpackPending">
-        <source xml:lang="en">Unpacking python package</source>
-        <target state="translated">Распаковка пакета Python</target>
-      </trans-unit>
-      <trans-unit id="yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Да</target>
       </trans-unit>
     </body>
   </file>

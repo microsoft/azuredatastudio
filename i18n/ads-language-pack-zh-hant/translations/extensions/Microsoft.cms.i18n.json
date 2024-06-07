@@ -133,7 +133,7 @@
 			"cms.connectionOptions.enclaveAttestationProtocol.description": "指定用來證明與有安全記憶體保護區的 Always Encrypted 一起使用的伺服器端記憶體保護區的通訊協定",
 			"cms.connectionOptions.enclaveAttestationUrl.description": "指定用來證明與有安全記憶體保護區的 Always Encrypted 一起使用的伺服器端記憶體保護區的端點",
 			"cms.connectionOptions.authType.description": "指定向 SQL Server 驗證的方法",
-			"cms.connectionOptions.encrypt.categoryValues.strict": "Strict (supported for SQL Server 2022 and Azure SQL)",
+			"cms.connectionOptions.encrypt.categoryValues.strict": "嚴格 (支援 SQL Server 2022 和 Azure SQL)",
 			"cms.description": "管理 SQL Server 中央管理伺服器的支援",
 			"cms.connectionOptions.currentLanguage.description": "SQL Server 語言記錄名稱",
 			"cms.connectionOptions.commandTimeout.description": "終止嘗試並產生錯誤前，要等待命令執行的時間長度 (以秒為單位)",
