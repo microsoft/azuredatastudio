@@ -31,6 +31,11 @@ export class LinuxUpdateService extends AbstractUpdateService {
 		super(lifecycleMainService, configurationService, environmentMainService, requestService, logService, productService);
 	}
 
+	// {{SQL CARBON EDIT}}
+	protected buildPlatform(): string {
+		return `linux-${process.arch}`;
+	}
+
 	protected buildUpdateFeedUrl(quality: string): string {
 		return createUpdateURL(`linux-${process.arch}`, quality, this.productService);
 	}

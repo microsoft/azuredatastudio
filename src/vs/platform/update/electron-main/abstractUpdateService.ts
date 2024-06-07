@@ -11,8 +11,9 @@ import { IEnvironmentMainService } from 'vs/platform/environment/electron-main/e
 import { ILifecycleMainService, LifecycleMainPhase } from 'vs/platform/lifecycle/electron-main/lifecycleMainService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IProductService } from 'vs/platform/product/common/productService';
-import { IRequestService } from 'vs/platform/request/common/request';
+import { IRequestService, asJson } from 'vs/platform/request/common/request'; // {{SQL CARBON EDIT}}
 import { AvailableForDownload, DisablementReason, IUpdateService, State, StateType, UpdateType } from 'vs/platform/update/common/update';
+import { Build, getUpdateFromBuild } from 'vs/platform/update/electron-main/updateMetadataProvider'; // {{SQL CARBON EDIT}}
 
 export function createUpdateURL(platform: string, quality: string, productService: IProductService): string {
 	return `${productService.updateUrl}/api/update/${platform}/${quality}/${productService.commit}`;
@@ -29,6 +30,7 @@ export abstract class AbstractUpdateService implements IUpdateService {
 	declare readonly _serviceBrand: undefined;
 
 	protected url: string | undefined;
+	protected platform: string | undefined; // {{SQL CARBON EDIT}}
 
 	private _state: State = State.Uninitialized;
 
@@ -89,6 +91,7 @@ export abstract class AbstractUpdateService implements IUpdateService {
 			return;
 		}
 
+		this.platform = this.buildPlatform(); // {{SQL CARBON EDIT}}
 		this.url = this.buildUpdateFeedUrl(quality);
 		if (!this.url) {
 			this.setState(State.Disabled(DisablementReason.InvalidConfiguration));
@@ -199,11 +202,11 @@ export abstract class AbstractUpdateService implements IUpdateService {
 		}
 
 		try {
-			const context = await this.requestService.request({ url: this.url }, CancellationToken.None);
-			// The update server replies with 204 (No Content) when no
-			// update is available - that's all we want to know.
-			return context.res.statusCode === 204;
-
+			// {{SQL CARBON EDIT}} - Use the metadata files from the Download Center as the update feed.
+			// If we don't have a update, then we are on the latest version.
+			const build = await asJson<Build | null>(await this.requestService.request({ url: this.productService.updateMetadataUrl }, CancellationToken.None));
+			const update = getUpdateFromBuild(build, this.productService, this.platform);
+			return update === undefined;
 		} catch (error) {
 			this.logService.error('update#isLatestVersion(): failed to check for updates');
 			this.logService.error(error);
@@ -223,6 +226,7 @@ export abstract class AbstractUpdateService implements IUpdateService {
 		// noop
 	}
 
+	protected abstract buildPlatform(): string | undefined; // {{SQL CARBON EDIT}}
 	protected abstract buildUpdateFeedUrl(quality: string): string | undefined;
 	protected abstract doCheckForUpdates(context: any): void;
 }
