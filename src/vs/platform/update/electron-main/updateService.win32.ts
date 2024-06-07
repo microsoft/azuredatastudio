@@ -99,7 +99,8 @@ export class Win32UpdateService extends AbstractUpdateService implements IRelaun
 		await super.initialize();
 	}
 
-	protected buildUpdateFeedUrl(quality: string): string | undefined {
+	// {{SQL CARBON EDIT}}
+	protected buildPlatform(): string {
 		let platform = 'win32';
 
 		if (process.arch !== 'ia32') {
@@ -111,8 +112,11 @@ export class Win32UpdateService extends AbstractUpdateService implements IRelaun
 		} else if (this.productService.target === 'user') {
 			platform += '-user';
 		}
+		return platform;
+	}
 
-		return createUpdateURL(platform, quality, this.productService);
+	protected buildUpdateFeedUrl(quality: string): string | undefined {
+		return createUpdateURL(this.platform, quality, this.productService); // {{SQL CARBON EDIT}}
 	}
 
 	protected doCheckForUpdates(context: any): void {
@@ -126,19 +130,7 @@ export class Win32UpdateService extends AbstractUpdateService implements IRelaun
 		this.requestService.request({ url: this.productService.updateMetadataUrl }, CancellationToken.None)
 			.then<Build | null>(asJson)
 			.then(build => {
-				let platform = 'win32';
-
-				if (process.arch !== 'ia32') {
-					platform += `-${process.arch}`;
-				}
-
-				if (getUpdateType() === UpdateType.Archive) {
-					platform += '-archive';
-				} else if (this.productService.target === 'user') {
-					platform += '-user';
-				}
-
-				const update = getUpdateFromBuild(build, this.productService, platform);
+				const update = getUpdateFromBuild(build, this.productService, this.platform);
 				const updateType = getUpdateType();
 
 				if (!update || !update.url || !update.version || !update.productVersion) {
