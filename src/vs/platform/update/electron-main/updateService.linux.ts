@@ -12,7 +12,7 @@ import { INativeHostMainService } from 'vs/platform/native/electron-main/nativeH
 import { IProductService } from 'vs/platform/product/common/productService';
 import { asJson, IRequestService } from 'vs/platform/request/common/request';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { AvailableForDownload, State, UpdateType } from 'vs/platform/update/common/update';
+import { AvailableForDownload, State, UpdateType } from 'vs/platform/update/common/update'; // {{SQL CARBON EDIT}}
 import { AbstractUpdateService, createUpdateURL, UpdateNotAvailableClassification } from 'vs/platform/update/electron-main/abstractUpdateService';
 import { Build, getUpdateFromBuild, updateMetadataUrl } from 'vs/platform/update/electron-main/updateMetadataProvider'; // {{SQL CARBON EDIT}}
 
