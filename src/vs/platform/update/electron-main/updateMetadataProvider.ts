@@ -8,11 +8,6 @@
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IUpdate } from 'vs/platform/update/common/update';
 
-export const updateMetadataUrl = 'https://go.microsoft.com/fwlink/?linkid=2274438';
-export const updateMetadataMacUrl = 'https://go.microsoft.com/fwlink/?linkid=2274285';
-export const updateMetadataMacArmUrl = 'https://go.microsoft.com/fwlink/?linkid=2274463';
-export const updateMetadataMacUniversalUrl = 'https://go.microsoft.com/fwlink/?linkid=2274286';
-
 export interface Asset {
 	platform: string;
 	type: string;

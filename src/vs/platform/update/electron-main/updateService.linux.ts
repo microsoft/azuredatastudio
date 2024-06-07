@@ -14,7 +14,7 @@ import { asJson, IRequestService } from 'vs/platform/request/common/request';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { AvailableForDownload, State, UpdateType } from 'vs/platform/update/common/update'; // {{SQL CARBON EDIT}}
 import { AbstractUpdateService, createUpdateURL, UpdateNotAvailableClassification } from 'vs/platform/update/electron-main/abstractUpdateService';
-import { Build, getUpdateFromBuild, updateMetadataUrl } from 'vs/platform/update/electron-main/updateMetadataProvider'; // {{SQL CARBON EDIT}}
+import { Build, getUpdateFromBuild } from 'vs/platform/update/electron-main/updateMetadataProvider'; // {{SQL CARBON EDIT}}
 
 export class LinuxUpdateService extends AbstractUpdateService {
 
@@ -43,7 +43,7 @@ export class LinuxUpdateService extends AbstractUpdateService {
 		this.setState(State.CheckingForUpdates(context));
 
 		// {{SQL CARBON EDIT}} - Use the metadata files from the Download Center as the update feed.
-		this.requestService.request({ url: updateMetadataUrl }, CancellationToken.None)
+		this.requestService.request({ url: this.productService.updateMetadataUrl }, CancellationToken.None)
 			.then<Build | null>(asJson)
 			.then(build => {
 				const update = getUpdateFromBuild(build, this.productService, `linux-${process.arch}`);

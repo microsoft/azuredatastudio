@@ -122,6 +122,10 @@ export interface IProductConfiguration {
 	readonly vscodeVersion: string; // {{SQL CARBON EDIT}} add vscode version
 	readonly gettingStartedUrl: string; // {{SQL CARBON EDIT}}
 	readonly disabledFeatures?: string[]; // {{SQL CARBON EDIT}}
+	readonly updateMetadataUrl: string; // {{SQL CARBON EDIT}}
+	readonly updateMetadataMacUrl: string; // {{SQL CARBON EDIT}} Mac update uses electron auto updater which has a format requirement for the update metadata feed.
+	readonly updateMetadataMacArmUrl: string; // {{SQL CARBON EDIT}}
+	readonly updateMetadataMacUniversalUrl: string; // {{SQL CARBON EDIT}}
 
 	readonly crashReporter?: {
 		readonly companyName: string;
