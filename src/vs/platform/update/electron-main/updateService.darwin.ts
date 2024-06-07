@@ -16,6 +16,7 @@ import { IRequestService } from 'vs/platform/request/common/request';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IUpdate, State, StateType, UpdateType } from 'vs/platform/update/common/update';
 import { AbstractUpdateService, UpdateNotAvailableClassification } from 'vs/platform/update/electron-main/abstractUpdateService';
+import { updateMetadataMacArmUrl, updateMetadataMacUniversalUrl, updateMetadataMacUrl } from 'vs/platform/update/electron-main/updateMetadataProvider'; // {{SQL CARBON EDIT}}
 
 export class DarwinUpdateService extends AbstractUpdateService implements IRelaunchHandler {
 
@@ -73,10 +74,12 @@ export class DarwinUpdateService extends AbstractUpdateService implements IRelau
 
 	protected buildUpdateFeedUrl(quality: string): string | undefined {
 		let url: string;
+
+		// {{SQL CARBON EDIT}} - Use the metadata files from the Download Center as the update feed.
 		if (!this.productService.darwinUniversalAssetId) {
-			url = process.arch === 'x64' ? 'https://go.microsoft.com/fwlink/?linkid=2274285' : 'https://go.microsoft.com/fwlink/?linkid=2274463';
+			url = process.arch === 'x64' ? updateMetadataMacUrl : updateMetadataMacArmUrl;
 		} else {
-			url = 'https://go.microsoft.com/fwlink/?linkid=2274286';
+			url = updateMetadataMacUniversalUrl;
 		}
 
 		try {

@@ -12,35 +12,9 @@ import { INativeHostMainService } from 'vs/platform/native/electron-main/nativeH
 import { IProductService } from 'vs/platform/product/common/productService';
 import { asJson, IRequestService } from 'vs/platform/request/common/request';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { AvailableForDownload, Build, IUpdate, State, UpdateType } from 'vs/platform/update/common/update';
+import { AvailableForDownload, State, UpdateType } from 'vs/platform/update/common/update';
 import { AbstractUpdateService, createUpdateURL, UpdateNotAvailableClassification } from 'vs/platform/update/electron-main/abstractUpdateService';
-
-function getUpdateFromBuild(build: Build | null, productService: IProductService): IUpdate | undefined {
-	if (!build) {
-		return undefined;
-	}
-
-	if (build.id === productService.commit) {
-		return undefined;
-	}
-
-	const platform = `linux-${process.arch}`;
-	const assetType = build.updates[platform];
-	const asset = build.assets.filter(a => a.platform === platform && a.type === assetType)[0];
-
-	if (!asset) {
-		return undefined;
-	}
-
-	const url = asset.url;
-	return {
-		url: url,
-		version: build.id,
-		productVersion: build.version,
-		hash: asset.hash,
-	};
-}
-
+import { Build, getUpdateFromBuild, updateMetadataUrl } from 'vs/platform/update/electron-main/updateMetadataProvider'; // {{SQL CARBON EDIT}}
 
 export class LinuxUpdateService extends AbstractUpdateService {
 
@@ -67,10 +41,12 @@ export class LinuxUpdateService extends AbstractUpdateService {
 		}
 
 		this.setState(State.CheckingForUpdates(context));
-		this.requestService.request({ url: 'https://go.microsoft.com/fwlink/?linkid=2274438' }, CancellationToken.None)
+
+		// {{SQL CARBON EDIT}} - Use the metadata files from the Download Center as the update feed.
+		this.requestService.request({ url: updateMetadataUrl }, CancellationToken.None)
 			.then<Build | null>(asJson)
 			.then(build => {
-				const update = getUpdateFromBuild(build, this.productService);
+				const update = getUpdateFromBuild(build, this.productService, `linux-${process.arch}`);
 				if (!update || !update.url || !update.version || !update.productVersion) {
 					this.telemetryService.publicLog2<{ explicit: boolean }, UpdateNotAvailableClassification>('update:notAvailable', { explicit: !!context });
 

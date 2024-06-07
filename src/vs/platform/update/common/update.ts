@@ -13,26 +13,6 @@ export interface IUpdate {
 	hash?: string;
 }
 
-export interface Asset {
-	platform: string;
-	type: string;
-	url: string;
-	mooncakeUrl: string;
-	hash: string;
-	sha256hash?: string;
-	packageCatalog?: string;
-	repoDefinition?: string;
-	repoDataFiles?: string[];
-}
-
-export interface Build {
-	id: string;
-	version: string;
-	isFrozen?: boolean;
-	assets: Asset[];
-	updates: { [platform: string]: string; };
-}
-
 /**
  * Updates are run as a state machine:
  *

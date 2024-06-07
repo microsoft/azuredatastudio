@@ -22,52 +22,15 @@ import { INativeHostMainService } from 'vs/platform/native/electron-main/nativeH
 import { IProductService } from 'vs/platform/product/common/productService';
 import { asJson, IRequestService } from 'vs/platform/request/common/request';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { AvailableForDownload, Build, DisablementReason, IUpdate, State, StateType, UpdateType } from 'vs/platform/update/common/update';
+import { AvailableForDownload, DisablementReason, IUpdate, State, StateType, UpdateType } from 'vs/platform/update/common/update';
 import { AbstractUpdateService, createUpdateURL, UpdateNotAvailableClassification } from 'vs/platform/update/electron-main/abstractUpdateService';
+import { Build, getUpdateFromBuild, updateMetadataUrl } from 'vs/platform/update/electron-main/updateMetadataProvider'; // {{SQL CARBON EDIT}}
 
 async function pollUntil(fn: () => boolean, millis = 1000): Promise<void> {
 	while (!fn()) {
 		await timeout(millis);
 	}
 }
-
-function getUpdateFromBuild(build: Build | null, productService: IProductService): IUpdate | undefined {
-	if (!build) {
-		return undefined;
-	}
-
-	if (build.id === productService.commit) {
-		return undefined;
-	}
-
-	let platform = 'win32';
-
-	if (process.arch !== 'ia32') {
-		platform += `-${process.arch}`;
-	}
-
-	if (getUpdateType() === UpdateType.Archive) {
-		platform += '-archive';
-	} else if (productService.target === 'user') {
-		platform += '-user';
-	}
-
-	const assetType = build.updates[platform];
-	const asset = build.assets.filter(a => a.platform === platform && a.type === assetType)[0];
-
-	if (!asset) {
-		return undefined;
-	}
-
-	const url = asset.url;
-	return {
-		url: url,
-		version: build.id,
-		productVersion: build.version,
-		hash: asset.hash,
-	};
-}
-
 
 interface IAvailableUpdate {
 	packagePath: string;
@@ -159,10 +122,23 @@ export class Win32UpdateService extends AbstractUpdateService implements IRelaun
 
 		this.setState(State.CheckingForUpdates(context));
 
-		this.requestService.request({ url: 'https://go.microsoft.com/fwlink/?linkid=2274438' }, CancellationToken.None)
+		// {{SQL CARBON EDIT}} - Use the metadata files from the Download Center as the update feed.
+		this.requestService.request({ url: updateMetadataUrl }, CancellationToken.None)
 			.then<Build | null>(asJson)
 			.then(build => {
-				const update = getUpdateFromBuild(build, this.productService);
+				let platform = 'win32';
+
+				if (process.arch !== 'ia32') {
+					platform += `-${process.arch}`;
+				}
+
+				if (getUpdateType() === UpdateType.Archive) {
+					platform += '-archive';
+				} else if (this.productService.target === 'user') {
+					platform += '-user';
+				}
+
+				const update = getUpdateFromBuild(build, this.productService, platform);
 				const updateType = getUpdateType();
 
 				if (!update || !update.url || !update.version || !update.productVersion) {
