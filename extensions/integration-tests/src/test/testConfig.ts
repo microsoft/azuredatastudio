@@ -83,7 +83,7 @@ export class TestServerProfile implements TestConnectionInfo {
 let TestingServers: TestServerProfile[] = [
 	new TestServerProfile(
 		{
-			serverName:	"localhost,1434",
+			serverName: "localhost,1434",
 			userName: "sa",
 			password: "Password123!",
 			authenticationType: AuthenticationType.SqlLogin,
