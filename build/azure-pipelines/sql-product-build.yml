@@ -1,16 +1,9 @@
-resources:
-  containers:
-  - container: linux-x64
-    image: sqltoolscontainers.azurecr.io/linux-build-agent:9
-    endpoint: SqlToolsContainers
-
 stages:
   - stage: Compile
     jobs:
     - job: Compile
       pool:
-        vmImage: 'Ubuntu-20.04'
-      container: linux-x64
+        vmImage: 'ubuntu-latest'
       steps:
       - script: |
           set -e
@@ -98,8 +91,7 @@ stages:
     jobs:
       - job: Linux
         pool:
-          vmImage: 'Ubuntu-20.04'
-        container: linux-x64
+          vmImage: 'ubuntu-latest'
         steps:
         - template: linux/sql-product-build-linux.yml
           parameters:
