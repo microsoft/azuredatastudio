@@ -7,18 +7,12 @@ steps:
   inputs:
     versionSpec: "1.x"
 
-- task: AzureKeyVault@1
-  displayName: 'Azure Key Vault: Get Secrets'
-  inputs:
-    azureSubscription: 'ADS Pipelines'
-    KeyVaultName: ado-secrets
-
 - script: |
     set -e
     cat << EOF > ~/.netrc
     machine github.com
     login azuredatastudio
-    password $(github-distro-mixin-password)
+    password $(Github-Mixin-Password)
     EOF
 
     git config user.email "sqltools@service.microsoft.com"
