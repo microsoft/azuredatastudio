@@ -71,7 +71,7 @@ stages:
         variables:
           NPM_CONFIG_ARCH: x64
           VSCODE_ARCH: universal
-          # Do not run tests for universal build
+          # Do not run tests for macOS_Universal build
           RUN_TESTS: false
           RUN_SMOKE_TESTS: false
         dependsOn:
