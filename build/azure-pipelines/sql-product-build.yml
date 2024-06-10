@@ -49,7 +49,7 @@ stages:
           NPM_CONFIG_ARCH: arm64
           VSCODE_ARCH: arm64
           AZDATA_RUNTIME: OSX_ARM64
-          # Do not run tests for arm64 build
+          # Do not run tests for macOS_ARM64 build
           RUN_TESTS: false
           RUN_SMOKE_TESTS: false
         condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS_ARM64'], 'true'))
