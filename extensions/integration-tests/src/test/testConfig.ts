@@ -85,7 +85,7 @@ let TestingServers: TestServerProfile[] = [
 		{
 			serverName: "localhost,1434",
 			userName: "sa",
-			password: "Password123!",
+			password: process.env['SQL_2017_PASS'],
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,
@@ -96,7 +96,7 @@ let TestingServers: TestServerProfile[] = [
 		{
 			serverName: "localhost,1436",
 			userName: "sa",
-			password: "Password123!",
+			password: process.env['AZURE_SQL_PASS'],
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,
@@ -107,7 +107,7 @@ let TestingServers: TestServerProfile[] = [
 		{
 			serverName: "localhost,1435",
 			userName: "sa",
-			password: "Password123!",
+			password: process.env['SQL_2019_PASS'],
 			authenticationType: AuthenticationType.SqlLogin,
 			database: 'master',
 			provider: ConnectionProvider.SQLServer,

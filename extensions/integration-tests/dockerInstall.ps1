@@ -47,4 +47,7 @@ if (-not $dockerInstalled) {
 }
 
 Write-Output "Starting docker container script..."
-Start-Process powershell.exe -ArgumentList "-Command `"$PSScriptRoot\dockerContainers.ps1`"" -Verb RunAs
+$sql2017passname='$sql2017pass'
+$sql2019passname='$sql2019pass'
+$azuresqlpassname='$azuresqlpass'
+Start-Process powershell.exe -ArgumentList "-Command $sql2017passname='$sql2017pass';$sql2019passname='$sql2019pass';$azuresqlpassname='$azuresqlpass';$PSScriptRoot\\dockerContainers.ps1" -Verb RunAs

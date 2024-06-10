@@ -53,7 +53,6 @@ if (!LAUNCH_OPTION) {
 	LAUNCH_OPTION = LAUNCH_VSCODE;
 }
 
-
 /**
  * Below are the environment variable values that are not saved in AKV and might vary by machine
  */
@@ -63,7 +62,7 @@ if (!LAUNCH_OPTION) {
 // How to install it:
 // Open ADS and run command 'Configure Python for Notebooks' command and install it to the default folder,
 // if you install it to a different folder you will have to update the value of this variable
-const NOTEBOOK_PYTHON_INSTALL_PATH = path.join(os.homedir(), 'azuredatastudio-python');
+const NOTEBOOK_PYTHON_INSTALL_PATH = "C:\\Users\\laurennathan\\AppData\\Local\\Programs\\Python\\Python311"; // path.join(os.homedir(), 'azuredatastudio-python');
 
 /**
  * ----------------------------------------------------------------------------------------------
@@ -81,17 +80,39 @@ if (!fs.existsSync(NOTEBOOK_PYTHON_INSTALL_PATH)) {
 	throw message;
 }
 
+// Database password generation
+function generatePassword() {
+	const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
+	const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	const numberChars = '0123456789';
+
+	let password = '';
+
+	password += lowercaseChars.charAt(Math.floor(Math.random() * lowercaseChars.length));
+	password += uppercaseChars.charAt(Math.floor(Math.random() * uppercaseChars.length));
+	password += numberChars.charAt(Math.floor(Math.random() * numberChars.length));
+	password += Math.random().toString(36).slice(-7);
+
+	return password;
+}
+
 // Environment variable names
 const ENVAR_PYTHON_INSTALL_PATH = 'PYTHON_TEST_PATH';
 const ENVAR_RUN_PYTHON3_TEST = 'RUN_PYTHON3_TEST';
+const ENVAR_SQL_2017_PASS = 'SQL_2017_PASS';
+const ENVAR_SQL_2019_PASS = 'SQL_2019_PASS';
+const ENVAR_AZURE_SQL_PASS = 'AZURE_SQL_PASS';
 
 // Set the values that are not stored in AKV here
 process.env[ENVAR_PYTHON_INSTALL_PATH] = NOTEBOOK_PYTHON_INSTALL_PATH;
 process.env[ENVAR_RUN_PYTHON3_TEST] = '1';
+process.env[ENVAR_SQL_2017_PASS] = generatePassword();
+process.env[ENVAR_SQL_2019_PASS] = generatePassword();
+process.env[ENVAR_AZURE_SQL_PASS] = generatePassword();
 
 // run the docker.ps1 powershell script, and wait for it to finish
 // show all output from the command
-const command = `powershell.exe -Command "Start-Process powershell.exe -ArgumentList '-Command \\"${__dirname}\\dockerInstall.ps1\\"' -Verb RunAs"`;
+const command = `powershell.exe -Command "Start-Process powershell.exe -ArgumentList '-Command', '$sql2017pass=''${process.env[ENVAR_SQL_2017_PASS]}'';$sql2019pass=''${process.env[ENVAR_SQL_2019_PASS]}'';$azuresqlpass=''${process.env[ENVAR_AZURE_SQL_PASS]}'';\\"${__dirname}\\dockerInstall.ps1\\"' -Verb RunAs"`;
 
 // wait for exec and it's child processes to finish
 exec(command, (error, stderr) => {
