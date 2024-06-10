@@ -62,7 +62,7 @@ if (!LAUNCH_OPTION) {
 // How to install it:
 // Open ADS and run command 'Configure Python for Notebooks' command and install it to the default folder,
 // if you install it to a different folder you will have to update the value of this variable
-const NOTEBOOK_PYTHON_INSTALL_PATH = "C:\\Users\\laurennathan\\AppData\\Local\\Programs\\Python\\Python311"; // path.join(os.homedir(), 'azuredatastudio-python');
+const NOTEBOOK_PYTHON_INSTALL_PATH = path.join(os.homedir(), 'azuredatastudio-python');
 
 /**
  * ----------------------------------------------------------------------------------------------
