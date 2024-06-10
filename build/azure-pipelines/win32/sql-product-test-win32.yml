@@ -36,23 +36,6 @@ steps:
     exec { .\node_modules\7zip\7zip-lite\7z.exe x $(Build.SourcesDirectory)\.build\win32-x64/archive/azuredatastudio-win32-x64.zip -o$(Agent.TempDirectory)\azuredatastudio-win32-x64 }
   displayName: Unzip artifact
 
-- task: DockerInstaller@0
-  displayName: 'Install Docker'
-  inputs:
-    dockerVersion: 'latest'
-
-- script: |
-    docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Password123!" -p 1434:1433 --name sql2017 -d mcr.microsoft.com/mssql/server:2017-latest
-    docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Password123!" -p 1435:1433 --name sql2019 -d mcr.microsoft.com/mssql/server:2019-latest
-    docker run --cap-add SYS_PTRACE -e 'ACCEPT_EULA=1' -e 'MSSQL_SA_PASSWORD=Password123!' -p 1436:1433 --name azuresqldb -d mcr.microsoft.com/azure-sql-edge
-  displayName: 'Run SQL Server containers'
-
-- script: |
-    echo 'Waiting for SQL Servers to start...'
-    sleep 60
-    echo 'SQL Servers should be ready now.'
-  displayName: 'Wait for SQL Servers to start'
-
 - task: AzureKeyVault@1
   displayName: 'Azure Key Vault: SqlToolsSecretStore'
   inputs:
@@ -70,6 +53,16 @@ steps:
   continueOnError: false
   condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['RUN_INTEGRATION_TESTS'], 'false')))
   displayName: Run stable tests
+  env:
+    STANDALONE_SQL_USERNAME: $(ads-integration-test-standalone-server-username)
+    STANDALONE_SQL_PWD: $(ads-integration-test-standalone-server-password)
+    STANDALONE_SQL: $(ads-integration-test-standalone-server)
+    AZURE_SQL_USERNAME: $(ads-integration-test-azure-server-username)
+    AZURE_SQL_PWD: $(ads-integration-test-azure-server-password)
+    AZURE_SQL: $(ads-integration-test-azure-server)
+    STANDALONE_SQL_USERNAME_2019: $(ads-integration-test-standalone-server-username-2019)
+    STANDALONE_SQL_PWD_2019: $(ads-integration-test-standalone-server-password-2019)
+    STANDALONE_SQL_2019: $(ads-integration-test-standalone-server-2019)
 
 - task: PublishTestResults@2
   displayName: 'Publish Integration and Smoke Test Results'
@@ -80,9 +73,3 @@ steps:
     failTaskOnFailedTests: true
   continueOnError: true
   condition: and(succeededOrFailed(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['RUN_INTEGRATION_TESTS'], 'false')))
-
-- script: |
-  docker rm -f sql2017
-  docker rm -f sql2019
-  docker rm -f azuresqldb
-displayName: 'Delete Docker containers'
