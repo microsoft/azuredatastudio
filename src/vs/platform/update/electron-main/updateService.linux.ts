@@ -12,8 +12,9 @@ import { INativeHostMainService } from 'vs/platform/native/electron-main/nativeH
 import { IProductService } from 'vs/platform/product/common/productService';
 import { asJson, IRequestService } from 'vs/platform/request/common/request';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { AvailableForDownload, IUpdate, State, UpdateType } from 'vs/platform/update/common/update';
+import { AvailableForDownload, State, UpdateType } from 'vs/platform/update/common/update'; // {{SQL CARBON EDIT}}
 import { AbstractUpdateService, createUpdateURL, UpdateNotAvailableClassification } from 'vs/platform/update/electron-main/abstractUpdateService';
+import { Build, getUpdateFromBuild } from 'vs/platform/update/electron-main/updateMetadataProvider'; // {{SQL CARBON EDIT}}
 
 export class LinuxUpdateService extends AbstractUpdateService {
 
@@ -30,6 +31,11 @@ export class LinuxUpdateService extends AbstractUpdateService {
 		super(lifecycleMainService, configurationService, environmentMainService, requestService, logService, productService);
 	}
 
+	// {{SQL CARBON EDIT}}
+	protected buildPlatform(): string {
+		return `linux-${process.arch}`;
+	}
+
 	protected buildUpdateFeedUrl(quality: string): string {
 		return createUpdateURL(`linux-${process.arch}`, quality, this.productService);
 	}
@@ -40,9 +46,12 @@ export class LinuxUpdateService extends AbstractUpdateService {
 		}
 
 		this.setState(State.CheckingForUpdates(context));
-		this.requestService.request({ url: this.url }, CancellationToken.None)
-			.then<IUpdate | null>(asJson)
-			.then(update => {
+
+		// {{SQL CARBON EDIT}} - Use the metadata files from the Download Center as the update feed.
+		this.requestService.request({ url: this.productService.updateMetadataUrl }, CancellationToken.None)
+			.then<Build | null>(asJson)
+			.then(build => {
+				const update = getUpdateFromBuild(build, this.productService, `linux-${process.arch}`);
 				if (!update || !update.url || !update.version || !update.productVersion) {
 					this.telemetryService.publicLog2<{ explicit: boolean }, UpdateNotAvailableClassification>('update:notAvailable', { explicit: !!context });
 
