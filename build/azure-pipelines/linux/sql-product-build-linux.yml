@@ -2,8 +2,7 @@ parameters:
   extensionsToUnitTest: []
 
 variables:
-- name: accessToken
-  value: ''
+  accessToken: ''
 
 steps:
   - task: NodeTool@0
