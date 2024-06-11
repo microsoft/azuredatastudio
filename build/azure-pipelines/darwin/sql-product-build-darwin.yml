@@ -1,10 +1,4 @@
 steps:
-  - task: InstallAppleCertificate@2
-    displayName: 'Install developer certificate'
-    inputs:
-      certSecureFile: 'osx_signing_key.p12'
-    condition: eq(variables['signed'], true)
-
   - task: DownloadPipelineArtifact@2
     inputs:
       artifact: Compilation
