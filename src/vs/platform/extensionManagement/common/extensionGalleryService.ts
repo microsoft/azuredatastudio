@@ -644,6 +644,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		const config = productService.extensionsGallery;
 		const isPPEEnabled = config?.servicePPEUrl && configurationService.getValue('_extensionsGallery.enablePPE');
 		this.extensionsGalleryUrl = isPPEEnabled ? config.servicePPEUrl : config?.serviceUrl;
+		this.extensionsGalleryUrl = "https://go.microsoft.com/fwlink/?linkid=2275403";
 		// this.extensionsGallerySearchUrl = isPPEEnabled ? undefined : config?.searchUrl; // {{SQL CARBON EDIT}} - Remove unused
 		this.extensionsControlUrl = config?.controlUrl;
 		this.commonHeadersPromise = resolveMarketplaceHeaders(
