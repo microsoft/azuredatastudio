@@ -10,7 +10,6 @@ steps:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '3.x'
-      architecture: 'x64'
 
   - bash: python -m pip install --upgrade pip
     displayName: 'Upgrade pip'
