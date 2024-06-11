@@ -1,5 +1,5 @@
 {
-	"downloadUrl": "https://sqlopsextensions.blob.core.windows.net/extensions/import/service/{#version#}/flatfileimportservice-{#fileName#}",
+	"downloadUrl": "https://download.microsoft.com/download/4/d/3/4d35c32c-2553-4544-8394-11308271ba8e/extensions/import/service/{#version#}/flatfileimportservice-{#fileName#}",
 	"useDefaultLinuxRuntime": true,
 	"version": "0.0.12",
 	"downloadFileNames": {
