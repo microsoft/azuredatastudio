@@ -7,6 +7,17 @@ steps:
   inputs:
     versionSpec: "1.x"
 
+- script: |
+    echo "Logging in with Managed Identity..."
+    az login --identity
+    echo "Retrieving access token..."
+    ACCESSTOKEN=$(az account get-access-token --resource https://management.azure.com --query accessToken -o tsv)
+    echo "Setting pipeline variable..."
+    echo "##vso[task.setvariable variable=accessToken]$ACCESSTOKEN"
+    echo $accessToken
+  displayName: 'Retrieve and set access token'
+
+
 - task: AzureKeyVault@1
   displayName: 'Azure Key Vault: Get Secrets'
   inputs:
