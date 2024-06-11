@@ -1,6 +1,10 @@
 parameters:
   extensionsToUnitTest: []
 
+variables:
+- name: accessToken
+  value: ''
+
 steps:
   - task: NodeTool@0
     inputs:
@@ -9,13 +13,6 @@ steps:
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
       versionSpec: "1.x"
-
-  - task: AzureKeyVault@1
-    displayName: 'Azure Key Vault: Get Secrets'
-    inputs:
-      azureSubscription: 'ADS Pipelines'
-      KeyVaultName: ado-secrets
-      SecretsFilter: 'github-distro-mixin-password'
 
   - task: DownloadPipelineArtifact@2
     inputs:
@@ -30,11 +27,20 @@ steps:
     displayName: Extract compilation output
 
   - script: |
+      echo "Logging in with Managed Identity..."
+      az login --identity
+      echo "Retrieving access token..."
+      ACCESSTOKEN=$(az account get-access-token --resource https://management.azure.com --query accessToken -o tsv)
+      echo "Setting pipeline variable..."
+      echo "##vso[task.setvariable variable=accessToken]$ACCESSTOKEN"
+    displayName: 'Retrieve and set access token'
+
+  - script: |
       set -e
       cat << EOF > ~/.netrc
       machine github.com
       login azuredatastudio
-      password $(github-distro-mixin-password)
+      password $(accessToken)
       EOF
 
       git config user.email "sqltools@service.microsoft.com"
@@ -74,7 +80,7 @@ steps:
       CHILD_CONCURRENCY=1 yarn --frozen-lockfile
     displayName: Install dependencies
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(accessToken)
     condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
 
   - script: |
@@ -101,8 +107,8 @@ steps:
       yarn gulp vscode-linux-x64-min-ci
     displayName: Build
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
-      VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(accessToken)
+      VSCODE_MIXIN_PASSWORD: $(accessToken)
 
   - script: |
       set -e
@@ -127,7 +133,7 @@ steps:
       DISPLAY=:10 ./scripts/test.sh --build --tfs "Unit Tests" --coverage
     displayName: Run core unit tests
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(accessToken)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
@@ -142,7 +148,7 @@ steps:
       DISPLAY=:10 ./scripts/test-integration.sh --build --tfs "Integration Tests"
     displayName: Run core integration tests
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(accessToken)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
@@ -159,7 +165,7 @@ steps:
     displayName: Run Extension Unit Tests (Continue on Error)
     continueOnError: true
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(accessToken)
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false')))
 
   - script: |
@@ -175,7 +181,7 @@ steps:
       DISPLAY=:10 ./scripts/test-extensions-unit.sh --build --tfs "Extension Unit Tests"
     displayName: Run Extension Unit Tests (Fail on Error)
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(accessToken)
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false')))
 
   - bash: |
