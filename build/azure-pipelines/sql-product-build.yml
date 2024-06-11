@@ -97,6 +97,8 @@ stages:
       - Compile
     jobs:
       - job: Linux
+        variables:
+          accessToken: ''
         pool:
           vmImage: 'Ubuntu-20.04'
         container: linux-x64
