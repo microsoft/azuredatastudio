@@ -24,6 +24,7 @@ import { asJson, IRequestService } from 'vs/platform/request/common/request';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { AvailableForDownload, DisablementReason, IUpdate, State, StateType, UpdateType } from 'vs/platform/update/common/update';
 import { AbstractUpdateService, createUpdateURL, UpdateNotAvailableClassification } from 'vs/platform/update/electron-main/abstractUpdateService';
+import { Build, getUpdateFromBuild } from 'vs/platform/update/electron-main/updateMetadataProvider'; // {{SQL CARBON EDIT}}
 
 async function pollUntil(fn: () => boolean, millis = 1000): Promise<void> {
 	while (!fn()) {
@@ -98,7 +99,8 @@ export class Win32UpdateService extends AbstractUpdateService implements IRelaun
 		await super.initialize();
 	}
 
-	protected buildUpdateFeedUrl(quality: string): string | undefined {
+	// {{SQL CARBON EDIT}}
+	protected buildPlatform(): string {
 		let platform = 'win32';
 
 		if (process.arch !== 'ia32') {
@@ -110,8 +112,11 @@ export class Win32UpdateService extends AbstractUpdateService implements IRelaun
 		} else if (this.productService.target === 'user') {
 			platform += '-user';
 		}
+		return platform;
+	}
 
-		return createUpdateURL(platform, quality, this.productService);
+	protected buildUpdateFeedUrl(quality: string): string | undefined {
+		return createUpdateURL(this.platform, quality, this.productService); // {{SQL CARBON EDIT}}
 	}
 
 	protected doCheckForUpdates(context: any): void {
@@ -121,9 +126,11 @@ export class Win32UpdateService extends AbstractUpdateService implements IRelaun
 
 		this.setState(State.CheckingForUpdates(context));
 
-		this.requestService.request({ url: this.url }, CancellationToken.None)
-			.then<IUpdate | null>(asJson)
-			.then(update => {
+		// {{SQL CARBON EDIT}} - Use the metadata files from the Download Center as the update feed.
+		this.requestService.request({ url: this.productService.updateMetadataUrl }, CancellationToken.None)
+			.then<Build | null>(asJson)
+			.then(build => {
+				const update = getUpdateFromBuild(build, this.productService, this.platform);
 				const updateType = getUpdateType();
 
 				if (!update || !update.url || !update.version || !update.productVersion) {
