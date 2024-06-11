@@ -1108,7 +1108,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 			/* Always exclude unpublished extensions */
 			.withFilter(FilterType.ExcludeWithFlags, flagsToString(Flags.Unpublished));
 
-		const commonHeaders = await this.commonHeadersPromise;
+		const commonHeaders = {}; // await this.commonHeadersPromise; {{SQL CARBON EDIT}} Because we query other sources such as github don't insert the custom VS headers - otherwise Electron will make a CORS preflight request which not all endpoints support.
 		const data = JSON.stringify(query.raw);
 		const headers = {
 			...commonHeaders,
