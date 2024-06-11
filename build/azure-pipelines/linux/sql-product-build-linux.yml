@@ -2,317 +2,318 @@ parameters:
   extensionsToUnitTest: []
 
 variables:
-  accessToken: ''
+- name: accessToken
+  value: ''
 
 steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: "18.15.0"
+- task: NodeTool@0
+  inputs:
+    versionSpec: "18.15.0"
 
-  - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
-    inputs:
-      versionSpec: "1.x"
+- task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
+  inputs:
+    versionSpec: "1.x"
 
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      artifact: Compilation
-    displayName: Download compilation output
+- task: DownloadPipelineArtifact@2
+  inputs:
+    artifact: Compilation
+  displayName: Download compilation output
 
-  - script: |
-      set -e
-      tar -xzf $(Pipeline.Workspace)/compilation.tar.gz
-      # delete tar.gz after it's been extracted to clear up the space
-      rm $(Pipeline.Workspace)/compilation.tar.gz
-    displayName: Extract compilation output
+- script: |
+    set -e
+    tar -xzf $(Pipeline.Workspace)/compilation.tar.gz
+    # delete tar.gz after it's been extracted to clear up the space
+    rm $(Pipeline.Workspace)/compilation.tar.gz
+  displayName: Extract compilation output
 
-  - script: |
-      echo "Logging in with Managed Identity..."
-      az login --identity
-      echo "Retrieving access token..."
-      ACCESSTOKEN=$(az account get-access-token --resource https://management.azure.com --query accessToken -o tsv)
-      echo "Setting pipeline variable..."
-      echo "##vso[task.setvariable variable=accessToken]$ACCESSTOKEN"
-    displayName: 'Retrieve and set access token'
+- script: |
+    echo "Logging in with Managed Identity..."
+    az login --identity
+    echo "Retrieving access token..."
+    ACCESSTOKEN=$(az account get-access-token --resource https://management.azure.com --query accessToken -o tsv)
+    echo "Setting pipeline variable..."
+    echo "##vso[task.setvariable variable=accessToken]$ACCESSTOKEN"
+  displayName: 'Retrieve and set access token'
 
-  - script: |
-      set -e
-      cat << EOF > ~/.netrc
-      machine github.com
-      login azuredatastudio
-      password $(accessToken)
-      EOF
+- script: |
+    set -e
+    cat << EOF > ~/.netrc
+    machine github.com
+    login azuredatastudio
+    password $(accessToken)
+    EOF
 
-      git config user.email "sqltools@service.microsoft.com"
-      git config user.name "AzureDataStudio"
-      git config --global http.postBuffer 524288000
-      git config --global https.postBuffer 524288000
-    displayName: Prepare tooling
+    git config user.email "sqltools@service.microsoft.com"
+    git config user.name "AzureDataStudio"
+    git config --global http.postBuffer 524288000
+    git config --global https.postBuffer 524288000
+  displayName: Prepare tooling
 
-  - script: |
-      set -e
-      git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
-      git fetch distro
-      git merge $(node -p "require('./package.json').distro")
-    displayName: Merge distro
+- script: |
+    set -e
+    git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+    git fetch distro
+    git merge $(node -p "require('./package.json').distro")
+  displayName: Merge distro
 
-  - script: |
-      mkdir -p .build
-      node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js > .build/yarnlockhash
-    displayName: Prepare yarn cache key
+- script: |
+    mkdir -p .build
+    node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js > .build/yarnlockhash
+  displayName: Prepare yarn cache key
 
-  - task: Cache@2
-    displayName: Restore Cache - Node Modules
-    inputs:
-      key: 'nodeModules | $(Agent.OS) | .build/yarnlockhash'
-      path: .build/node_modules_cache
-      cacheHitVar: NODE_MODULES_RESTORED
-    continueOnError: true
+- task: Cache@2
+  displayName: Restore Cache - Node Modules
+  inputs:
+    key: 'nodeModules | $(Agent.OS) | .build/yarnlockhash'
+    path: .build/node_modules_cache
+    cacheHitVar: NODE_MODULES_RESTORED
+  continueOnError: true
 
-  - script: |
-      set -e
-      tar -xzf .build/node_modules_cache/cache.tgz
-    condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
-    displayName: Extract node_modules archive
+- script: |
+    set -e
+    tar -xzf .build/node_modules_cache/cache.tgz
+  condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
+  displayName: Extract node_modules archive
 
-  - script: |
-      set -e
-      CHILD_CONCURRENCY=1 yarn --frozen-lockfile
-    displayName: Install dependencies
-    env:
-      GITHUB_TOKEN: $(accessToken)
-    condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+- script: |
+    set -e
+    CHILD_CONCURRENCY=1 yarn --frozen-lockfile
+  displayName: Install dependencies
+  env:
+    GITHUB_TOKEN: $(accessToken)
+  condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
 
-  - script: |
-      set -e
-      node build/azure-pipelines/common/listNodeModules.js .build/node_modules_list.txt
-      mkdir -p .build/node_modules_cache
-      tar -czf .build/node_modules_cache/cache.tgz --files-from .build/node_modules_list.txt
-    condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
-    displayName: Create node_modules archive
+- script: |
+    set -e
+    node build/azure-pipelines/common/listNodeModules.js .build/node_modules_list.txt
+    mkdir -p .build/node_modules_cache
+    tar -czf .build/node_modules_cache/cache.tgz --files-from .build/node_modules_list.txt
+  condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+  displayName: Create node_modules archive
 
-  - script: |
-      set -e
-      yarn postinstall
-    displayName: Run postinstall scripts
-    condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
+- script: |
+    set -e
+    yarn postinstall
+  displayName: Run postinstall scripts
+  condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
 
-  - script: |
-      set -e
-      node build/azure-pipelines/sql-mixin
-    displayName: Mix in quality
+- script: |
+    set -e
+    node build/azure-pipelines/sql-mixin
+  displayName: Mix in quality
 
-  - script: |
-      set -e
-      yarn gulp vscode-linux-x64-min-ci
-    displayName: Build
-    env:
-      GITHUB_TOKEN: $(accessToken)
-      VSCODE_MIXIN_PASSWORD: $(accessToken)
+- script: |
+    set -e
+    yarn gulp vscode-linux-x64-min-ci
+  displayName: Build
+  env:
+    GITHUB_TOKEN: $(accessToken)
+    VSCODE_MIXIN_PASSWORD: $(accessToken)
 
-  - script: |
-      set -e
-      yarn gulp package-rebuild-extensions
-      yarn gulp compile-extensions
-      yarn gulp package-external-extensions
-    displayName: Package External extensions
+- script: |
+    set -e
+    yarn gulp package-rebuild-extensions
+    yarn gulp compile-extensions
+    yarn gulp package-external-extensions
+  displayName: Package External extensions
 
-  - script: |
-      set -e
-      yarn gulp package-langpacks
-    displayName: Package Langpacks
+- script: |
+    set -e
+    yarn gulp package-langpacks
+  displayName: Package Langpacks
 
-  - script: |
-      set -e
-      service xvfb start
-    displayName: Start xvfb
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+- script: |
+    set -e
+    service xvfb start
+  displayName: Start xvfb
+  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - script: |
-      set -e
-      DISPLAY=:10 ./scripts/test.sh --build --tfs "Unit Tests" --coverage
-    displayName: Run core unit tests
-    env:
-      GITHUB_TOKEN: $(accessToken)
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
+- script: |
+    set -e
+    DISPLAY=:10 ./scripts/test.sh --build --tfs "Unit Tests" --coverage
+  displayName: Run core unit tests
+  env:
+    GITHUB_TOKEN: $(accessToken)
+  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
-  - script: |
-      # Figure out the full absolute path of the product we just built
-      # including the remote server and configure the integration tests
-      # to run with these builds instead of running out of sources.
-      set -e
-      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
-      APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
-      INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
-      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
-      DISPLAY=:10 ./scripts/test-integration.sh --build --tfs "Integration Tests"
-    displayName: Run core integration tests
-    env:
-      GITHUB_TOKEN: $(accessToken)
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
+- script: |
+    # Figure out the full absolute path of the product we just built
+    # including the remote server and configure the integration tests
+    # to run with these builds instead of running out of sources.
+    set -e
+    APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
+    APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
+    INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
+    VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
+    DISPLAY=:10 ./scripts/test-integration.sh --build --tfs "Integration Tests"
+  displayName: Run core integration tests
+  env:
+    GITHUB_TOKEN: $(accessToken)
+  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
-  - script: |
-      # Figure out the full absolute path of the product we just built
-      # including the remote server and configure the unit tests
-      # to run with these builds instead of running out of sources.
-      set -e
-      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
-      APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
-      INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
-      NO_CLEANUP=1 \
-      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
-      DISPLAY=:10 ./scripts/test-extensions-unit.sh --build --tfs "Extension Unit Tests"
-    displayName: Run Extension Unit Tests (Continue on Error)
-    continueOnError: true
-    env:
-      GITHUB_TOKEN: $(accessToken)
-    condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false')))
+- script: |
+    # Figure out the full absolute path of the product we just built
+    # including the remote server and configure the unit tests
+    # to run with these builds instead of running out of sources.
+    set -e
+    APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
+    APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
+    INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
+    NO_CLEANUP=1 \
+    VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
+    DISPLAY=:10 ./scripts/test-extensions-unit.sh --build --tfs "Extension Unit Tests"
+  displayName: Run Extension Unit Tests (Continue on Error)
+  continueOnError: true
+  env:
+    GITHUB_TOKEN: $(accessToken)
+  condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false')))
 
-  - script: |
-      # Figure out the full absolute path of the product we just built
-      # including the remote server and configure the unit tests
-      # to run with these builds instead of running out of sources.
-      set -e
-      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
-      APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
-      INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
-      NO_CLEANUP=1 \
-      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
-      DISPLAY=:10 ./scripts/test-extensions-unit.sh --build --tfs "Extension Unit Tests"
-    displayName: Run Extension Unit Tests (Fail on Error)
-    env:
-      GITHUB_TOKEN: $(accessToken)
-    condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false')))
+- script: |
+    # Figure out the full absolute path of the product we just built
+    # including the remote server and configure the unit tests
+    # to run with these builds instead of running out of sources.
+    set -e
+    APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
+    APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
+    INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
+    NO_CLEANUP=1 \
+    VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
+    DISPLAY=:10 ./scripts/test-extensions-unit.sh --build --tfs "Extension Unit Tests"
+  displayName: Run Extension Unit Tests (Fail on Error)
+  env:
+    GITHUB_TOKEN: $(accessToken)
+  condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false')))
 
-  - bash: |
-      set -e
-      mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
-      cd /tmp
-      for folder in adsuser*/
-      do
-      folder=${folder%/}
-      # Only archive directories we want for debugging purposes
-      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
-      done
-    displayName: Archive Logs
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+- bash: |
+    set -e
+    mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
+    cd /tmp
+    for folder in adsuser*/
+    do
+    folder=${folder%/}
+    # Only archive directories we want for debugging purposes
+    tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
+    done
+  displayName: Archive Logs
+  continueOnError: true
+  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - script: |
-        set -e
-        yarn gulp vscode-linux-x64-prepare-deb
-    displayName: Prepare deb package
-    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
+- script: |
+    set -e
+    yarn gulp vscode-linux-x64-prepare-deb
+  displayName: Prepare deb package
+  condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
-  - script: |
-      set -e
-      yarn gulp vscode-linux-x64-build-deb
-    displayName: Build deb package
-    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
+- script: |
+    set -e
+    yarn gulp vscode-linux-x64-build-deb
+  displayName: Build deb package
+  condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
-  - script: |
-        set -e
-        yarn gulp vscode-linux-x64-prepare-rpm
-    displayName: Prepare rpm package
-    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
+- script: |
+    set -e
+    yarn gulp vscode-linux-x64-prepare-rpm
+  displayName: Prepare rpm package
+  condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
-  - script: |
-      set -e
-      yarn gulp vscode-linux-x64-build-rpm
-    displayName: Build rpm package
-    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
+- script: |
+    set -e
+    yarn gulp vscode-linux-x64-build-rpm
+  displayName: Build rpm package
+  condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
-  - task: UseDotNet@2
-    displayName: 'Install .NET SDK for signing'
-    inputs:
-      packageType: sdk
-      version: 6.0.x
-      installationPath: $(Agent.ToolsDirectory)/dotnet
+- task: UseDotNet@2
+  displayName: 'Install .NET SDK for signing'
+  inputs:
+    packageType: sdk
+    version: 6.0.x
+    installationPath: $(Agent.ToolsDirectory)/dotnet
 
-  - task: EsrpCodeSigning@3
-    inputs:
-      ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.SourcesDirectory)/.build/linux'
-      Pattern: 'deb/*.deb, rpm/*.rpm'
-      signConfigType: inlineSignParams
-      inlineOperation: |
-        [
-          {
-            "KeyCode": "CP-500207-Pgp",
-            "OperationCode": "LinuxSign",
-            "Parameters": {},
-            "ToolName": "sign",
-            "ToolVersion": "1.0"
-          }
-        ]
-      SessionTimeout: 120
-    displayName: 'Signing deb and rpm'
-    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'), eq(variables['signed'], true))
+- task: EsrpCodeSigning@3
+  inputs:
+    ConnectedServiceName: 'Code Signing'
+    FolderPath: '$(Build.SourcesDirectory)/.build/linux'
+    Pattern: 'deb/*.deb, rpm/*.rpm'
+    signConfigType: inlineSignParams
+    inlineOperation: |
+      [
+        {
+          "KeyCode": "CP-500207-Pgp",
+          "OperationCode": "LinuxSign",
+          "Parameters": {},
+          "ToolName": "sign",
+          "ToolVersion": "1.0"
+        }
+      ]
+    SessionTimeout: 120
+  displayName: 'Signing deb and rpm'
+  condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'), eq(variables['signed'], true))
 
-  - task: EsrpCodeSigning@3
-    inputs:
-      ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.SourcesDirectory)/.build'
-      Pattern: 'extensions/*.vsix,langpacks/*.vsix'
-      signConfigType: inlineSignParams
-      inlineOperation: |
-        [
-          {
-            "keyCode": "CP-233016",
-            "operationSetCode": "OpcSign",
-            "parameters": [
-              {
-                "parameterName": "FileDigest",
-                "parameterValue": "/fd \"SHA256\""
-              }
-            ],
-            "toolName": "sign",
-            "toolVersion": "1.0"
-          },
-          {
-            "keyCode": "CP-233016",
-            "operationSetCode": "OpcVerify",
-            "parameters": [],
-            "toolName": "sign",
-            "toolVersion": "1.0"
-          }
-        ]
-      SessionTimeout: 120
-    displayName: 'Signing Extensions and Langpacks'
-    condition: and(succeeded(), eq(variables['signed'], true))
+- task: EsrpCodeSigning@3
+  inputs:
+    ConnectedServiceName: 'Code Signing'
+    FolderPath: '$(Build.SourcesDirectory)/.build'
+    Pattern: 'extensions/*.vsix,langpacks/*.vsix'
+    signConfigType: inlineSignParams
+    inlineOperation: |
+      [
+        {
+          "keyCode": "CP-233016",
+          "operationSetCode": "OpcSign",
+          "parameters": [
+            {
+              "parameterName": "FileDigest",
+              "parameterValue": "/fd \"SHA256\""
+            }
+          ],
+          "toolName": "sign",
+          "toolVersion": "1.0"
+        },
+        {
+          "keyCode": "CP-233016",
+          "operationSetCode": "OpcVerify",
+          "parameters": [],
+          "toolName": "sign",
+          "toolVersion": "1.0"
+        }
+      ]
+    SessionTimeout: 120
+  displayName: 'Signing Extensions and Langpacks'
+  condition: and(succeeded(), eq(variables['signed'], true))
 
-  - script: |
-      set -e
-      ./build/azure-pipelines/linux/createDrop.sh
-    displayName: Create Drop
+- script: |
+    set -e
+    ./build/azure-pipelines/linux/createDrop.sh
+  displayName: Create Drop
 
-  - script: |
-      set -e
-      shopt -s globstar
-      mkdir -p $(Build.ArtifactStagingDirectory)/test-results/coverage
-      cp --parents -r $(Build.SourcesDirectory)/extensions/*/coverage/** $(Build.ArtifactStagingDirectory)/test-results/coverage
-    displayName: Copy Coverage
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+- script: |
+    set -e
+    shopt -s globstar
+    mkdir -p $(Build.ArtifactStagingDirectory)/test-results/coverage
+    cp --parents -r $(Build.SourcesDirectory)/extensions/*/coverage/** $(Build.ArtifactStagingDirectory)/test-results/coverage
+  displayName: Copy Coverage
+  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - task: PublishTestResults@2
-    displayName: 'Publish Test Results test-results.xml'
-    inputs:
-      testResultsFiles: '*.xml'
-      searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
-    continueOnError: true
-    condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results test-results.xml'
+  inputs:
+    testResultsFiles: '*.xml'
+    searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
+  continueOnError: true
+  condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: crash reports'
-    inputs:
-      PathtoPublish: '$(Build.SourcesDirectory)/.build/crashes'
-      ArtifactName: crashes
-    condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: crash reports'
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)/.build/crashes'
+    ArtifactName: crashes
+  condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: drop'
-    condition: succeededOrFailed()
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  condition: succeededOrFailed()
 
-  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-    displayName: 'Component Detection'
-    inputs:
-      failOnAlert: true
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  displayName: 'Component Detection'
+  inputs:
+    failOnAlert: true
