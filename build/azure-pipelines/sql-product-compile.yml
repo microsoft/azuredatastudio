@@ -7,16 +7,9 @@ steps:
     inputs:
         versionSpec: "1.x"
 
-  - task: UsePythonVersion@0
-    inputs:
-        versionSpec: '3.x' # Specifies the Python version to install, e.g., '3.x' for the latest Python 3 version
-    name: PythonSetup
-
-  - script: |
-        $(PythonSetup.pythonLocation)/python -m pip install --upgrade pip
-        $(PythonSetup.pythonLocation)/python -m pip install --pre azure-cli
-        az --version
-    displayName: 'Upgrade pip and install Azure CLI'
+  - bash: |
+        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+    displayName: 'Install Azure CLI'
 
   - script: |
         echo "Installing Azure CLI..."
