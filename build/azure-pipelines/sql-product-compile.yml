@@ -7,13 +7,9 @@ steps:
     inputs:
         versionSpec: "1.x"
 
-  - bash: |
-        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-    displayName: 'Install Azure CLI'
-
   - script: |
         echo "Installing Azure CLI..."
-        curl -L https://aka.ms/InstallAzureCli | bash
+        curl -SL https://aka.ms/InstallAzureCli | bash
         echo "Logging in with Managed Identity..."
         az login --identity
         echo "Retrieving access token..."
