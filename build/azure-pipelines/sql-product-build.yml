@@ -8,7 +8,7 @@ stages:
       - script: |
           set -e
           echo "##vso[build.addbuildtag]$(VSCODE_QUALITY)"
-        displayName: Add Quality Tag to Build
+        displayName: Set Quality Tag for Build
       - template: sql-product-compile.yml
       timeoutInMinutes: 120
 
