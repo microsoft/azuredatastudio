@@ -35,6 +35,10 @@ export const EnableArcFeaturesSection = 'enableArcFeatures';
 
 export const ServiceName = 'azuredatastudio';
 
+export const HttpConfigSection = 'http';
+
+export const Proxy = 'proxy';
+
 export const TenantSection = 'tenant';
 
 export const NoSystemKeyChainSection = 'noSystemKeychain';
@@ -54,8 +58,6 @@ export const AccountVersion = '2.0';
 
 export const Bearer = 'Bearer';
 
-/** HTTP Client */
-export const httpConfigSectionName = 'http';
 
 /**
  * Use SHA-256 algorithm
