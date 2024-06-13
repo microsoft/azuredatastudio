@@ -81,23 +81,26 @@ export class DarwinUpdateService extends AbstractUpdateService implements IRelau
 	}
 
 	protected buildUpdateFeedUrl(quality: string): string | undefined {
-		let url: string;
+		let feedUrl: string;
 
 		// {{SQL CARBON EDIT}} - Use the metadata files from the Download Center as the update feed.
 		if (!this.productService.darwinUniversalAssetId) {
-			url = process.arch === 'x64' ? this.productService.updateMetadataMacUrl : this.productService.updateMetadataMacArmUrl;
+			feedUrl = process.arch === 'x64' ? this.productService.updateMetadataMacUrl : this.productService.updateMetadataMacArmUrl;
 		} else {
-			url = this.productService.updateMetadataMacUniversalUrl;
+			feedUrl = this.productService.updateMetadataMacUniversalUrl;
 		}
 
 		try {
-			electron.autoUpdater.setFeedURL({ url });
+			electron.autoUpdater.setFeedURL({
+				url: feedUrl,
+				serverType: 'json',
+			});
 		} catch (e) {
 			// application is very likely not signed
 			this.logService.error('Failed to set update feed URL', e);
 			return undefined;
 		}
-		return url;
+		return feedUrl;
 	}
 
 	protected doCheckForUpdates(context: any): void {
