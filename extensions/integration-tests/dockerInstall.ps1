@@ -2,8 +2,6 @@
 $dockerInstalled = Get-Command docker -ErrorAction SilentlyContinue
 
 if (-not $dockerInstalled) {
-	# Ask and get admin permission: TO DO~!!!!!!
-
     Write-Output "Docker is not installed. Installing Docker..."
 
     # Define the URL for the Docker Desktop installer
