@@ -62,7 +62,7 @@ if (!LAUNCH_OPTION) {
 // How to install it:
 // Open ADS and run command 'Configure Python for Notebooks' command and install it to the default folder,
 // if you install it to a different folder you will have to update the value of this variable
-const NOTEBOOK_PYTHON_INSTALL_PATH = path.join(os.homedir(), 'azuredatastudio-python');
+const NOTEBOOK_PYTHON_INSTALL_PATH = "C:\\Users\\laurennathan\\AppData\\Local\\Programs\\Python\\Python311" //path.join(os.homedir(), 'azuredatastudio-python');
 
 /**
  * ----------------------------------------------------------------------------------------------
@@ -82,17 +82,11 @@ if (!fs.existsSync(NOTEBOOK_PYTHON_INSTALL_PATH)) {
 
 // Database password generation
 function generatePassword() {
-	const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
-	const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	const numberChars = '0123456789';
-
-	let password = '';
-
-	password += lowercaseChars.charAt(Math.floor(Math.random() * lowercaseChars.length));
-	password += uppercaseChars.charAt(Math.floor(Math.random() * uppercaseChars.length));
-	password += numberChars.charAt(Math.floor(Math.random() * numberChars.length));
-	password += Math.random().toString(36).slice(-7);
-
+	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	let password = "";
+	for (let n = 0; n < 128; n++) {
+		password += chars.charAt(Math.random() * chars.length)
+	}
 	return password;
 }
 
@@ -110,10 +104,12 @@ process.env[ENVAR_SQL_2017_PASS] = generatePassword();
 process.env[ENVAR_SQL_2019_PASS] = generatePassword();
 process.env[ENVAR_AZURE_SQL_PASS] = generatePassword();
 
-// run the docker.ps1 powershell script, and wait for it to finish
-// show all output from the command
-const command = `powershell.exe -Command "Start-Process powershell.exe -ArgumentList '-Command', '$sql2017pass=''${process.env[ENVAR_SQL_2017_PASS]}'';$sql2019pass=''${process.env[ENVAR_SQL_2019_PASS]}'';$azuresqlpass=''${process.env[ENVAR_AZURE_SQL_PASS]}'';\\"${__dirname}\\dockerInstall.ps1\\"' -Verb RunAs"`;
+// Start docker containers
+const wincommand = `powershell.exe -Command "Start-Process powershell.exe -ArgumentList '-Command', '$sql2017pass=''${process.env[ENVAR_SQL_2017_PASS]}'';$sql2019pass=''${process.env[ENVAR_SQL_2019_PASS]}'';$azuresqlpass=''${process.env[ENVAR_AZURE_SQL_PASS]}'';\\"${__dirname}\\dockerWindows.ps1\\"' -Verb RunAs"`;
+const unixcommand = `bash -c '$sql2017pass=${process.env[ENVAR_SQL_2017_PASS]} $sql2019pass=${process.env[ENVAR_SQL_2019_PASS]} $azuresqlpass=${process.env[ENVAR_AZURE_SQL_PASS]} ${__dirname}/dockerUnix.sh'`;
 
+// Determine the OS and set the appropriate command
+const command = os.platform() === 'win32' ? wincommand : unixcommand;
 // wait for exec and it's child processes to finish
 exec(command, (error, stderr) => {
 	if (error) {
