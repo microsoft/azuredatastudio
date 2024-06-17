@@ -25,6 +25,7 @@ The integration test suite has been added to ADS windows pipeline to run the tes
 	1. Navigate to this folder and then run `node setEnvironmentVariables.js`, there are different options, by default VS Code will be opened.
 		1. Terminal(Mac)/CMD(Windows): `node setEnvironmentVariables.js Terminal`
 		2. Git-Bash on Windows: `node setEnvironmentVariables.js BashWin`
+		3. This command will install docker if you don't have it, and then run the docker containers required for tests. If it goes through the install docker process, it may prompt you during installation. Just hit continue.
 	1. A new window will be opened based on your selection and the new window will have the required environment variables set.
 	2. In the new window navigate to the scripts folder and run sql-test-integration.[bat|sh]
 
