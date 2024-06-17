@@ -27,8 +27,6 @@ const { getUNCHost, addUNCHostToAllowlist } = require('./vs/base/node/unc');
 const product = require('../product.json');
 const { app, protocol, crashReporter, Menu } = require('electron');
 
-app.commandLine.appendSwitch('disable-http-cache');
-
 // Enable portable support
 const portable = bootstrapNode.configurePortable(product);
 

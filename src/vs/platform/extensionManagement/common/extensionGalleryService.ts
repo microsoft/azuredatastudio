@@ -26,7 +26,6 @@ import { asJson, asTextOrError, IRequestService } from 'vs/platform/request/comm
 import { resolveMarketplaceHeaders } from 'vs/platform/externalServices/common/marketplace';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { rresult } from 'vs/platform/extensionManagement/common/test';
 // import { StopWatch } from 'vs/base/common/stopwatch'; // {{SQL CARBON EIDT}} - Remove unused
 
 const CURRENT_TARGET_PLATFORM = isWeb ? TargetPlatform.WEB : getTargetPlatform(platform, arch);
@@ -87,7 +86,7 @@ interface IRawGalleryExtensionsResult {
 	readonly context?: IStringDictionary<string>;
 }
 
-export interface IRawGalleryQueryResult {
+interface IRawGalleryQueryResult {
 	readonly results: {
 		readonly extensions: IRawGalleryExtension[];
 		readonly resultMetadata: {
@@ -645,7 +644,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		const config = productService.extensionsGallery;
 		const isPPEEnabled = config?.servicePPEUrl && configurationService.getValue('_extensionsGallery.enablePPE');
 		this.extensionsGalleryUrl = isPPEEnabled ? config.servicePPEUrl : config?.serviceUrl;
-		this.extensionsGalleryUrl = "https://download.microsoft.com/download/8/a/0/8a021c59-2f71-4b6d-b07a-bd709143890e/azuredatastudio-linux-1.48.0.tar.gz";
+		this.extensionsGalleryUrl = "https://go.microsoft.com/fwlink/?linkid=2275403";
 		// this.extensionsGallerySearchUrl = isPPEEnabled ? undefined : config?.searchUrl; // {{SQL CARBON EDIT}} - Remove unused
 		this.extensionsControlUrl = config?.controlUrl;
 		this.commonHeadersPromise = resolveMarketplaceHeaders(
@@ -1110,38 +1109,30 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 			.withFilter(FilterType.ExcludeWithFlags, flagsToString(Flags.Unpublished));
 
 		const commonHeaders = {}; // await this.commonHeadersPromise; {{SQL CARBON EDIT}} Because we query other sources such as github don't insert the custom VS headers - otherwise Electron will make a CORS preflight request which not all endpoints support.
-		// const data = JSON.stringify(query.raw);
+		const data = JSON.stringify(query.raw);
 		const headers = {
 			...commonHeaders,
-			// 'Content-Type': 'application/json',
-			// 'Accept': 'application/json;api-version=3.0-preview.1',
-			// 'Accept-Encoding': 'gzip',
-			// 'Content-Length': String(data.length),
+			'Content-Type': 'application/json',
+			'Accept': 'application/json;api-version=3.0-preview.1',
+			'Accept-Encoding': 'gzip',
+			'Content-Length': String(data.length),
 		};
-		headers;
-		let context: IRequestContext;
-		try {
-			// context = await this.requestService.request({
-			// 	// {{SQL CARBON EDIT}}
-			// 	type: 'GET',
-			// 	url: this.api('/extensionquery'),
-			// 	// data,
-			// 	headers
-			// }, token);
-		} catch (error) {
-			this.logService.trace('AAAAAAAAAAAAAAAAAAAAAA' + error);
-		}
-		this.logService.error('BBBBBBBBBB');
-		console.log(context);
 
+		const context = await this.requestService.request({
+			// {{SQL CARBON EDIT}}
+			type: 'GET',
+			url: this.api('/extensionquery'),
+			data,
+			headers
+		}, token);
 
 		// {{SQL CARBON EDIT}}
-		// let extensionPolicy: string = this.configurationService.getValue<string>(ExtensionsPolicyKey);
-		// if (context.res.statusCode && context.res.statusCode >= 400 && context.res.statusCode < 500 || extensionPolicy === ExtensionsPolicy.allowNone) {
-		// 	return { galleryExtensions: [], total: 0 };
-		// }
+		let extensionPolicy: string = this.configurationService.getValue<string>(ExtensionsPolicyKey);
+		if (context.res.statusCode && context.res.statusCode >= 400 && context.res.statusCode < 500 || extensionPolicy === ExtensionsPolicy.allowNone) {
+			return { galleryExtensions: [], total: 0 };
+		}
 
-		const result = JSON.parse(rresult) as IRawGalleryQueryResult;
+		const result = await asJson<IRawGalleryQueryResult>(context);
 		if (result) {
 			const r = result.results[0];
 			const galleryExtensions = r.extensions;
