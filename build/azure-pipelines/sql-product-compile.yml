@@ -7,12 +7,18 @@ steps:
   inputs:
     versionSpec: "1.x"
 
+- task: AzureKeyVault@1
+  displayName: 'Azure Key Vault: Get Secrets'
+  inputs:
+    azureSubscription: 'ADS Pipelines'
+    KeyVaultName: ado-secrets
+
 - script: |
     set -e
     cat << EOF > ~/.netrc
     machine github.com
     login azuredatastudio
-    password $(Github-Mixin-Password)
+    password $(github-distro-mixin-password)
     EOF
 
     git config user.email "sqltools@service.microsoft.com"
@@ -51,10 +57,8 @@ steps:
   displayName: Extract node_modules archive
 
 - script: |
-      set -e
-      sudo apt-get update
-      sudo apt-get install -y build-essential g++ libx11-dev libxkbfile-dev libsecret-1-dev python-is-python3 libkrb5-dev fakeroot rpm
-      CHILD_CONCURRENCY=1 yarn --frozen-lockfile
+    set -e
+    CHILD_CONCURRENCY=1 yarn --frozen-lockfile
   displayName: Install dependencies
   condition: and(succeeded(), ne(variables['NODE_MODULES_RESTORED'], 'true'))
 
@@ -91,6 +95,14 @@ steps:
     set -e
     yarn npm-run-all -lp sqllint extensions-lint
   displayName: SQL Hygiene
+
+- script: |
+    set -e
+    AZURE_STORAGE_ACCOUNT="$(sourcemap-storage-account)" \
+    AZURE_STORAGE_ACCESS_KEY="$(sourcemap-storage-key)" \
+      node build/azure-pipelines/upload-sourcemaps
+  displayName: Upload sourcemaps
+  condition: and(succeeded(), ne(variables['VSCODE_PUBLISH'], 'false'))
 
 - script: |
     set -e
