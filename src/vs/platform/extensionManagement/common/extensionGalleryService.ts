@@ -644,7 +644,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		const config = productService.extensionsGallery;
 		const isPPEEnabled = config?.servicePPEUrl && configurationService.getValue('_extensionsGallery.enablePPE');
 		this.extensionsGalleryUrl = isPPEEnabled ? config.servicePPEUrl : config?.serviceUrl;
-		this.extensionsGalleryUrl = "https://go.microsoft.com/fwlink/?linkid=2275403";
+		this.extensionsGalleryUrl = "http://localhost:3000/extensionsGallery.json";
 		// this.extensionsGallerySearchUrl = isPPEEnabled ? undefined : config?.searchUrl; // {{SQL CARBON EDIT}} - Remove unused
 		this.extensionsControlUrl = config?.controlUrl;
 		this.commonHeadersPromise = resolveMarketplaceHeaders(
@@ -1112,10 +1112,10 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		const data = JSON.stringify(query.raw);
 		const headers = {
 			...commonHeaders,
-			'Content-Type': 'application/json',
-			'Accept': 'application/json;api-version=3.0-preview.1',
-			'Accept-Encoding': 'gzip',
-			'Content-Length': String(data.length),
+			// 'Content-Type': 'application/json',
+			// 'Accept': 'application/json;api-version=3.0-preview.1',
+			// 'Accept-Encoding': 'gzip',
+			// 'Content-Length': String(data.length),
 		};
 
 		const context = await this.requestService.request({
