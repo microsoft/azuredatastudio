@@ -112,6 +112,7 @@ execSync(LAUNCH_OPTION);
 console.log('New window for running test has been opened.');
 
 // Start docker containers
+// For windows, we need to run it as an admin to get it working locally, which can only be done using Start-Process
 const winargs = ['powershell.exe', '-Command', `Start-Process powershell.exe -ArgumentList '-Command', '$sql2017pass=\\"${process.env[ENVAR_SQL_2017_PASS]}\\";$sql2019pass=\\"${process.env[ENVAR_SQL_2019_PASS]}\\";$azuresqlpass=\\"${process.env[ENVAR_AZURE_SQL_PASS]}\\";${__dirname}\\dockerWindows.ps1' -Verb RunAs`];
 const unixargs = ['bash', '-c', `chmod +x ${__dirname}/dockerUnix.sh; export sql2017pass="${process.env[ENVAR_SQL_2017_PASS]}"; export sql2019pass="${process.env[ENVAR_SQL_2019_PASS]}"; export azuresqlpass="${process.env[ENVAR_AZURE_SQL_PASS]}"; ${__dirname}/dockerUnix.sh`];
 
