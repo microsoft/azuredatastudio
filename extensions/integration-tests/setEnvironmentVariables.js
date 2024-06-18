@@ -106,7 +106,7 @@ process.env[ENVAR_AZURE_SQL_PASS] = generatePassword();
 
 // Start docker containers
 const wincommand = `powershell.exe -Command "Start-Process powershell.exe -ArgumentList '-Command', '$sql2017pass=''${process.env[ENVAR_SQL_2017_PASS]}'';$sql2019pass=''${process.env[ENVAR_SQL_2019_PASS]}'';$azuresqlpass=''${process.env[ENVAR_AZURE_SQL_PASS]}'';\\"${__dirname}\\dockerWindows.ps1\\"' -Verb RunAs"`;
-const unixcommand = `bash -c '$sql2017pass=${process.env[ENVAR_SQL_2017_PASS]} $sql2019pass=${process.env[ENVAR_SQL_2019_PASS]} $azuresqlpass=${process.env[ENVAR_AZURE_SQL_PASS]} ${__dirname}/dockerUnix.sh'`;
+const unixcommand = `bash -c 'chmod +x ${__dirname}/dockerUnix.sh; export sql2017pass="${process.env[ENVAR_SQL_2017_PASS]}"; export sql2019pass="${process.env[ENVAR_SQL_2019_PASS]}"; export azuresqlpass="${process.env[ENVAR_AZURE_SQL_PASS]}"; ${__dirname}/dockerUnix.sh'`;
 
 // Determine the OS and set the appropriate command
 const command = os.platform() === 'win32' ? wincommand : unixcommand;
@@ -122,7 +122,7 @@ exec(command, (error, stderr) => {
 	}
 });
 
-console.log(`Running docker setup.`);
+console.log(`Running docker setup...`);
 
 console.log(`Launching new window: ${LAUNCH_OPTION}...`);
 if (LAUNCH_OPTION === LAUNCH_VSCODE) {
