@@ -31,6 +31,8 @@ The integration test suite has been added to ADS windows pipeline to run the tes
 	1. A new window will be opened based on your selection and the new window will have the required environment variables set.
 	2. In the new window navigate to the scripts folder and run sql-test-integration.[bat|sh]
 
+	These tests won't work locally on an M1 Mac.
+
 ## How to debug the tests
 1. Set the debug target to `Attach to Extension Host`
 1. Run the script to start the tests

@@ -1,8 +1,6 @@
 # Get where docker is installed
 $dockerDirectory = (Get-Command docker).Source
-echo $dockerDirectory
-$dockerDirectory = $dockerDirectory.Substring(0, $dockerDirectory.Length - 15)
-echo $dockerDirectory
+$dockerDirectory = $dockerDirectory.Substring(0, $dockerDirectory.Length - 24)
 
 Write-Output "Waiting for Docker Desktop to start..."
 Start-Process -FilePath "$dockerDirectory\Docker Desktop.exe"

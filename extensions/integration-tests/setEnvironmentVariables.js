@@ -5,7 +5,7 @@
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
-const { exec, execSync } = require('child_process');
+const { execSync, spawn } = require('child_process');
 
 /**
  * Launch options
@@ -62,7 +62,7 @@ if (!LAUNCH_OPTION) {
 // How to install it:
 // Open ADS and run command 'Configure Python for Notebooks' command and install it to the default folder,
 // if you install it to a different folder you will have to update the value of this variable
-const NOTEBOOK_PYTHON_INSTALL_PATH = "C:\\Users\\laurennathan\\AppData\\Local\\Programs\\Python\\Python311" //path.join(os.homedir(), 'azuredatastudio-python');
+const NOTEBOOK_PYTHON_INSTALL_PATH = path.join(os.homedir(), 'azuredatastudio-python');
 
 /**
  * ----------------------------------------------------------------------------------------------
@@ -104,29 +104,34 @@ process.env[ENVAR_SQL_2017_PASS] = generatePassword();
 process.env[ENVAR_SQL_2019_PASS] = generatePassword();
 process.env[ENVAR_AZURE_SQL_PASS] = generatePassword();
 
-// Start docker containers
-const wincommand = `powershell.exe -Command "Start-Process powershell.exe -ArgumentList '-Command', '$sql2017pass=''${process.env[ENVAR_SQL_2017_PASS]}'';$sql2019pass=''${process.env[ENVAR_SQL_2019_PASS]}'';$azuresqlpass=''${process.env[ENVAR_AZURE_SQL_PASS]}'';\\"${__dirname}\\dockerWindows.ps1\\"' -Verb RunAs"`;
-const unixcommand = `bash -c 'chmod +x ${__dirname}/dockerUnix.sh; export sql2017pass="${process.env[ENVAR_SQL_2017_PASS]}"; export sql2019pass="${process.env[ENVAR_SQL_2019_PASS]}"; export azuresqlpass="${process.env[ENVAR_AZURE_SQL_PASS]}"; ${__dirname}/dockerUnix.sh'`;
-
-// Determine the OS and set the appropriate command
-const command = os.platform() === 'win32' ? wincommand : unixcommand;
-// wait for exec and it's child processes to finish
-exec(command, (error, stderr) => {
-	if (error) {
-		console.error(`Error: ${error.message}`);
-		return;
-	}
-	if (stderr) {
-		console.error(`Stderr: ${stderr}`);
-		return;
-	}
-});
-
-console.log(`Running docker setup...`);
-
 console.log(`Launching new window: ${LAUNCH_OPTION}...`);
 if (LAUNCH_OPTION === LAUNCH_VSCODE) {
 	console.warn('Trying to launch vscode, make sure you have it set properly in the PATH environment variable');
 }
 execSync(LAUNCH_OPTION);
 console.log('New window for running test has been opened.');
+
+// Start docker containers
+const winargs = ['powershell.exe', '-Command', `Start-Process powershell.exe -ArgumentList '-Command', '$sql2017pass=\\"${process.env[ENVAR_SQL_2017_PASS]}\\";$sql2019pass=\\"${process.env[ENVAR_SQL_2019_PASS]}\\";$azuresqlpass=\\"${process.env[ENVAR_AZURE_SQL_PASS]}\\";${__dirname}\\dockerWindows.ps1' -Verb RunAs`];
+const unixargs = ['bash', '-c', `chmod +x ${__dirname}/dockerUnix.sh; export sql2017pass="${process.env[ENVAR_SQL_2017_PASS]}"; export sql2019pass="${process.env[ENVAR_SQL_2019_PASS]}"; export azuresqlpass="${process.env[ENVAR_AZURE_SQL_PASS]}"; ${__dirname}/dockerUnix.sh`];
+
+const args = os.platform() === 'win32' ? winargs : unixargs;
+
+const child = spawn(args[0], args.slice(1));
+
+console.log(`Running docker setup...`);
+child.stdout.on('data', (data) => {
+	console.log(`${data}`);
+});
+
+child.stderr.on('data', (data) => {
+	console.error(`${data}`);
+});
+
+child.on('close', () => {
+	console.log(`Finished running docker setup.`);
+});
+
+child.on('error', (error) => {
+	console.error(`Error: ${error.message}`);
+});
