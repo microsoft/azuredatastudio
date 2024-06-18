@@ -22,17 +22,19 @@ export async function connectToServer(connectionInfo: TestConnectionInfo, timeou
 	let connectionProfile: azdata.IConnectionProfile = {
 		serverName: connectionInfo.serverName,
 		databaseName: connectionInfo.database,
-		authenticationType: connectionInfo.authenticationTypeName,
-		providerName: connectionInfo.providerName,
-		connectionName: '',
 		userName: connectionInfo.userName,
 		password: connectionInfo.password,
-		savePassword: false,
+		authenticationType: connectionInfo.authenticationTypeName,
+		providerName: connectionInfo.providerName,
+		savePassword: true,
 		groupFullName: undefined,
 		saveProfile: true,
 		id: undefined,
 		groupId: undefined,
-		options: {}
+		options: {
+			encrypt: "true",
+			trustServerCertificate: true,
+		}
 	};
 	await ensureConnectionViewOpened();
 
@@ -42,10 +44,10 @@ export async function connectToServer(connectionInfo: TestConnectionInfo, timeou
 			let connection = <azdata.ConnectionResult>await azdata.connection.connect(connectionProfile);
 			assert(connection?.connected, `Failed to connect to "${connectionProfile.serverName}", error code: ${connection.errorCode}, error message: ${connection.errorMessage}`);
 			return connection;
-
 		}, 3);
 	//workaround
 	//wait for OE to load
+	/*
 	await pollTimeout(async () => {
 		const nodes = await azdata.objectexplorer.getActiveConnectionNodes();
 		let found = nodes.some(node => {
@@ -56,6 +58,7 @@ export async function connectToServer(connectionInfo: TestConnectionInfo, timeou
 		}
 		return found;
 	}, 1000, timeout);
+	*/
 
 	return result.connectionId;
 }
@@ -337,6 +340,9 @@ export function testServerProfileToIConnectionProfile(serverProfile: TestServerP
 		saveProfile: true,
 		id: undefined,
 		groupId: undefined,
-		options: {}
+		options: {
+			encrypt: 'true',
+			trustServerCertificate: true,
+		}
 	};
 }
