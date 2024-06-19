@@ -183,3 +183,48 @@ function updateIcon(executablePath) {
 gulp.task(task.define('vscode-win32-ia32-inno-updater', task.series(copyInnoUpdater('ia32'), updateIcon(path.join(buildPath('ia32'), 'tools', 'inno_updater.exe')))));
 gulp.task(task.define('vscode-win32-x64-inno-updater', task.series(copyInnoUpdater('x64'), updateIcon(path.join(buildPath('x64'), 'tools', 'inno_updater.exe')))));
 gulp.task(task.define('vscode-win32-arm64-inno-updater', task.series(copyInnoUpdater('arm64'), updateIcon(path.join(buildPath('arm64'), 'tools', 'inno_updater.exe')))));
+
+/**
+ * Updates azuredatastudio.exe icon and metadata
+ * @param {string} arch
+ */
+function updateExeIconAndMetadata(arch) {
+	return cb => {
+		const { config } = require('./lib/electron');
+		const fancyLog = require('fancy-log');
+		const ansiColors = require('ansi-colors');
+
+		var patch = {
+			"version-string": {
+				CompanyName: config.companyName || "GitHub, Inc.",
+				FileDescription: config.productAppName || opts.productName,
+				LegalCopyright:
+					config.copyright ||
+					"Copyright (C) 2014 GitHub, Inc. All rights reserved",
+				ProductName: config.productAppName || config.productName,
+				ProductVersion: config.productVersion,
+			},
+			"file-version": config.productVersion,
+			"product-version": config.productVersion,
+			"icon": config.winIcon
+		};
+
+		fancyLog(ansiColors.cyan('[Updating exe icon]'), JSON.stringify(patch, null, 2));
+		fancyLog(ansiColors.yellow(`Checking if icon exists`), fs.existsSync('resources/win32/code.ico'));
+		fs.readdir(buildPath(arch), (err, files) => {
+			if (err) {
+				return cb(err);
+			}
+			files.forEach(file => {
+				if (file.startsWith('azuredatastudio') && file.endsWith('.exe')) {
+					fancyLog(ansiColors.cyan('[Patching exe]'), `Updating ${file}`);
+					rcedit(path.join(buildPath(arch), file), patch, cb);
+				}
+			});
+		});
+	};
+}
+
+gulp.task(task.define('vscode-win32-x64-exe-patcher', updateExeIconAndMetadata('x64')));
+gulp.task(task.define('vscode-win32-ia32-exe-patcher', updateExeIconAndMetadata('ia32')));
+gulp.task(task.define('vscode-win32-arm64-exe-patcher', updateExeIconAndMetadata('arm64')));
