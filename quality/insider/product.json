@@ -1,0 +1,36 @@
+{
+	"nameShort": "azuredatastudio-insiders",
+	"nameLong": "Azure Data Studio - Insiders",
+	"applicationName": "azuredatastudio-insiders",
+	"dataFolderName": ".azuredatastudio-insiders",
+	"win32MutexName": "azuredatastudio-insiders",
+	"win32DirName": "Azure Data Studio - Insiders",
+	"win32NameVersion": "Azure Data Studio - Insiders",
+	"win32RegValueName": "azuredatastudio-insiders",
+	"win32AppId": "{{9F0801B2-DEE3-4272-A2C6-FBDF25BAAF0F}",
+	"win32x64AppId": "{{6748A5FD-29EB-4BA6-B3C6-E7B981B8D6B0}",
+	"win32UserAppId": "{{0F8CD1ED-483C-40EB-8AD2-8ED784651AA1}",
+	"win32x64UserAppId": "{{1F0FD1CE-9703-4734-8F50-5B5CEEDAE6B9}-insiders",
+	"win32AppUserModelId": "Microsoft.azuredatastudio.insiders",
+	"win32ShellNameShort": "Azure Data Studio - Insiders",
+	"darwinBundleIdentifier": "com.azuredatastudio.oss.insiders",
+	"linuxIconName": "com.azuredatastudio.insiders",
+	"quality": "insider",
+	"extensionsGallery": {
+		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery-insider.json"
+	},
+	"updateUrl": "https://azuredatastudio-update.azurewebsites.net",
+	"msftInternalDomains": [
+		"redmond.corp.microsoft.com",
+		"northamerica.corp.microsoft.com",
+		"fareast.corp.microsoft.com",
+		"ntdev.corp.microsoft.com",
+		"wingroup.corp.microsoft.com",
+		"southpacific.corp.microsoft.com",
+		"wingroup.windeploy.ntdev.microsoft.com",
+		"ddnet.microsoft.com",
+		"europe.corp.microsoft.com"
+	],
+	"urlProtocol": "azuredatastudio-insiders",
+	"enableTelemetry": true
+}

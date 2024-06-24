@@ -1,0 +1,50 @@
+diff --git a/src/vs/server/cli.js b/src/vs/server/cli.js
+index c974cec0921..6ad8446c338 100644
+--- a/src/vs/server/cli.js
++++ b/src/vs/server/cli.js
+@@ -1,6 +1,6 @@
+ /*---------------------------------------------------------------------------------------------
+  *  Copyright (c) Microsoft Corporation. All rights reserved.
+- *  Licensed under the MIT License. See License.txt in the project root for license information.
++ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+  *--------------------------------------------------------------------------------------------*/
+ const path = require('path');
+ 
+diff --git a/src/vs/server/main.js b/src/vs/server/main.js
+index 42487a4aceb..bf33bc88f16 100644
+--- a/src/vs/server/main.js
++++ b/src/vs/server/main.js
+@@ -1,6 +1,6 @@
+ /*---------------------------------------------------------------------------------------------
+  *  Copyright (c) Microsoft Corporation. All rights reserved.
+- *  Licensed under the MIT License. See License.txt in the project root for license information.
++ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+  *--------------------------------------------------------------------------------------------*/
+ 
+ //@ts-check
+diff --git a/src/vs/server/remoteExtensionHostAgent.ts b/src/vs/server/remoteExtensionHostAgent.ts
+index 6538e8287f7..237622dac14 100644
+--- a/src/vs/server/remoteExtensionHostAgent.ts
++++ b/src/vs/server/remoteExtensionHostAgent.ts
+@@ -154,7 +154,7 @@ if (shouldSpawnCli(args)) {
+ 	const license = `
+ 
+ *
+-* Visual Studio Code Server
++* Azure Data Studio Server
+ *
+ * Reminder: You may only use this software with Visual Studio family products,
+ * as described in the license https://aka.ms/vscode-remote/license
+diff --git a/src/vs/server/remoteLanguagePacks.ts b/src/vs/server/remoteLanguagePacks.ts
+index 63ae32e719e..d0caeab8289 100644
+--- a/src/vs/server/remoteLanguagePacks.ts
++++ b/src/vs/server/remoteLanguagePacks.ts
+@@ -1,7 +1,7 @@
+ /*---------------------------------------------------------------------------------------------
+  *  Copyright (c) Microsoft Corporation. All rights reserved.
+  *--------------------------------------------------------------------------------------------*/
+-'use strict';
++'use strict'; // tslint:disable-line
+ 
+ import * as fs from 'fs';
+ import * as path from 'vs/base/common/path';

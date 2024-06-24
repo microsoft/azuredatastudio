@@ -1,0 +1,20 @@
+{
+	"quality": "stable",
+	"updateUrl": "https://azuredatastudio-update.azurewebsites.net",
+	"extensionsGallery": {
+		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
+	},
+	"msftInternalDomains": [
+		"redmond.corp.microsoft.com",
+		"northamerica.corp.microsoft.com",
+		"fareast.corp.microsoft.com",
+		"ntdev.corp.microsoft.com",
+		"wingroup.corp.microsoft.com",
+		"southpacific.corp.microsoft.com",
+		"wingroup.windeploy.ntdev.microsoft.com",
+		"ddnet.microsoft.com",
+		"europe.corp.microsoft.com"
+	],
+	"urlProtocol": "azuredatastudio",
+	"enableTelemetry": true
+}

@@ -1,0 +1,30 @@
+diff --git a/build/gulpfile.vscode.web.js b/build/gulpfile.vscode.web.js
+index f3a95a3a1fe..b6e68be8876 100644
+--- a/build/gulpfile.vscode.web.js
++++ b/build/gulpfile.vscode.web.js
+@@ -1,6 +1,6 @@
+ /*---------------------------------------------------------------------------------------------
+  *  Copyright (c) Microsoft Corporation. All rights reserved.
+- *  Licensed under the MIT License. See License.txt in the project root for license information.
++ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+  *--------------------------------------------------------------------------------------------*/
+ 
+ 'use strict';
+@@ -35,7 +35,7 @@ const productionDependencies = deps.getProductionDependencies(WEB_FOLDER);
+ 
+ const vscodeWebResourceIncludes = [
+ 	// Workbench
+-	'out-build/vs/{base,platform,editor,workbench}/**/*.{svg,png}',
++	'out-build/{vs,sql}/{base,platform,editor,workbench}/**/*.{svg,png,html}',
+ 	'out-build/vs/code/browser/workbench/*.html',
+ 	'out-build/vs/base/browser/ui/codicons/codicon/**/*.ttf',
+ 	'out-build/vs/**/markdown.css',
+@@ -54,7 +54,7 @@ const vscodeWebResources = [
+ 	...vscodeWebResourceIncludes,
+ 
+ 	// Excludes
+-	'!out-build/vs/**/{node,electron-browser,electron-main}/**',
++	'!out-build/{vs,sql}/**/{node,electron-browser,electron-main}/**',
+ 	'!out-build/vs/editor/standalone/**',
+ 	'!out-build/vs/workbench/**/*-tb.png',
+ 	'!**/test/**'

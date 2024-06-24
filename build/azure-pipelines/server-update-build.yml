@@ -1,0 +1,52 @@
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+schedules:
+- cron: "0 5 * * Mon-Fri"
+  displayName: Mon-Fri at 7:00
+  branches:
+    include:
+    - serverupdate
+
+trigger: none
+pr: none
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: "10.15.1"
+
+- task: AzureKeyVault@1
+  displayName: 'Azure Key Vault: Get Secrets'
+  inputs:
+    azureSubscription: 'azuredatastudio-adointegration'
+    KeyVaultName: ado-secrets
+
+- script: |
+    set -e
+
+    cat << EOF > ~/.netrc
+    machine github.com
+    login vscode
+    password $(github-distro-mixin-password)
+    EOF
+
+    git config user.email "andresse@microsoft.com"
+    git config user.name "AzureDataStudio"
+
+    git checkout serverupdate
+
+    git remote add vsdistro https://github.com/microsoft/vscode-distro.git
+    git fetch vsdistro
+
+    git checkout vsdistro/distro -- src/vs/server
+
+    git apply --ignore-space-change --ignore-whitespace build/patches/server.patch
+
+    git add -A
+    git diff --quiet && git diff --staged --quiet || git commit -m "update vscode server";
+
+    git checkout origin/distro
+    git merge serverupdate
+
+  displayName: Sync & Merge Server
