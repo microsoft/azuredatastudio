@@ -19,6 +19,6 @@ jobs:
     - uses: Azure/pipelines@v1.2
       with:
         azure-devops-project-url: 'https://dev.azure.com/msdata/SQLToolsAndLibraries'
-        azure-pipeline-name: 'Update AzureDataStudio Extensions Gallery' # name of the Azure pipeline to be triggered
+        azure-pipeline-name: 'Azure Data Studio Extensions - Update Gallery' # name of the Azure pipeline to be triggered
         azure-devops-token: '${{ secrets.ADO_UPDATE_GALLERIES_TOKEN }}'
         azure-pipeline-variables: '{"githubBranch": "${{ github.ref_name }}"}' # pass branch name to pipeline

@@ -441,6 +441,13 @@ const allowedPublishersForVSIXAssets = [
     'github'
 ]
 
+// Extensions that have some ongoing issue with the link (such as hitting download rate limits). We just skip them for now
+// and leave it up to the extension owners to fix if they want
+const fileValidationExtensionsToSkip = [
+    'vscode-wakatime',
+    'sql-search'
+]
+
 /**
  * Validate an IRawGalleryExtensionFile object
  * Will also validate that the source URL provided is valid, and if it's a direct VSIX link that the
@@ -458,8 +465,8 @@ async function validateExtensionFile(galleryFilePath, extensionName, extensionJs
     if (!extensionFileJson.source) {
         throw new Error(`${galleryFilePath} - ${extensionName} - No source\n${JSON.stringify(extensionFileJson)}`)
     }
-    // Waka-time link is hitting rate limit for the download link so just ignore this one for now.
-    if (extensionName === 'vscode-wakatime' && extensionFileJson.assetType === MICROSOFT_SQLOPS_DOWNLOADPAGE) {
+
+    if (fileValidationExtensionsToSkip.includes(extensionName) && extensionFileJson.assetType === MICROSOFT_SQLOPS_DOWNLOADPAGE) {
         return;
     }
     if (hostedAssetTypes.has(extensionFileJson.assetType) && !allowedHosts.find(host => extensionFileJson.source.startsWith(host))) {
