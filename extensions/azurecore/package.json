@@ -517,7 +517,7 @@
     "qs": "^6.9.1",
     "universalify": "^0.1.2",
     "vscode-nls": "^4.0.0",
-    "ws": "^7.4.6"
+    "ws": "^7.5.10"
   },
   "devDependencies": {
     "@microsoft/vscodetestcover": "^1.2.2",
