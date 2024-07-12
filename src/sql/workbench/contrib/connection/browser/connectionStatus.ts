@@ -104,7 +104,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 	 * Helper function for getting the connection info of the current editor.
 	 */
 	private getCurrentActiveEditorInfo(): ConnectionManagementInfo | undefined {
-		if (this._editorService.activeEditor) {
+		if (this._editorService?.activeEditor?.resource) {
 			return this._connectionManagementService.getConnectionInfo(this._editorService.activeEditor.resource.toString());
 		}
 		return undefined;
