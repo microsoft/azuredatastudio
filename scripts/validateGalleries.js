@@ -445,7 +445,8 @@ const allowedPublishersForVSIXAssets = [
 // and leave it up to the extension owners to fix if they want
 const fileValidationExtensionsToSkip = [
     'vscode-wakatime',
-    'sql-search'
+    'sql-search',
+    'pieces-azure-data-studio'
 ]
 
 /**
