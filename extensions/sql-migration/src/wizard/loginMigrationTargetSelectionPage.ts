@@ -13,9 +13,10 @@ import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH, WizardController } from './wizardController';
 import * as utils from '../api/utils';
 import { MigrationTargetType } from '../api/utils';
+import * as contracts from '../service/contracts';
 import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
-import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionProfile, isSourceConnectionSysAdmin, LoginTableInfo } from '../api/sqlUtils';
+import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionString, isSourceConnectionSysAdmin, LoginTableInfo } from '../api/sqlUtils';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
 import { ConnectingToTargetFailed, } from '../models/loginMigrationModel';
@@ -344,12 +345,33 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			await this.populateLocationDropdown();
 
 			// Collect source login info here, as it will speed up loading the next page
-			const sourceLogins: LoginTableInfo[] = [];
+			var sourceLogins: LoginTableInfo[] = [];
 			sourceLogins.push(...await collectSourceLogins(
 				await getSourceConnectionId(),
 				this.migrationStateModel.isWindowsAuthMigrationSupported));
+
+			// validate Login Eligibility result contains system logins in Exception map from which system login names can be extracted.
+			// These system logins are not to be displayed in the source logins list
+			var validateLoginEligibilityResult: contracts.StartLoginMigrationPreValidationResult | undefined = await this.migrationStateModel.migrationService.validateLoginEligibility(
+				await getSourceConnectionString(),
+				"",
+				sourceLogins.map(row => row.loginName),
+				""
+			);
+
+			var sourceSystemLoginsName: string[] = [];
+
+			if (validateLoginEligibilityResult !== undefined) {
+				sourceSystemLoginsName = Object.keys(validateLoginEligibilityResult.exceptionMap).map(loginName => loginName.toLocaleLowerCase());
+			}
+
+			// separate out system logins from non system logins
+			const sourceSystemLogins: LoginTableInfo[] = sourceLogins.filter(login => sourceSystemLoginsName.includes(login.loginName.toLocaleLowerCase()));
+			sourceLogins = sourceLogins.filter(login => !sourceSystemLoginsName.includes(login.loginName.toLocaleLowerCase()));
+
 			this.migrationStateModel._loginMigrationModel.collectedSourceLogins = true;
 			this.migrationStateModel._loginMigrationModel.loginsOnSource = sourceLogins;
+			this.migrationStateModel._loginMigrationModel.systemLoginsOnSource = sourceSystemLogins;
 		}));
 
 		const flexContainer = this._view.modelBuilder.flexContainer()
@@ -1131,3 +1153,4 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 		}
 	}
 }
+
