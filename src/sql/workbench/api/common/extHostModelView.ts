@@ -1620,6 +1620,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidChange, this.getRegisteredEmitter<any>());
 		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, this.getRegisteredEmitter<azdata.DeclarativeTableRowSelectedEvent>());
+
 	}
 
 	public get data(): any[][] {
@@ -1689,24 +1690,6 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		this.setProperty('selectedRow', v);
 	}
 
-	protected setColumnAriaLabels() {
-		let columnAriaLabel = nls.localize("columnHeaderLabel", ", With Column Headers: ");
-		const columnAriaStart = this.ariaLabel.indexOf(columnAriaLabel);
-
-		for (const column of this.columns) {
-			columnAriaLabel += column.displayName;
-		}
-
-		columnAriaLabel += "."
-
-		if (columnAriaStart === -1) {
-			this.ariaLabel += columnAriaLabel;
-		}
-		else {
-			this.ariaLabel = this.ariaLabel.substring(0, columnAriaStart) + columnAriaLabel;
-		}
-	}
-
 	public override toComponentShape(): IComponentShape {
 		// Overridden to ensure we send the correct properties mapping.
 		return <IComponentShape>{
@@ -1726,7 +1709,6 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		// and so map them into their IDs instead. We don't want to update the actual
 		// data property though since the caller would still expect that to contain
 		// the Component objects they created
-		this.setColumnAriaLabels();
 		const properties = Object.assign({}, this.properties);
 		const componentsToAdd: ComponentWrapper[] = [];
 		if (properties.data?.length > 0) {
