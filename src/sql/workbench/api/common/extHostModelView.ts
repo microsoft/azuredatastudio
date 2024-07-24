@@ -1691,19 +1691,23 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 
 	protected setColumnAriaLabels() {
 		let columnAriaLabel = nls.localize("columnHeaderLabel", ", With Column Headers: ");
-		const columnAriaStart = this.ariaLabel.indexOf(columnAriaLabel);
+		if (this.ariaLabel) {
+			const columnAriaStart = this.ariaLabel.indexOf(columnAriaLabel);
 
-		for (const column of this.columns) {
-			columnAriaLabel += column.displayName;
-		}
+			for (const column of this.columns) {
+				if (column) {
+					columnAriaLabel += column.displayName;
+				}
+			}
 
-		columnAriaLabel += "."
+			columnAriaLabel += "."
 
-		if (columnAriaStart === -1) {
-			this.ariaLabel += columnAriaLabel;
-		}
-		else {
-			this.ariaLabel = this.ariaLabel.substring(0, columnAriaStart) + columnAriaLabel;
+			if (columnAriaStart === -1) {
+				this.ariaLabel += columnAriaLabel;
+			}
+			else {
+				this.ariaLabel = this.ariaLabel.substring(0, columnAriaStart) + columnAriaLabel;
+			}
 		}
 	}
 
