@@ -1645,6 +1645,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 	async setDataValues(v: azdata.DeclarativeTableCellValue[][]): Promise<void> {
 		await this.clearItems();
 		await this.setProperty('dataValues', v);
+		this.setRowNumAriaLabels();
 	}
 
 	public get columns(): azdata.DeclarativeTableColumn[] {
@@ -1679,6 +1680,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 
 	public setFilter(rowIndexes: number[]): void {
 		this._proxy.$doAction(this._handle, this._id, ModelViewAction.Filter, rowIndexes);
+		this.setRowNumAriaLabels();
 	}
 
 	public get selectedRow(): number {
@@ -1696,17 +1698,40 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 
 			for (const column of this.columns) {
 				if (column) {
-					columnAriaLabel += column.displayName;
+					columnAriaLabel += column.displayName + " ";
 				}
 			}
 
-			columnAriaLabel += "."
-
 			if (columnAriaStart === -1) {
+				columnAriaLabel += "\n"
 				this.ariaLabel += columnAriaLabel;
 			}
 			else {
-				this.ariaLabel = this.ariaLabel.substring(0, columnAriaStart) + columnAriaLabel;
+				const columnAriaEnd = this.ariaLabel.indexOf("\n", columnAriaStart);
+				this.ariaLabel = this.ariaLabel.substring(0, columnAriaStart) + columnAriaLabel + this.ariaLabel.substring(columnAriaEnd);
+			}
+		}
+	}
+
+	protected setRowNumAriaLabels() {
+		let rowAriaLabel = nls.localize("rowNumLabel", `Table has `);
+		if (this.ariaLabel) {
+			const rowAriaStart = this.ariaLabel.indexOf(rowAriaLabel);
+
+			if (this.dataValues && this.dataValues.length) {
+				rowAriaLabel = nls.localize("rowNumLabel", `Table has ${this.dataValues[0].length} rows.`);
+			}
+			else {
+				rowAriaLabel = nls.localize("rowNumLabel", `Table has 0 rows.`);
+			}
+
+			if (rowAriaStart === -1) {
+				rowAriaLabel += "\n"
+				this.ariaLabel += rowAriaLabel;
+			}
+			else {
+				const rowAriaEnd = this.ariaLabel.indexOf("\n", rowAriaStart);
+				this.ariaLabel = this.ariaLabel.substring(0, rowAriaStart) + rowAriaLabel + this.ariaLabel.substring(rowAriaEnd);
 			}
 		}
 	}
@@ -1731,6 +1756,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		// data property though since the caller would still expect that to contain
 		// the Component objects they created
 		this.setColumnAriaLabels();
+		this.setRowNumAriaLabels();
 		const properties = Object.assign({}, this.properties);
 		const componentsToAdd: ComponentWrapper[] = [];
 		if (properties.data?.length > 0) {
