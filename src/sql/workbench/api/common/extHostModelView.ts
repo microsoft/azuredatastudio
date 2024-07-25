@@ -1719,10 +1719,10 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 			const rowAriaStart = this.ariaLabel.indexOf(rowAriaLabel);
 
 			if (this.dataValues && this.dataValues.length) {
-				rowAriaLabel = nls.localize("rowNumLabel", `Table has ${this.dataValues[0].length} rows`);
+				rowAriaLabel = nls.localize("rowNumLabel", `Table has ${this.dataValues[0].length} rows.`);
 			}
 			else {
-				rowAriaLabel = nls.localize("rowNumLabel", `Table has 0 rows`);
+				rowAriaLabel = nls.localize("rowNumLabel", `Table has 0 rows.`);
 			}
 
 			if (rowAriaStart === -1) {
