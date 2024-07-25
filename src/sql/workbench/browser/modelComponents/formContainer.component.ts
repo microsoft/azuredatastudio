@@ -44,7 +44,7 @@ class FormItem {
 					</model-component-wrapper>
 				</div>
 			</div>
-			<div class="form-row" *ngIf="isFormComponent(item)" [style.height]="getRowHeight(item)">
+			<div class="form-row" *ngIf="isFormComponent(item)" [style.height]="getRowHeight(item)" tabindex="0">
 					<ng-container *ngIf="isHorizontal(item)">
 						<div *ngIf="hasItemTitle(item)" class="form-cell form-cell-title" [style.font-size]="getItemTitleFontSize(item)" [ngClass]="{'form-group-item': isInGroup(item)}">
 							{{getItemTitle(item)}}<span class="form-required" *ngIf="isItemRequired(item)">*</span>
