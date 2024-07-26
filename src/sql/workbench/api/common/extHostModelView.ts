@@ -1718,7 +1718,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		if (this.ariaLabel) {
 			const rowAriaStart = this.ariaLabel.indexOf(rowAriaLabel);
 
-			if (this.dataValues && this.dataValues.length) {
+			if (this.dataValues && this.dataValues.length > 0 && this.dataValues[0]) {
 				rowAriaLabel = nls.localize("rowNumLabel", `Table has ${this.dataValues[0].length} rows.`);
 			}
 			else {
