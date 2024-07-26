@@ -1646,7 +1646,6 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		await this.clearItems();
 		await this.setProperty('dataValues', v);
 		this.setRowNumAriaLabels();
-		this.setRowNumAriaLabels();
 	}
 
 	public get columns(): azdata.DeclarativeTableColumn[] {
