@@ -1714,15 +1714,15 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 	}
 
 	protected setRowNumAriaLabels() {
-		let rowAriaLabel = nls.localize("rowNumLabel", `Table has `);
+		let rowAriaLabel = nls.localize("rowNumLabel", "Table has ");
 		if (this.ariaLabel) {
 			const rowAriaStart = this.ariaLabel.indexOf(rowAriaLabel);
 
 			if (this.dataValues && this.dataValues.length > 0 && this.dataValues[0]) {
-				rowAriaLabel = nls.localize("rowNumLabel", `Table has ${this.dataValues[0].length} rows.`);
+				rowAriaLabel = nls.localize("rowNumLabel", "Table has {0} rows.", this.dataValues[0].length);
 			}
 			else {
-				rowAriaLabel = nls.localize("rowNumLabel", `Table has 0 rows.`);
+				rowAriaLabel = nls.localize("rowNumLabel", "Table has 0 rows.");
 			}
 
 			if (rowAriaStart === -1) {
