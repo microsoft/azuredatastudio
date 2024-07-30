@@ -678,6 +678,7 @@ const validationPromises = [
     validateExtensionGallery(STABLE_GALLERY_PATH, STABLE_GALLERY_JSON),
 ]
 
+/* We are no longer publishing insiders builds so disable checks for now
 // argv[2] is the target branch name
 // RC1 branch only needs to check the stable gallery since the insiders gallery won't be updated there.
 const isRC1 = process.argv[2] === 'extensions/rc1';
@@ -685,4 +686,5 @@ const isRC1 = process.argv[2] === 'extensions/rc1';
 if (!isRC1) {
     validationPromises.push(validateExtensionGallery(INSIDERS_GALLERY_PATH, INSIDERS_GALLERY_JSON));
 }
+*/
 await Promise.all(validationPromises);
