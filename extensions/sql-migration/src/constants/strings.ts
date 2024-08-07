@@ -522,6 +522,7 @@ export const LOGIN_MIGRATION_COMPLETED = localize('sql.login.migration.steps.mig
 export function COLLECTING_TARGET_LOGINS_FAILED(errorCode: number): string {
 	return localize('sql.login.migration.collecting.target.logins.failed', "Collecting target login failed with error code {0}", errorCode);
 }
+export const VALIDATE_LOGIN_ELIGIBILITY_FAILED = localize('sql.login.migration.validate.login.eligibility.failed', "Login migration source logins eligibility validation failed");
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");

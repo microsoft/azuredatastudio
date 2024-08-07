@@ -8,12 +8,11 @@ import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
-import { debounce, getLoginStatusImage, getLoginStatusMessage } from '../api/utils';
+import { debounce, getLoginStatusImage, getLoginStatusMessage, getSourceLogins } from '../api/utils';
 import * as styles from '../constants/styles';
-import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionString, LoginTableInfo } from '../api/sqlUtils';
+import { collectTargetLogins, LoginTableInfo } from '../api/sqlUtils';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import * as utils from '../api/utils';
-import * as contracts from '../service/contracts';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
 import { CollectingSourceLoginsFailed, CollectingTargetLoginsFailed } from '../models/loginMigrationModel';
 import { WizardController } from './wizardController';
@@ -512,36 +511,10 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 	private async _getSourceLogins() {
 		const stateMachine: MigrationStateModel = this.migrationStateModel;
-		var sourceLogins: LoginTableInfo[] = [];
 
 		// execute a query against the source to get the logins
 		try {
-			sourceLogins.push(...await collectSourceLogins(
-				await getSourceConnectionId(),
-				stateMachine.isWindowsAuthMigrationSupported));
-
-			// validate Login Eligibility result contains system logins in Exception map from which system login names can be extracted.
-			// These system logins are not to be displayed in the source logins list
-			var validateLoginEligibilityResult: contracts.StartLoginMigrationPreValidationResult | undefined = await this.migrationStateModel.migrationService.validateLoginEligibility(
-				await getSourceConnectionString(),
-				"",
-				sourceLogins.map(row => row.loginName),
-				""
-			);
-
-			var sourceSystemLoginsName: string[] = [];
-
-			if (validateLoginEligibilityResult !== undefined) {
-				sourceSystemLoginsName = Object.keys(validateLoginEligibilityResult.exceptionMap).map(loginName => loginName.toLocaleLowerCase());
-			}
-
-			// separate out system logins from non system logins
-			const sourceSystemLogins: LoginTableInfo[] = sourceLogins.filter(login => sourceSystemLoginsName.includes(login.loginName.toLocaleLowerCase()));
-			sourceLogins = sourceLogins.filter(login => !sourceSystemLoginsName.includes(login.loginName.toLocaleLowerCase()));
-
-			stateMachine._loginMigrationModel.collectedSourceLogins = true;
-			stateMachine._loginMigrationModel.loginsOnSource = sourceLogins;
-			stateMachine._loginMigrationModel.systemLoginsOnSource = sourceSystemLogins;
+			await getSourceLogins(stateMachine);
 		} catch (error) {
 			this._refreshLoading.loading = false;
 			this._refreshResultsInfoBox.style = 'error';
