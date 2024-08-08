@@ -5534,19 +5534,19 @@
 					        },
 					        {
 					          "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-					          "source": "https://github.com/yterterian/In-Query-Generator-AZ/tree/main/images/logo-icon.png"
+					          "source": "https://raw.githubusercontent.com/yterterian/In-Query-Generator-AZ/main/images/logo-icon.png"
 					        },
 					        {
 					          "assetType": "Microsoft.VisualStudio.Services.Content.Details",
-					          "source": "https://github.com/yterterian/In-Query-Generator-AZ/blob/main/ReadMe.md"
+					          "source": "https://raw.githubusercontent.com/yterterian/In-Query-Generator-AZ/main/ReadMe.md"
 					        },
 					        {
 					          "assetType": "Microsoft.VisualStudio.Code.Manifest",
-					          "source": "https://github.com/yterterian/In-Query-Generator-AZ/blob/main/package.json"
+					          "source": "https://raw.githubusercontent.com/yterterian/In-Query-Generator-AZ/main/package.json"
 					        },
 					        {
 					          "assetType": "Microsoft.VisualStudio.Services.Content.License",
-					          "source": "https://github.com/yterterian/In-Query-Generator-AZ/blob/main/License"
+					          "source": "https://raw.githubusercontent.com/yterterian/In-Query-Generator-AZ/main/License"
 					        }
 					      ],
 					      "properties": [
