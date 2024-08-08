@@ -210,12 +210,14 @@ async function validateExtension(galleryFilePath, extensionJson) {
 
     // Check active extensions to make sure they're in insiders if they exist in stable. We don't want to have an extension only be in stable, they
     // should always be released in insiders first (or at the same time).
+    /* We are no longer publishing insiders builds so disable checks for now
     if (galleryFilePath === STABLE_GALLERY_PATH && !deprecatedExtension.includes(extensionName)) {
         const insidersExtensionJson = findExtension(INSIDERS_GALLERY_JSON, extensionName);
         if (!insidersExtensionJson) {
             throw new Error(`${galleryFilePath} - Extension ${extensionName} exists in the stable gallery but not in the insiders gallery. An extension must always be in both if it's in the stable gallery.`);
         }
     }
+    */
 }
 
 /**
