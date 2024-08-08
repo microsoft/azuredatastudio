@@ -5534,19 +5534,19 @@
 					        },
 					        {
 					          "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-					          "source": "https://raw.githubusercontent.com/YakovT/sql-in-query-statement-generator/main/icon.png"
+					          "source": "https://github.com/yterterian/In-Query-Generator-AZ/tree/main/images/logo-icon.png"
 					        },
 					        {
 					          "assetType": "Microsoft.VisualStudio.Services.Content.Details",
-					          "source": "https://raw.githubusercontent.com/YakovT/sql-in-query-statement-generator/main/README.md"
+					          "source": "https://github.com/yterterian/In-Query-Generator-AZ/blob/main/ReadMe.md"
 					        },
 					        {
 					          "assetType": "Microsoft.VisualStudio.Code.Manifest",
-					          "source": "https://raw.githubusercontent.com/YakovT/sql-in-query-statement-generator/main/package.json"
+					          "source": "https://github.com/yterterian/In-Query-Generator-AZ/blob/main/package.json"
 					        },
 					        {
 					          "assetType": "Microsoft.VisualStudio.Services.Content.License",
-					          "source": "https://raw.githubusercontent.com/YakovT/sql-in-query-statement-generator/main/LICENSE"
+					          "source": "https://github.com/yterterian/In-Query-Generator-AZ/blob/main/License"
 					        }
 					      ],
 					      "properties": [
@@ -5556,7 +5556,7 @@
 					        },
 					        {
 					          "key": "Microsoft.VisualStudio.Services.Links.Source",
-					          "value": "https://github.com/YakovT/sql-in-query-statement-generator"
+					          "value": "https://github.com/yterterian/In-Query-Generator-AZ"
 					        },
 					        {
 					          "key": "Microsoft.VisualStudio.Code.Engine",
