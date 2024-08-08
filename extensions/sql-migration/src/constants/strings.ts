@@ -457,6 +457,9 @@ export const LOGIN_MIGRATIONS_VM_TEXT = localize('sql.login.migration.vm.title',
 export const LOGIN_MIGRATIONS_AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.login.migration.target.title', "Azure SQL target");
 export const LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE = localize('sql.login.migration.select.page.title', "Select login(s) to migrate");
 export const LOGIN_MIGRATIONS_SELECT_LOGINS_WINDOWS_AUTH_WARNING = localize('sql.login.migration.select.logins.windows.auth.warning', "Please note that this wizard does not display windows authentication login types because migrating that type is currently not supported. Capability for migrating windows authentication logins is coming soon.");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_TAB_NON_SYSTEM_LOGIN_TITLE = localize('sql.login.migration.select.logins.tab.non.system.title', "Logins ready for migration");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_TAB_SYSTEM_LOGIN_TITLE = localize('sql.login.migration.select.logins.tab.system.title', "Excluded login/s");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_SYSTEM_LOGIN_INFO_BOX = localize('sql.login.migration.select.logins.system.info.box', "Below login/s is/are excluded from login migration as they are either local service or system accounts at the source.");
 export const LOGIN_MIGRATIONS_STATUS_PAGE_TITLE = localize('sql.login.migration.status.page.title', "Migration Status");
 export function LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
 	return localize('sql.login.migration.status.page.description', "Migrating {0} logins to target {1} '{2}'", numLogins, targetType, targetName);
@@ -519,6 +522,7 @@ export const LOGIN_MIGRATION_COMPLETED = localize('sql.login.migration.steps.mig
 export function COLLECTING_TARGET_LOGINS_FAILED(errorCode: number): string {
 	return localize('sql.login.migration.collecting.target.logins.failed', "Collecting target login failed with error code {0}", errorCode);
 }
+export const VALIDATE_LOGIN_ELIGIBILITY_FAILED = localize('sql.login.migration.validate.login.eligibility.failed', "Login migration source logins eligibility validation failed");
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");

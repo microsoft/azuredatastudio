@@ -24,6 +24,7 @@ import { CssStyles } from 'azdata';
 import { DeclarativeTableCellValue } from 'azdata';
 import path = require('path');
 import { spawn } from "child_process"
+import { collectSourceLogins, getSourceConnectionId, getSourceConnectionString, LoginTableInfo } from './sqlUtils';
 
 export type TargetServerType = azure.SqlVMServer | azureResource.AzureSqlManagedInstance | azure.AzureSqlDatabaseServer;
 
@@ -902,6 +903,41 @@ export async function createManualIRconfigContentContainer(view: azdata.ModelVie
 	container.addItems([instructions, migrationServiceAuthKeyTable]);
 
 	return container;
+}
+
+export async function getSourceLogins(migrationStateModel: MigrationStateModel) {
+	var sourceLogins: LoginTableInfo[] = [];
+
+	// execute a query against the source to get the logins
+	sourceLogins.push(...await collectSourceLogins(
+		await getSourceConnectionId(),
+		migrationStateModel.isWindowsAuthMigrationSupported));
+
+	// validate Login Eligibility result contains system logins in Exception map from which system login names can be extracted.
+	// These system logins are not to be displayed in the source logins list
+	var validateLoginEligibilityResult: contracts.StartLoginMigrationPreValidationResult | undefined = await migrationStateModel.migrationService.validateLoginEligibility(
+		await getSourceConnectionString(),
+		"",
+		sourceLogins.map(row => row.loginName),
+		""
+	);
+
+	var sourceSystemLoginsName: string[] = [];
+	var sourceSystemLogins: LoginTableInfo[] = [];
+
+	if (validateLoginEligibilityResult !== undefined) {
+		sourceSystemLoginsName = Object.keys(validateLoginEligibilityResult.exceptionMap).map(loginName => loginName.toLocaleLowerCase());
+
+		// separate out system logins from non system logins
+		sourceSystemLogins = sourceLogins.filter(login => sourceSystemLoginsName.includes(login.loginName.toLocaleLowerCase()));
+		sourceLogins = sourceLogins.filter(login => !sourceSystemLoginsName.includes(login.loginName.toLocaleLowerCase()));
+	} else {
+		logError(TelemetryViews.Utils, 'utils.getSourceLogins', new Error(constants.VALIDATE_LOGIN_ELIGIBILITY_FAILED));
+	}
+
+	migrationStateModel._loginMigrationModel.collectedSourceLogins = true;
+	migrationStateModel._loginMigrationModel.loginsOnSource = sourceLogins;
+	migrationStateModel._loginMigrationModel.systemLoginsOnSource = sourceSystemLogins;
 }
 
 export async function getAzureSqlDatabaseServers(account?: Account, subscription?: azureResource.AzureResourceSubscription): Promise<azure.AzureSqlDatabaseServer[]> {
