@@ -5510,7 +5510,69 @@
 					],
 					"statistics": [],
 					"flags": ""
-				}
+				},
+				{
+					  "extensionId": "109",
+					  "extensionName": "sql-in-query-statement-generator",
+					  "displayName": "In-Query Statement Generator",
+					  "shortDescription": "The In-Query Generator is a powerful extension for Azure Data Studio that simplifies the process of creating IN clauses for SQL queries.",
+					  "publisher": {
+					    "displayName": "YakovT",
+					    "publisherId": "yakovt",
+					    "publisherName": "yakovt"
+					  },
+					  "versions": [
+					    {
+					      "version": "0.0.9",
+					      "lastUpdated": "08/08/2024",
+					      "assetUri": "",
+					      "fallbackAssetUri": "fallbackAssetUri",
+					      "files": [
+					        {
+					          "assetType": "Microsoft.SQLOps.DownloadPage",
+					          "source": "https://marketplace.visualstudio.com/items?itemName=YakovT.Sql-in-query-statement-generator"
+					        },
+					        {
+					          "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+					          "source": "https://raw.githubusercontent.com/YakovT/sql-in-query-statement-generator/main/icon.png"
+					        },
+					        {
+					          "assetType": "Microsoft.VisualStudio.Services.Content.Details",
+					          "source": "https://raw.githubusercontent.com/YakovT/sql-in-query-statement-generator/main/README.md"
+					        },
+					        {
+					          "assetType": "Microsoft.VisualStudio.Code.Manifest",
+					          "source": "https://raw.githubusercontent.com/YakovT/sql-in-query-statement-generator/main/package.json"
+					        },
+					        {
+					          "assetType": "Microsoft.VisualStudio.Services.Content.License",
+					          "source": "https://raw.githubusercontent.com/YakovT/sql-in-query-statement-generator/main/LICENSE"
+					        }
+					      ],
+					      "properties": [
+					        {
+					          "key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+					          "value": ""
+					        },
+					        {
+					          "key": "Microsoft.VisualStudio.Services.Links.Source",
+					          "value": "https://github.com/YakovT/sql-in-query-statement-generator"
+					        },
+					        {
+					          "key": "Microsoft.VisualStudio.Code.Engine",
+					          "value": "*"
+					        },
+					        {
+					          "key": "Microsoft.AzDataEngine",
+					          "value": "*"
+					        }
+					      ]
+					    }
+					  ],
+					  "statistics": [],
+					  "flags": ""
+					}
+
 
 			],
 			"resultMetadata": [
@@ -5519,7 +5581,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 90
+							"count": 91
 						}
 					]
 				}
