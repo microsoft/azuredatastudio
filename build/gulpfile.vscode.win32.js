@@ -196,16 +196,16 @@ function updateExeIconAndMetadata(arch) {
 
 		var patch = {
 			"version-string": {
-				CompanyName: config.companyName || "GitHub, Inc.",
+				CompanyName: config.companyName || "Microsoft",
 				FileDescription: config.productAppName || opts.productName,
 				LegalCopyright:
 					config.copyright ||
-					"Copyright (C) 2014 GitHub, Inc. All rights reserved",
+					"Copyright (C) 2024 Microsoft, All rights reserved",
 				ProductName: config.productAppName || config.productName,
-				ProductVersion: config.productVersion,
+				ProductVersion: pkg.version,
 			},
-			"file-version": config.productVersion,
-			"product-version": config.productVersion,
+			"file-version": pkg.version,
+			"product-version": pkg.version,
 			"icon": config.winIcon
 		};
 
