@@ -756,8 +756,14 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 
 		if (compatible) {
 			try {
+				// {{SQL CARBON EDIT}} - fix the version checks to use VSCode & ADS values
 				const engine = await this.getEngine(rawGalleryExtensionVersion);
-				if (!isEngineValid(engine, this.productService.version, this.productService.date)) {
+				if (!isEngineValid(engine, this.productService.vscodeVersion, this.productService.date)) {
+					return false;
+				}
+
+				const adsEngine = await this.getAzureDataStudioEngine(rawGalleryExtensionVersion);
+				if (!isEngineValid(adsEngine, this.productService.version, this.productService.date)) {
 					return false;
 				}
 			} catch (error) {
@@ -1369,6 +1375,18 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 				throw new Error('Manifest was not found');
 			}
 			engine = manifest.engines.vscode;
+		}
+		return engine;
+	}
+
+	private async getAzureDataStudioEngine(rawExtensionVersion: IRawGalleryExtensionVersion): Promise<string> {
+		let engine = getAzureDataStudioEngine(rawExtensionVersion);
+		if (!engine) {
+			const manifest = await this.getManifestFromRawExtensionVersion(rawExtensionVersion, CancellationToken.None);
+			if (!manifest) {
+				throw new Error('Manifest was not found');
+			}
+			engine = manifest.engines.azdata;
 		}
 		return engine;
 	}
