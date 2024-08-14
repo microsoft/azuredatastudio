@@ -18,6 +18,7 @@ on:
     branches: [ "main", "extensions/rc1", "master", "release/*", "release/extensions" ]
   schedule:
     - cron: '35 3 * * 1'
+  workflow_dispatch:
 
 jobs:
   analyze:
