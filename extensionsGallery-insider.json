@@ -1346,9 +1346,9 @@
 					"displayName": "PowerShell",
 					"shortDescription": "Develop PowerShell scripts in Azure Data Studio",
 					"publisher": {
-						"displayName": "Microsoft",
-						"publisherId": "Microsoft",
-						"publisherName": "Microsoft"
+						"displayName": "ms-vscode",
+						"publisherId": "ms-vscode",
+						"publisherName": "ms-vscode"
 					},
 					"versions": [
 						{
@@ -1359,7 +1359,7 @@
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/microsoft.PowerShell-2024.3.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2024.3.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
