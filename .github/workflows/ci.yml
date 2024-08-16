@@ -169,7 +169,7 @@ jobs:
 
   darwin:
     name: macOS
-    runs-on: macos-latest
+    runs-on: macos-latest-large
     timeout-minutes: 30
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
