@@ -103,6 +103,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		// If there is already an edit being processed, the new edit will be skipped if the previous edit is not accepted.
 		const checkPreviousEditResult = this._editQueue.size !== 0;
 		this._editQueue.queue(async () => {
+			this.escapeAllApostrophes(edit);
 			await this.doProcessEdit(edit, checkPreviousEditResult);
 		});
 	}
@@ -936,5 +937,11 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}
 		}
 		return typeArray.join('/');
+	}
+
+	private escapeAllApostrophes(edit: DesignerEdit): void {
+		if (typeof edit.value === 'string' && edit.value.includes('\'')) {
+			edit.value = edit.value.replace(/'/g, '\'\'');
+		}
 	}
 }
