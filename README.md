@@ -33,31 +33,6 @@ Azure Data Studio is a data management and development tool with connectivity to
 
 Go to our [download page](https://aka.ms/getazuredatastudio) for more specific instructions.
 
-## Try out the latest insiders build from `main` branch:
-
-|Platform |Type             |Download - Insiders Build |
-| --------|-----------------|----------------------- |
-|Windows  |User Installer   |[64 bit][in-win-user]&emsp;[ARM][in-win-user-arm64] |
-|         |System Installer |[64 bit][in-win-system]&emsp;[ARM][in-win-system-arm64] |
-|         |.zip             |[64 bit][in-win-zip]&emsp;[ARM][in-win-zip-arm64] |
-|Linux    |.tar.gz          |[64 bit][in-linux-zip] |
-|         |.deb             |[64 bit][in-linux-deb] |
-|         |.rpm             |[64 bit][in-linux-rpm] |
-|Mac      |.zip             |[Universal][in-osx-universal]&emsp;[Intel Chip][in-osx-zip]&emsp;[Apple Silicon][in-osx-arm64] |
-
-[in-win-user]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-user/insider
-[in-win-system]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64/insider
-[in-win-zip]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-archive/insider
-[in-win-user-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64-user/insider
-[in-win-system-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64/insider
-[in-win-zip-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64-archive/insider
-[in-linux-zip]:https://azuredatastudio-update.azurewebsites.net/latest/linux-x64/insider
-[in-linux-deb]:https://azuredatastudio-update.azurewebsites.net/latest/linux-deb-x64/insider
-[in-linux-rpm]:https://azuredatastudio-update.azurewebsites.net/latest/linux-rpm-x64/insider
-[in-osx-universal]: https://azuredatastudio-update.azurewebsites.net/latest/darwin-universal/insider
-[in-osx-zip]: https://azuredatastudio-update.azurewebsites.net/latest/darwin/insider
-[in-osx-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/darwin-arm64/insider
-
 Please visit our [download page](https://aka.ms/getazuredatastudio) for more specific installation instructions.
 Check out the [change log](https://github.com/Microsoft/azuredatastudio/blob/main/CHANGELOG.md) or [release notes](https://learn.microsoft.com/sql/azure-data-studio/release-notes-azure-data-studio) for additional details of what's in the each release.
 The [Azure Data Studio documentation](https://learn.microsoft.com/sql/azure-data-studio) includes complete details on getting started, connection quickstarts, and feature tutorials.
