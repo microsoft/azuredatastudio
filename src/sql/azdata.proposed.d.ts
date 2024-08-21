@@ -892,6 +892,10 @@ declare module 'azdata' {
 		 * The selected ranges to be copied.
 		 */
 		selections: SelectionRange[];
+		/**
+		 * Whether to copy the results directly from the backend.
+		 */
+		copyInBackend: boolean;
 	}
 
 	export interface CopyResultsRequestResult {
