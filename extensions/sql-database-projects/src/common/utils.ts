@@ -729,20 +729,24 @@ export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.
 		const engineEdition = serverInfo.engineEditionId;
 		const azdataApi = getAzdataApi();
 		if (azdataApi) {
-			// TODO: Update this when Fabric DW gets its own engine edition
-			// https://github.com/microsoft/azuredatastudio/issues/24112
-			if (engineEdition === azdataApi.DatabaseEngineEdition.SqlOnDemand) {
-				targetPlatform = isSqlDwUnifiedServer(serverUrl) ? SqlTargetPlatform.sqlDwUnified : SqlTargetPlatform.sqlDwServerless;
+			if (isSqlDwUnifiedServer(serverUrl)) {
+				targetPlatform = SqlTargetPlatform.sqlDwUnified;
+			} else if (engineEdition === azdataApi.DatabaseEngineEdition.SqlOnDemand) {
+				targetPlatform = SqlTargetPlatform.sqlDwServerless;
+			} else if (engineEdition === azdataApi.DatabaseEngineEdition.SqlDbFabric) {
+				targetPlatform = SqlTargetPlatform.sqlDbFabric;
 			} else if (engineEdition === azdataApi.DatabaseEngineEdition.SqlDataWarehouse) {
 				targetPlatform = SqlTargetPlatform.sqlDW;
 			} else {
 				targetPlatform = SqlTargetPlatform.sqlAzure;
 			}
 		} else {
-			// TODO: Update this when Fabric DW gets its own engine edition
-			// https://github.com/microsoft/azuredatastudio/issues/24112
-			if (engineEdition === vscodeMssql.DatabaseEngineEdition.SqlOnDemand) {
-				targetPlatform = isSqlDwUnifiedServer(serverUrl) ? SqlTargetPlatform.sqlDwUnified : SqlTargetPlatform.sqlDwServerless;
+			if (isSqlDwUnifiedServer(serverUrl)) {
+				targetPlatform = SqlTargetPlatform.sqlDwUnified;
+			} else if (engineEdition === vscodeMssql.DatabaseEngineEdition.SqlOnDemand) {
+				targetPlatform = SqlTargetPlatform.sqlDwServerless;
+			} else if (engineEdition === vscodeMssql.DatabaseEngineEdition.SqlDbFabric) {
+				targetPlatform = SqlTargetPlatform.sqlDbFabric;
 			} else if (engineEdition === vscodeMssql.DatabaseEngineEdition.SqlDataWarehouse) {
 				targetPlatform = SqlTargetPlatform.sqlDW;
 			} else {

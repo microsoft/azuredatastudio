@@ -595,7 +595,8 @@ declare module 'azdata' {
 		SqlDataWarehouse = 6,
 		SqlStretchDatabase = 7,
 		SqlManagedInstance = 8,
-		SqlOnDemand = 11
+		SqlOnDemand = 11,
+		SqlDbFabric = 12
 	}
 
 	export interface DataProvider {

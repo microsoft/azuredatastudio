@@ -15,9 +15,11 @@ import { arch } from 'vs/base/common/process';
 import { TelemetryTrustedValue } from 'vs/platform/telemetry/common/telemetryUtils';
 
 export function areSameExtensions(a: IExtensionIdentifier, b: IExtensionIdentifier): boolean {
-	if (a.uuid && b.uuid) {
-		return a.uuid === b.uuid;
-	}
+	// {{SQL CARBON EDIT}} - Bug in extension gallery metadata breaks this assumption
+	// {{SQL CARBON EDIT}} - Specifically, Copilot 1.82.15 has incorrect ID in package.json
+	// if (a.uuid && b.uuid) {
+	// 	return a.uuid === b.uuid;
+	// }
 	if (a.id === b.id) {
 		return true;
 	}

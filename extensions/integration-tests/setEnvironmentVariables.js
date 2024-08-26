@@ -5,6 +5,7 @@
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
+const { execSync, spawn } = require('child_process');
 
 /**
  * Launch options
@@ -52,7 +53,6 @@ if (!LAUNCH_OPTION) {
 	LAUNCH_OPTION = LAUNCH_VSCODE;
 }
 
-
 /**
  * Below are the environment variable values that are not saved in AKV and might vary by machine
  */
@@ -63,7 +63,6 @@ if (!LAUNCH_OPTION) {
 // Open ADS and run command 'Configure Python for Notebooks' command and install it to the default folder,
 // if you install it to a different folder you will have to update the value of this variable
 const NOTEBOOK_PYTHON_INSTALL_PATH = path.join(os.homedir(), 'azuredatastudio-python');
-
 
 /**
  * ----------------------------------------------------------------------------------------------
@@ -81,74 +80,59 @@ if (!fs.existsSync(NOTEBOOK_PYTHON_INSTALL_PATH)) {
 	throw message;
 }
 
-const { DefaultAzureCredential } = require('@azure/identity');
-const { SecretClient } = require('@azure/keyvault-secrets');
-const child_process = require('child_process');
-
-// Name of the values that are stored in Azure Key Vault
-const AKV_URL = 'https://sqltoolssecretstore.vault.azure.net/';
-const SECRET_AZURE_SERVER = 'ads-integration-test-azure-server';
-const SECRET_AZURE_SERVER_USERNAME = 'ads-integration-test-azure-server-username';
-const SECRET_AZURE_SERVER_PASSWORD = 'ads-integration-test-azure-server-password';
-const SECRET_STANDALONE_SERVER = 'ads-integration-test-standalone-server';
-const SECRET_STANDALONE_SERVER_USERNAME = 'ads-integration-test-standalone-server-username';
-const SECRET_STANDALONE_SERVER_PASSWORD = 'ads-integration-test-standalone-server-password';
-const SECRET_STANDALONE_SERVER_2019 = 'ads-integration-test-standalone-server-2019';
-const SECRET_STANDALONE_SERVER_USERNAME_2019 = 'ads-integration-test-standalone-server-username-2019';
-const SECRET_STANDALONE_SERVER_PASSWORD_2019 = 'ads-integration-test-standalone-server-password-2019';
+// Database password generation
+function generatePassword() {
+	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	let password = "";
+	for (let n = 0; n < 128; n++) {
+		password += chars.charAt(Math.random() * chars.length)
+	}
+	return password;
+}
 
 // Environment variable names
-const ENVAR_AZURE_SERVER = 'AZURE_SQL';
-const ENVAR_AZURE_SERVER_USERNAME = 'AZURE_SQL_USERNAME';
-const ENVAR_AZURE_SERVER_PASSWORD = 'AZURE_SQL_PWD';
-const ENVAR_STANDALONE_SERVER = 'STANDALONE_SQL';
-const ENVAR_STANDALONE_SERVER_USERNAME = 'STANDALONE_SQL_USERNAME';
-const ENVAR_STANDALONE_SERVER_PASSWORD = 'STANDALONE_SQL_PWD';
-const ENVAR_STANDALONE_SERVER_2019 = 'STANDALONE_SQL_2019';
-const ENVAR_STANDALONE_SERVER_USERNAME_2019 = 'STANDALONE_SQL_USERNAME_2019';
-const ENVAR_STANDALONE_SERVER_PASSWORD_2019 = 'STANDALONE_SQL_PWD_2019';
 const ENVAR_PYTHON_INSTALL_PATH = 'PYTHON_TEST_PATH';
 const ENVAR_RUN_PYTHON3_TEST = 'RUN_PYTHON3_TEST';
-
-// Mapping between AKV secret and the environment variable names
-const SecretEnVarMapping = [];
-SecretEnVarMapping.push([SECRET_AZURE_SERVER, ENVAR_AZURE_SERVER]);
-SecretEnVarMapping.push([SECRET_AZURE_SERVER_PASSWORD, ENVAR_AZURE_SERVER_PASSWORD]);
-SecretEnVarMapping.push([SECRET_AZURE_SERVER_USERNAME, ENVAR_AZURE_SERVER_USERNAME]);
-SecretEnVarMapping.push([SECRET_STANDALONE_SERVER, ENVAR_STANDALONE_SERVER]);
-SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_PASSWORD, ENVAR_STANDALONE_SERVER_PASSWORD]);
-SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_USERNAME, ENVAR_STANDALONE_SERVER_USERNAME]);
-SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_2019, ENVAR_STANDALONE_SERVER_2019]);
-SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_USERNAME_2019, ENVAR_STANDALONE_SERVER_USERNAME_2019]);
-SecretEnVarMapping.push([SECRET_STANDALONE_SERVER_PASSWORD_2019, ENVAR_STANDALONE_SERVER_PASSWORD_2019]);
+const ENVAR_SQL_2017_PASS = 'SQL_2017_PASS';
+const ENVAR_SQL_2019_PASS = 'SQL_2019_PASS';
+const ENVAR_AZURE_SQL_PASS = 'AZURE_SQL_PASS';
 
 // Set the values that are not stored in AKV here
 process.env[ENVAR_PYTHON_INSTALL_PATH] = NOTEBOOK_PYTHON_INSTALL_PATH;
 process.env[ENVAR_RUN_PYTHON3_TEST] = '1';
+process.env[ENVAR_SQL_2017_PASS] = generatePassword();
+process.env[ENVAR_SQL_2019_PASS] = generatePassword();
+process.env[ENVAR_AZURE_SQL_PASS] = generatePassword();
 
-const credential = new DefaultAzureCredential();
-const client = new SecretClient(AKV_URL, credential);
-
-async function main() {
-	for (const entry of SecretEnVarMapping) {
-		const secretName = entry[0];
-		const environmentVariable = entry[1];
-		try {
-			const result = await client.getSecret(secretName);
-			console.log(`${secretName}: ${result.value}`);
-			process.env[environmentVariable] = result.value;
-		} catch (err) {
-			console.error('An error occured while retrieving the value for secret:' + secretName);
-			console.error(err);
-		}
-	}
-	console.log('Done reading values from Azure KeyVault!');
-	console.log(`Launching new window: ${LAUNCH_OPTION}...`);
-	if (LAUNCH_OPTION === LAUNCH_VSCODE) {
-		console.warn('Trying to launch vscode, make sure you have it set properly in the PATH environment variable');
-	}
-	child_process.execSync(LAUNCH_OPTION);
-	console.log('New window for running test has been opened.');
+console.log(`Launching new window: ${LAUNCH_OPTION}...`);
+if (LAUNCH_OPTION === LAUNCH_VSCODE) {
+	console.warn('Trying to launch vscode, make sure you have it set properly in the PATH environment variable');
 }
+execSync(LAUNCH_OPTION);
+console.log('New window for running test has been opened.');
 
-main();
+// Start docker containers
+// For windows, we need to run it as an admin to get it working locally, which can only be done using Start-Process
+const winargs = ['powershell.exe', '-Command', `Start-Process powershell.exe -ArgumentList '-Command', '$sql2017pass=\\"${process.env[ENVAR_SQL_2017_PASS]}\\";$sql2019pass=\\"${process.env[ENVAR_SQL_2019_PASS]}\\";$azuresqlpass=\\"${process.env[ENVAR_AZURE_SQL_PASS]}\\";${__dirname}\\dockerWindows.ps1' -Verb RunAs`];
+const unixargs = ['bash', '-c', `chmod +x ${__dirname}/dockerUnix.sh; export sql2017pass="${process.env[ENVAR_SQL_2017_PASS]}"; export sql2019pass="${process.env[ENVAR_SQL_2019_PASS]}"; export azuresqlpass="${process.env[ENVAR_AZURE_SQL_PASS]}"; ${__dirname}/dockerUnix.sh`];
+
+const args = os.platform() === 'win32' ? winargs : unixargs;
+
+const child = spawn(args[0], args.slice(1));
+
+console.log(`Running docker setup...`);
+child.stdout.on('data', (data) => {
+	console.log(`${data}`);
+});
+
+child.stderr.on('data', (data) => {
+	console.error(`${data}`);
+});
+
+child.on('close', () => {
+	console.log(`Finished running docker setup.`);
+});
+
+child.on('error', (error) => {
+	console.error(`Error: ${error.message}`);
+});

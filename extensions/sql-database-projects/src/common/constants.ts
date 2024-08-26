@@ -625,7 +625,8 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[SqlTargetPlatform.sqlAzure, 'AzureV12'],
 	[SqlTargetPlatform.sqlDW, 'Dw'],
 	[SqlTargetPlatform.sqlDwServerless, 'Serverless'],
-	[SqlTargetPlatform.sqlDwUnified, 'DwUnified']
+	[SqlTargetPlatform.sqlDwUnified, 'DwUnified'],
+	[SqlTargetPlatform.sqlDbFabric, 'DbFabric']
 ]);
 
 export const onPremServerVersionToTargetPlatform: Map<number, SqlTargetPlatform> = new Map<number, SqlTargetPlatform>([

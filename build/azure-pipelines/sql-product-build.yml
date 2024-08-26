@@ -1,21 +1,14 @@
-resources:
-  containers:
-  - container: linux-x64
-    image: sqltoolscontainers.azurecr.io/linux-build-agent:9
-    endpoint: SqlToolsContainers
-
 stages:
   - stage: Compile
     jobs:
     - job: Compile
       pool:
-        vmImage: 'Ubuntu-20.04'
-      container: linux-x64
+        vmImage: 'ubuntu-latest'
       steps:
       - script: |
           set -e
           echo "##vso[build.addbuildtag]$(VSCODE_QUALITY)"
-        displayName: Add Quality Build Tag
+        displayName: Set Quality Tag for Build
       - template: sql-product-compile.yml
       timeoutInMinutes: 120
 
@@ -34,22 +27,12 @@ stages:
         - template: darwin/sql-product-build-darwin.yml
         timeoutInMinutes: 90
 
-      - job: macOS_Signing
-        variables:
-          VSCODE_ARCH: x64
-        condition: and(succeeded(), eq(variables['signed'], true))
-        dependsOn:
-        - macOS
-        steps:
-        - template: darwin/sql-product-build-darwin-signing.yml
-        timeoutInMinutes: 60
-
       - job: macOS_ARM64
         variables:
           NPM_CONFIG_ARCH: arm64
           VSCODE_ARCH: arm64
           AZDATA_RUNTIME: OSX_ARM64
-          # Do not run tests for arm64 build
+          # Do not run tests for macOS_ARM64 build
           RUN_TESTS: false
           RUN_SMOKE_TESTS: false
         condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS_ARM64'], 'true'))
@@ -57,21 +40,11 @@ stages:
         - template: darwin/sql-product-build-darwin.yml
         timeoutInMinutes: 90
 
-      - job: macOS_Signing_ARM64
-        variables:
-          VSCODE_ARCH: arm64
-        condition: and(succeeded(), eq(variables['signed'], true))
-        dependsOn:
-        - macOS_ARM64
-        steps:
-        - template: darwin/sql-product-build-darwin-signing.yml
-        timeoutInMinutes: 60
-
       - job: macOS_Universal
         variables:
           NPM_CONFIG_ARCH: x64
           VSCODE_ARCH: universal
-          # Do not run tests for universal build
+          # Do not run tests for macOS_Universal build
           RUN_TESTS: false
           RUN_SMOKE_TESTS: false
         dependsOn:
@@ -80,16 +53,6 @@ stages:
         steps:
         - template: darwin/sql-product-build-darwin.yml
         timeoutInMinutes: 90
-
-      - job: macOS_Signing_Universal
-        variables:
-          VSCODE_ARCH: universal
-        condition: and(succeeded(), eq(variables['signed'], true))
-        dependsOn:
-        - macOS_Universal
-        steps:
-        - template: darwin/sql-product-build-darwin-signing.yml
-        timeoutInMinutes: 60
 
   - stage: Linux
     condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX'], true))
@@ -98,8 +61,7 @@ stages:
     jobs:
       - job: Linux
         pool:
-          vmImage: 'Ubuntu-20.04'
-        container: linux-x64
+          vmImage: 'ubuntu-latest'
         steps:
         - template: linux/sql-product-build-linux.yml
           parameters:
@@ -129,45 +91,6 @@ stages:
         steps:
         - template: win32/sql-product-build-win32.yml
         timeoutInMinutes: 90
-    # disable due to invalid machine pool (karlb 3/9/2022)
-    # - job: Windows_Test
-    #   condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
-    #   pool:
-    #     name: mssqltools
-    #   dependsOn:
-    #   - Linux
-    #   - Windows
-    #   steps:
-    #   - template: win32/sql-product-test-win32.yml
-    #   timeoutInMinutes: 90
-
-  - stage: Release
-    # Requirements:
-    # 1. Release can be created only from builds of the official build pipeline, but not all builds of it should be released automatically.
-    # 2. A build should be released only when the release variable is set to true.
-    # 3. The daily scheduled Insiders build should be released automatically.
-    #
-    # Limitation:
-    # Ideally, we should be able to use the condition `and(succeeded(), eq(variables['VSCODE_RELEASE'], 'true')` to achieve what we want. The VSCODE_RELEASE variable can be defined as overwritable or non-overwritable based on whether we want to
-    # release from the pipeline. Unfortunately ADO doesn't allow overriding variable values for scheduled runs. (see https://learn.microsoft.com/en-us/azure/devops/pipelines/process/scheduled-triggers?view=azure-devops&tabs=yaml#scheduled-triggers).
-    # This means we can't simply set VSCODE_RELEASE to true only for scheduled builds and have to set it to true for all runs of the pipeline by default.
-    #
-    # Implementation:
-    # Set the VSCODE_RELEASE variable's default value to true and add the release tag for following scenarios:
-    # 1. The build is a scheduled insiders build.
-    # 2. The build is not an insiders build. e.g. rc1, stable, saw.
-    # To release an ad-hoc insiders build, manually add 'Release' tag to the build.
-    condition: and(succeeded(), eq(variables['VSCODE_RELEASE'], 'true'), or(ne(variables['VSCODE_QUALITY'], 'insider'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
-    pool:
-      vmImage: 'Ubuntu-20.04'
-    dependsOn:
-      - macOS
-      - Linux
-      - Windows
-    jobs:
-      - job: Add_Release_Tag
-        steps:
-        - template: sql-release.yml
 
 trigger: none
 pr: none

@@ -3,10 +3,10 @@
 	"useDefaultLinuxRuntime": true,
 	"version": "5.0.0.5",
 	"downloadFileNames": {
-		"Windows_86": "win-x86-net7.0.zip",
-		"Windows": "win-x64-net7.0.zip",
-		"OSX": "osx-x64-net7.0.tar.gz",
-		"Linux": "rhel-x64-net7.0.tar.gz"
+		"Windows_86": "win-x86-net8.0.zip",
+		"Windows": "win-x64-net8.0.zip",
+		"OSX": "osx-x64-net8.0.tar.gz",
+		"Linux": "rhel-x64-net8.0.tar.gz"
 	},
 	"installDirectory": "./migrationService/{#platform#}/{#version#}",
 	"executableFiles": ["MicrosoftSqlToolsMigration", "MicrosoftSqlToolsMigration.exe"],

@@ -10,13 +10,6 @@ steps:
     inputs:
       versionSpec: "1.x"
 
-  - task: AzureKeyVault@1
-    displayName: 'Azure Key Vault: Get Secrets'
-    inputs:
-      azureSubscription: 'ADS Pipelines'
-      KeyVaultName: ado-secrets
-      SecretsFilter: 'github-distro-mixin-password'
-
   - task: DownloadPipelineArtifact@2
     inputs:
       artifact: Compilation
@@ -34,7 +27,7 @@ steps:
       cat << EOF > ~/.netrc
       machine github.com
       login azuredatastudio
-      password $(github-distro-mixin-password)
+      password $(Github-Mixin-Password)
       EOF
 
       git config user.email "sqltools@service.microsoft.com"
@@ -74,7 +67,7 @@ steps:
       CHILD_CONCURRENCY=1 yarn --frozen-lockfile
     displayName: Install dependencies
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
     condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
 
   - script: |
@@ -101,8 +94,8 @@ steps:
       yarn gulp vscode-linux-x64-min-ci
     displayName: Build
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
-      VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
+      VSCODE_MIXIN_PASSWORD: $(Github-Mixin-Password)
 
   - script: |
       set -e
@@ -127,7 +120,7 @@ steps:
       DISPLAY=:10 ./scripts/test.sh --build --tfs "Unit Tests" --coverage
     displayName: Run core unit tests
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
@@ -142,7 +135,7 @@ steps:
       DISPLAY=:10 ./scripts/test-integration.sh --build --tfs "Integration Tests"
     displayName: Run core integration tests
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
@@ -159,7 +152,7 @@ steps:
     displayName: Run Extension Unit Tests (Continue on Error)
     continueOnError: true
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false')))
 
   - script: |
@@ -175,7 +168,7 @@ steps:
       DISPLAY=:10 ./scripts/test-extensions-unit.sh --build --tfs "Extension Unit Tests"
     displayName: Run Extension Unit Tests (Fail on Error)
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false')))
 
   - bash: |
@@ -215,65 +208,6 @@ steps:
       yarn gulp vscode-linux-x64-build-rpm
     displayName: Build rpm package
     condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
-
-  - task: UseDotNet@2
-    displayName: 'Install .NET SDK for signing'
-    inputs:
-      packageType: sdk
-      version: 6.0.x
-      installationPath: $(Agent.ToolsDirectory)/dotnet
-
-  - task: EsrpCodeSigning@3
-    inputs:
-      ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.SourcesDirectory)/.build/linux'
-      Pattern: 'deb/*.deb, rpm/*.rpm'
-      signConfigType: inlineSignParams
-      inlineOperation: |
-        [
-          {
-            "KeyCode": "CP-500207-Pgp",
-            "OperationCode": "LinuxSign",
-            "Parameters": {},
-            "ToolName": "sign",
-            "ToolVersion": "1.0"
-          }
-        ]
-      SessionTimeout: 120
-    displayName: 'Signing deb and rpm'
-    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'), eq(variables['signed'], true))
-
-  - task: EsrpCodeSigning@3
-    inputs:
-      ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.SourcesDirectory)/.build'
-      Pattern: 'extensions/*.vsix,langpacks/*.vsix'
-      signConfigType: inlineSignParams
-      inlineOperation: |
-        [
-          {
-            "keyCode": "CP-233016",
-            "operationSetCode": "OpcSign",
-            "parameters": [
-              {
-                "parameterName": "FileDigest",
-                "parameterValue": "/fd \"SHA256\""
-              }
-            ],
-            "toolName": "sign",
-            "toolVersion": "1.0"
-          },
-          {
-            "keyCode": "CP-233016",
-            "operationSetCode": "OpcVerify",
-            "parameters": [],
-            "toolName": "sign",
-            "toolVersion": "1.0"
-          }
-        ]
-      SessionTimeout: 120
-    displayName: 'Signing Extensions and Langpacks'
-    condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
       set -e

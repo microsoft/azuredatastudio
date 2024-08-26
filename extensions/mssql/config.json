@@ -1,6 +1,6 @@
 {
 	"downloadUrl": "https://github.com/Microsoft/sqltoolsservice/releases/download/{#version#}/microsoft.sqltools.servicelayer-{#fileName#}",
-	"version": "5.0.0.2",
+	"version": "5.0.20240724.1",
 	"downloadFileNames": {
 		"Windows_86": "win-x86-net8.0.zip",
 		"Windows_64": "win-x64-net8.0.zip",
