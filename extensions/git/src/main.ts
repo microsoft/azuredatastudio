@@ -23,7 +23,7 @@ import { registerAPICommands } from './api/api1';
 import { TerminalEnvironmentManager } from './terminal';
 import { createIPCServer, IPCServer } from './ipc/ipcServer';
 import { GitEditor } from './gitEditor';
-// import { GitPostCommitCommandsProvider } from './postCommitCommands'; // {{SQL CARBON EDIT}} - remove unused
+import { GitPostCommitCommandsProvider } from './postCommitCommands';
 import { GitEditSessionIdentityProvider } from './editSessionIdentityProvider';
 
 const deactivateTasks: { (): Promise<any> }[] = [];
@@ -115,8 +115,8 @@ async function createModel(context: ExtensionContext, logger: LogOutputChannel, 
 		new GitEditSessionIdentityProvider(model)
 	);
 
-	// const postCommitCommandsProvider = new GitPostCommitCommandsProvider(); {{SQL CARBON TODO}} lewissanchez - Do we need this?
-	// model.registerPostCommitCommandsProvider(postCommitCommandsProvider); {{SQL CARBON TODO}} lewissanchez - Do we need this?
+	const postCommitCommandsProvider = new GitPostCommitCommandsProvider();
+	model.registerPostCommitCommandsProvider(postCommitCommandsProvider);
 
 	// checkGitVersion(info); {{SQL CARBON EDIT}} Don't check git version
 	// commands.executeCommand('setContext', 'gitVersion2.35', git.compareGitVersionTo('2.35') >= 0);
