@@ -108,17 +108,13 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "Sfoglia",
-			"configurePython.installationType": "Tipo di installazione",
-			"configurePython.newInstall": "Nuova installazione di Python",
 			"configurePythyon.noVersionsFound": "Non sono state trovate versioni Python supportate.",
 			"configurePython.descriptionWithoutKernel": "I kernel dei notebook richiedono la configurazione di un runtime Python e l'installazione delle dipendenze.",
-			"configurePython.locationTextBoxText": "Percorso di installazione di Python",
-			"configurePython.pythonConfigured": "Il runtime Python è stato configurato.",
+			"configurePython.locationTextBoxText": "Percorso di Python",
 			"configurePython.selectFileLabel": "Seleziona",
 			"configurePython.descriptionWithKernel": "Il kernel '{0}' richiede la configurazione di un runtime Python e l'installazione delle dipendenze.",
-			"configurePython.existingInstall": "Usa l'installazione esistente di Python",
+			"configurePythyon.existingInstance": "{0} (Istanza Python corrente)",
 			"configurePythyon.customPathLabel": "{0} (Personalizzato)",
-			"configurePythyon.defaultPathLabel": "{0} (Predefinito)",
 			"configurePythyon.dropdownPathLabel": "{0} (Python {1})"
 		},
 		"dist/dialog/configurePython/configurePythonWizard": {
@@ -190,28 +186,14 @@
 			"errNotebookUriMissing": "È necessario specificare un percorso di notebook"
 		},
 		"dist/jupyter/jupyterServerInstallation": {
-			"msgShutdownNotebookSessions": "Le sessioni del notebook di Python attive verranno arrestate per l'aggiornamento. Procedere ora?",
 			"msgWaitingForInstall": "È già in corso un'altra installazione di Python. Attendere che venga completata.",
-			"msgPythonRunningError": "Non è possibile sovrascrivere un'installazione esistente di Python mentre Python è in esecuzione. Chiudere gli eventuali notebook attivi prima di procedere.",
-			"dontAskAgain": "Non chiedere più",
-			"msgDownloadPython": "Download della versione locale di Python per la piattaforma {0} in {1}",
-			"msgPythonDownloadPending": "Download del pacchetto Python",
 			"msgGetPythonUserDirFailed": "Si è verificato un errore durante il recupero del percorso utente di Python: {0}",
 			"msgPackageRetrievalFailed": "Si è verificato un errore durante il tentativo di recuperare l'elenco dei pacchetti installati: {0}",
-			"msgPythonDirectoryError": "Si è verificato un errore durante la creazione della directory di installazione di Python",
-			"msgPythonDownloadError": "Si è verificato un errore durante il download della configurazione di Python",
-			"msgPythonUnpackError": "Si è verificato un errore durante la decompressione del bundle di Python",
 			"msgTaskName": "Installazione delle dipendenze di Notebook",
 			"msgDependenciesInstallationFailed": "L'installazione delle dipendenze di Notebook non è riuscita. Errore: {0}",
 			"msgInstallPkgStart": "Installazione delle dipendenze di Notebook. Per altre informazioni, vedere la visualizzazione attività",
-			"no": "No",
 			"msgInstallPkgFinish": "L'installazione delle dipendenze di Notebook è stata completata",
-			"msgInstallPkgProgress": "L'installazione delle dipendenze di Notebook è in corso",
-			"msgPythonDownloadComplete": "Il download di Python è stato completato",
-			"msgPythonVersionUpdatePrompt": "Python {0} è ora disponibile in Azure Data Studio. La versione corrente di Python (3.6.6) non sarà supportata da dicembre 2021. Eseguire ora l'aggiornamento a Python {0} ?",
-			"msgPythonVersionUpdateWarning": "Python {0} verrà installato e sostituirà Python 3.6.6. Alcuni pacchetti potrebbero non essere più compatibili con la nuova versione o potrebbero dover essere reinstallati. Verrà creato un notebook che consente di reinstallare tutti i pacchetti pip. Continuare con l'aggiornamento ora?",
-			"msgPythonUnpackPending": "Decompressione del pacchetto Python",
-			"yes": "Sì"
+			"msgInstallPkgProgress": "L'installazione delle dipendenze di Notebook è in corso"
 		},
 		"dist/jupyter/jupyterServerManager": {
 			"shutdownError": "L'arresto del server di Notebook non è riuscito: {0}"

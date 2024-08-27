@@ -507,7 +507,7 @@
     "@azure/arm-resourcegraph": "^4.2.1",
     "@azure/arm-subscriptions": "^3.0.0",
     "@azure/msal-common": "11.0.0",
-    "@azure/msal-node": "1.16.0",
+    "@azure/msal-node": "2.9.2",
     "@azure/ms-rest-js": "^2.2.0",
     "@azure/storage-blob": "^12.13.0",
     "axios": "^1.6.0",
@@ -517,7 +517,7 @@
     "qs": "^6.9.1",
     "universalify": "^0.1.2",
     "vscode-nls": "^4.0.0",
-    "ws": "^7.4.6"
+    "ws": "^7.5.10"
   },
   "devDependencies": {
     "@microsoft/vscodetestcover": "^1.2.2",

@@ -133,7 +133,7 @@
 			"cms.connectionOptions.enclaveAttestationProtocol.description": "Spécifie un protocole pour attester une enclave côté serveur utilisée avec Always Encrypted avec des enclaves sécurisées",
 			"cms.connectionOptions.enclaveAttestationUrl.description": "Spécifie un point de terminaison pour attester une enclave côté serveur utilisée avec Always Encrypted avec des enclaves sécurisées",
 			"cms.connectionOptions.authType.description": "Spécifie la méthode d'authentification avec SQL Server",
-			"cms.connectionOptions.encrypt.categoryValues.strict": "Strict (supported for SQL Server 2022 and Azure SQL)",
+			"cms.connectionOptions.encrypt.categoryValues.strict": "Strict (pris en charge pour SQL Server 2022 et Azure SQL)",
 			"cms.description": "Prise en charge de la gestion des serveurs de gestion centralisée SQL Server",
 			"cms.connectionOptions.currentLanguage.description": "Nom d'enregistrement de la langue de SQL Server",
 			"cms.connectionOptions.commandTimeout.description": "La durée (en secondes) d’attente de l’exécution d’une commande avant de mettre fin à la tentative et de générer une erreur.",

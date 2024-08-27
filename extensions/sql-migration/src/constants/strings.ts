@@ -260,6 +260,13 @@ export const IMPORT_PERFORMANCE_DATA = localize('sql.migration.sku.import.perfor
 export const IMPORT_PERFORMANCE_DATA_DIALOG_DESCRIPTION = localize('sql.migration.sku.import.performance.data.dialog.description', "Import this data file from an existing folder, if you have already collected it using Data Migration Assistant.");
 export const IMPORT_PERFORMANCE_DATA_DIALOG_HELPER_MESSAGE = localize('sql.migration.sku.import.performance.data.dialog.helper.message', "Select a folder on your local drive");
 export const IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FOLDER = localize('sql.migration.sku.import.performance.data.dialog.open.folder', "Select a folder");
+export const UPLOAD_TEMPLATE_TO_AZURE = localize('sql.migration.target.upload.to.azure', "Save to Azure blob container");
+export const TARGET_PROVISIONING_TITLE = localize('sql.migration.target.provisioning.title', "Save Template");
+export const GENERATE_ARM_TEMPLATE = localize('sql.migration.target.provisioning.generate.template', "Generate Template");
+export const CLOSE_DIALOG = localize('sql.migration.target.provisioning.close', "Close");
+export const TARGET_PROVISIONING_DESCRIPTION = localize('sql.migration.target.provisioning.description', "Below is the ARM script for the recommended target SKU. You can save the script as template.");
+export const DISPLAY_ARM_TEMPLATE_LIMIT = localize('sql.migration.target.provisioning.template.display.limit', "A single ARM template has a deployment limitation of a maximum 50 Azure SQL Databases. The template for the first 50 databases is displayed below. To view all templates, save the template JSON file in a local storage or Azure Blob storage.")
+
 // allow-any-unicode-next-line
 export const AZURE_RECOMMENDATION_CARD_NOT_ENABLED = localize('sql.migration.sku.card.azureRecommendation.notEnabled', "Azure recommendation is not available. Click 'Start data collection' button above to get started.");
 export const AZURE_RECOMMENDATION_CARD_IN_PROGRESS = localize('sql.migration.sku.card.azureRecommendation.inProgress', "Azure recommendation will be displayed once data collection is complete.");
@@ -326,6 +333,7 @@ export function MI_CONFIGURATION_PREVIEW(hardwareType: string, computeTier: stri
 }
 export const GENERAL_PURPOSE = localize('sql.migration.sku.azureConfiguration.generalPurpose', "General purpose");
 export const BUSINESS_CRITICAL = localize('sql.migration.sku.azureConfiguration.businessCritical', "Business critical");
+export const NEXTGEN_GENERAL_PURPOSE = localize('sql.migration.sku.azureConfiguration.nextGenGeneralPurpose', "Next-gen General Purpose");
 export const HYPERSCALE = localize('sql.migration.sku.azureConfiguration.hyperscale', "Hyperscale");
 export const GEN5 = localize('sql.migration.sku.azureConfiguration.gen5', "Gen5");
 export const PREMIUM_SERIES = localize('sql.migration.sku.azureConfiguration.premiumSeries', "Premium-series");
@@ -449,6 +457,9 @@ export const LOGIN_MIGRATIONS_VM_TEXT = localize('sql.login.migration.vm.title',
 export const LOGIN_MIGRATIONS_AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.login.migration.target.title', "Azure SQL target");
 export const LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE = localize('sql.login.migration.select.page.title', "Select login(s) to migrate");
 export const LOGIN_MIGRATIONS_SELECT_LOGINS_WINDOWS_AUTH_WARNING = localize('sql.login.migration.select.logins.windows.auth.warning', "Please note that this wizard does not display windows authentication login types because migrating that type is currently not supported. Capability for migrating windows authentication logins is coming soon.");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_TAB_NON_SYSTEM_LOGIN_TITLE = localize('sql.login.migration.select.logins.tab.non.system.title', "Logins ready for migration");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_TAB_SYSTEM_LOGIN_TITLE = localize('sql.login.migration.select.logins.tab.system.title', "Excluded login/s");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_SYSTEM_LOGIN_INFO_BOX = localize('sql.login.migration.select.logins.system.info.box', "Below login/s is/are excluded from login migration as they are either local service or system accounts at the source.");
 export const LOGIN_MIGRATIONS_STATUS_PAGE_TITLE = localize('sql.login.migration.status.page.title', "Migration Status");
 export function LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
 	return localize('sql.login.migration.status.page.description', "Migrating {0} logins to target {1} '{2}'", numLogins, targetType, targetName);
@@ -511,6 +522,7 @@ export const LOGIN_MIGRATION_COMPLETED = localize('sql.login.migration.steps.mig
 export function COLLECTING_TARGET_LOGINS_FAILED(errorCode: number): string {
 	return localize('sql.login.migration.collecting.target.logins.failed', "Collecting target login failed with error code {0}", errorCode);
 }
+export const VALIDATE_LOGIN_ELIGIBILITY_FAILED = localize('sql.login.migration.validate.login.eligibility.failed', "Login migration source logins eligibility validation failed");
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
@@ -1590,6 +1602,25 @@ export const MIGRATION_SERVICE_CLEAR = localize('sql.migration.select.service.de
 export const MIGRATION_SERVICE_SELECT_HEADING = localize('sql.migration.select.service.heading', 'Filter the migration list by Database Migration Service');
 export const MIGRATION_SERVICE_SELECT_SERVICE_LABEL = localize('sql.migration.select.service.service.label', 'Azure Database Migration Service');
 export const MIGRATION_SERVICE_SELECT_SERVICE_PROMPT = localize('sql.migration.select.service.prompt', 'Select a Database Migration Service');
+
+// Upload Arm Template Dialog
+export const SELECT_STORAGE_ACCOUNT_TITLE = localize('sql.migration.select.storage.account.title', "Select Azure Storage Account");
+export const STORAGE_ACCOUNT_SELECT_HEADING = localize('sql.migration.select.storage.account.heading', "Enter the details below to select the Azure Storage account and save the script as template");
+export const STORAGE_ACCOUNT_SELECT_LABEL = localize('sql.migration.select.storage.account.label', "Storage Account");
+export const SAVE_LABEL = localize('sql.migration.target.provisioning.save', "Save");
+
+export const TARGET_STORAGE_ACCOUNT_INFO = localize('sql.migration.storage.account', "Your Storage Account name");
+export const TARGET_BLOB_CONTAINER_INFO = localize('sql.migration.storage.account.blob.container', "Your Blob Container name");
+export const STORAGE_ACCOUNT_LOCATION = localize('sql.migration.storage.account.location', "Your Storage Account location");
+export const STORAGE_ACCOUNT_RESOURCE_GROUP_INFO = localize('sql.migration.storage.account.location', "Azure region for your Storage Account. Only regions that contain a storage account will be shown.");
+export const SELECT_A_STORAGE_ACCOUNT = localize('sql.migration.select.storage.select.a.storage.account', "Select a Storage Account");
+export const STORAGE_ACCOUNT_SUBSCRIPTION_INFO = localize('sql.migration.storage.account.subscription', "Subscription name for your Storage Account");
+export const SAVE_TEMPLATE_SUCCESS = localize('sql.migration.target.provisioning.save.template.success', "Template saved successfully");
+export const SAVE_TEMPLATE_FAIL = localize('sql.migration.target.provisioning.save.template.fail', "Failed to save ARM Template");
+export const UPLOAD_TEMPLATE_SUCCESS = localize('sql.migration.target.provisioning.upload.template.success', "Template uploaded successfully");
+export const UPLOAD_TEMPLATE_FAIL = localize('sql.migration.target.provisioning.upload.template.fail', "Failed to upload ARM Template");
+
+
 export function MIGRATION_SERVICE_SERVICE_PROMPT(serviceName: string): string {
 	return localize('sql.migration.service.prompt', '{0} (change)', serviceName);
 }

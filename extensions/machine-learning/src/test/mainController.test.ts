@@ -17,8 +17,6 @@ import * as nbExtensionApis from '../typings/notebookServices';
 
 interface TestContext {
 	notebookExtension: vscode.Extension<any>;
-	jupyterInstallation: nbExtensionApis.IJupyterServerInstallation;
-	jupyterController: nbExtensionApis.IJupyterController;
 	nbExtensionApis: nbExtensionApis.IExtensionApi;
 	apiWrapper: TypeMoq.IMock<ApiWrapper>;
 	queryRunner: TypeMoq.IMock<QueryRunner>;
@@ -32,34 +30,14 @@ interface TestContext {
 
 function createContext(): TestContext {
 	let packages = new Map<string, nbExtensionApis.IPackageManageProvider>();
-	let jupyterInstallation: nbExtensionApis.IJupyterServerInstallation = {
-		installCondaPackages: () => { return Promise.resolve(); },
-		getInstalledPipPackages: () => { return Promise.resolve([]); },
-		installPipPackages: () => { return Promise.resolve(); },
-		uninstallPipPackages: () => { return Promise.resolve(); },
-		uninstallCondaPackages: () => { return Promise.resolve(); },
-		executeBufferedCommand: () => { return Promise.resolve(''); },
-		executeStreamedCommand: () => { return Promise.resolve(); },
-		pythonExecutable: '',
-		pythonInstallationPath: '',
-		installPythonPackage: () => { return Promise.resolve(); }
-	};
-
-	let jupyterController = {
-		jupyterInstallation: jupyterInstallation
-	};
 
 	let extensionPath = path.join(__dirname, '..', '..');
 	let extensionApi: nbExtensionApis.IExtensionApi = {
-		getJupyterController: () => { return jupyterController; },
 		registerPackageManager: (providerId: string, packageManagerProvider: nbExtensionApis.IPackageManageProvider) => {
 			packages.set(providerId, packageManagerProvider);
 		},
-		getPackageManagers: () => { return packages; },
 	};
 	return {
-		jupyterInstallation: jupyterInstallation,
-		jupyterController: jupyterController,
 		nbExtensionApis: extensionApi,
 		notebookExtension: {
 			id: '',

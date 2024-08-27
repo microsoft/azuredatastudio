@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { BasePage } from './basePage';
 import * as nls from 'vscode-nls';
-import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 import * as utils from '../../common/utils';
 
 const localize = nls.loadMessageBundle();
@@ -18,11 +17,9 @@ export class ConfigurePathPage extends BasePage {
 
 	private pythonLocationDropdown: azdata.DropDownComponent;
 	private pythonDropdownLoader: azdata.LoadingComponent;
-	private newInstallButton: azdata.RadioButtonComponent;
-	private existingInstallButton: azdata.RadioButtonComponent;
 
-	private selectInstallEnabled: boolean;
-	private usingCustomPath: boolean = false;
+	private usingCustomPath = false;
+	private noPathsFound = false;
 
 	public async initialize(): Promise<boolean> {
 		let wizardDescription: string;
@@ -49,7 +46,7 @@ export class ConfigurePathPage extends BasePage {
 		this.pythonDropdownLoader = this.view.modelBuilder.loadingComponent()
 			.withItem(this.pythonLocationDropdown)
 			.withProps({
-				loading: false
+				loading: true
 			})
 			.component();
 		let browseButton = this.view.modelBuilder.button()
@@ -60,18 +57,10 @@ export class ConfigurePathPage extends BasePage {
 			}).component();
 		browseButton.onDidClick(() => this.handleBrowse());
 
-		this.createInstallRadioButtons(this.view.modelBuilder, this.model.useExistingPython);
-
 		let selectInstallForm = this.view.modelBuilder.formContainer()
 			.withFormItems([{
-				component: this.newInstallButton,
-				title: localize('configurePython.installationType', "Installation Type")
-			}, {
-				component: this.existingInstallButton,
-				title: ''
-			}, {
 				component: this.pythonDropdownLoader,
-				title: localize('configurePython.locationTextBoxText', "Python Install Location")
+				title: localize('configurePython.locationTextBoxText', "Python Location")
 			}, {
 				component: browseButton,
 				title: ''
@@ -82,46 +71,6 @@ export class ConfigurePathPage extends BasePage {
 				clickable: false
 			}).component();
 
-		let allParentItems = [selectInstallContainer];
-		if (this.model.pythonLocation) {
-			let installedPathTextBox = this.view.modelBuilder.inputBox().withProps({
-				value: this.model.pythonLocation,
-				enabled: false,
-				width: '400px'
-			}).component();
-			let editPathButton = this.view.modelBuilder.button().withProps({
-				label: 'Edit',
-				width: '70px',
-				secondary: true
-			}).component();
-			let editPathForm = this.view.modelBuilder.formContainer()
-				.withFormItems([{
-					title: localize('configurePython.pythonConfigured', "Python runtime configured!"),
-					component: installedPathTextBox
-				}, {
-					title: '',
-					component: editPathButton
-				}]).component();
-
-			let editPathContainer = this.view.modelBuilder.divContainer()
-				.withItems([editPathForm])
-				.withProps({
-					clickable: false
-				}).component();
-			allParentItems.push(editPathContainer);
-
-			editPathButton.onDidClick(async () => {
-				editPathContainer.display = 'none';
-				selectInstallContainer.display = 'block';
-				this.selectInstallEnabled = true;
-			});
-			selectInstallContainer.display = 'none';
-
-			this.selectInstallEnabled = false;
-		} else {
-			this.selectInstallEnabled = true;
-		}
-
 		let parentContainer = this.view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' }).component();
 		parentContainer.addItem(wizardDescriptionLabel, {
@@ -129,10 +78,10 @@ export class ConfigurePathPage extends BasePage {
 				'padding': '0px 30px 0px 30px'
 			}
 		});
-		parentContainer.addItems(allParentItems);
+		parentContainer.addItem(selectInstallContainer);
 
 		await this.view.initializeModel(parentContainer);
-		await this.updatePythonPathsDropdown(this.model.useExistingPython);
+		await this.updatePythonPathsDropdown();
 
 		return true;
 	}
@@ -144,48 +93,49 @@ export class ConfigurePathPage extends BasePage {
 		if (this.pythonDropdownLoader.loading) {
 			return false;
 		}
-		if (this.selectInstallEnabled) {
-			let pythonLocation = utils.getDropdownValue(this.pythonLocationDropdown);
-			if (!pythonLocation || pythonLocation.length === 0) {
-				this.instance.showErrorMessage(this.instance.InvalidLocationMsg);
-				return false;
-			}
 
-			this.model.pythonLocation = pythonLocation;
-			this.model.useExistingPython = !!this.existingInstallButton.checked;
-			this.model.packageUpgradeOnly = false;
-		} else {
-			this.model.packageUpgradeOnly = true;
+		let pythonLocation = utils.getDropdownValue(this.pythonLocationDropdown);
+		if (!pythonLocation || pythonLocation.length === 0) {
+			this.instance.showErrorMessage(this.instance.InvalidLocationMsg);
+			return false;
 		}
+
+		this.model.pythonLocation = pythonLocation;
 		return true;
 	}
 
-	private async updatePythonPathsDropdown(useExistingPython: boolean): Promise<void> {
+	private async updatePythonPathsDropdown(): Promise<void> {
 		this.instance.wizard.nextButton.enabled = false;
 		this.pythonDropdownLoader.loading = true;
 		try {
 			let dropdownValues: azdata.CategoryValue[];
-			if (useExistingPython) {
-				let pythonPaths = await this.model.pythonPathLookup.getSuggestions();
-				if (pythonPaths && pythonPaths.length > 0) {
-					dropdownValues = pythonPaths.map(path => {
-						return {
-							displayName: localize('configurePythyon.dropdownPathLabel', "{0} (Python {1})", path.installDir, path.version),
-							name: path.installDir
-						};
-					});
-				} else {
-					dropdownValues = [{
-						displayName: localize('configurePythyon.noVersionsFound', "No supported Python versions found."),
-						name: ''
-					}];
-				}
+			let pythonPaths = await this.model.pythonPathLookup.getSuggestions();
+			if (pythonPaths?.length > 0) {
+				dropdownValues = pythonPaths.map(path => {
+					return {
+						displayName: localize('configurePythyon.dropdownPathLabel', "{0} (Python {1})", path.installDir, path.version),
+						name: path.installDir
+					};
+				});
+				this.noPathsFound = false;
 			} else {
-				let defaultPath = JupyterServerInstallation.DefaultPythonLocation;
+				dropdownValues = [];
+			}
+
+			if (this.model.pythonLocation) {
+				// Filter out other matching path entries if they're already present
+				dropdownValues = dropdownValues.filter(val => val.name !== this.model.pythonLocation);
+				dropdownValues.unshift({
+					displayName: localize('configurePythyon.existingInstance', "{0} (Current Python Instance)", this.model.pythonLocation),
+					name: this.model.pythonLocation
+				});
+				this.noPathsFound = false;
+			} else if (dropdownValues.length === 0) {
 				dropdownValues = [{
-					displayName: localize('configurePythyon.defaultPathLabel', "{0} (Default)", defaultPath),
-					name: defaultPath
+					displayName: localize('configurePythyon.noVersionsFound', "No supported Python versions found."),
+					name: ''
 				}];
+				this.noPathsFound = true;
 			}
 
 			this.usingCustomPath = false;
@@ -197,37 +147,6 @@ export class ConfigurePathPage extends BasePage {
 			this.instance.wizard.nextButton.enabled = true;
 			this.pythonDropdownLoader.loading = false;
 		}
-	}
-
-	private createInstallRadioButtons(modelBuilder: azdata.ModelBuilder, useExistingPython: boolean): void {
-		let buttonGroup = 'installationType';
-		this.newInstallButton = modelBuilder.radioButton()
-			.withProps({
-				name: buttonGroup,
-				label: localize('configurePython.newInstall', "New Python installation"),
-				checked: !useExistingPython
-			}).component();
-		this.newInstallButton.onDidClick(() => {
-			this.existingInstallButton.checked = false;
-			this.updatePythonPathsDropdown(false)
-				.catch(err => {
-					this.instance.showErrorMessage(utils.getErrorMessage(err));
-				});
-		});
-
-		this.existingInstallButton = modelBuilder.radioButton()
-			.withProps({
-				name: buttonGroup,
-				label: localize('configurePython.existingInstall', "Use existing Python installation"),
-				checked: useExistingPython
-			}).component();
-		this.existingInstallButton.onDidClick(() => {
-			this.newInstallButton.checked = false;
-			this.updatePythonPathsDropdown(true)
-				.catch(err => {
-					this.instance.showErrorMessage(utils.getErrorMessage(err));
-				});
-		});
 	}
 
 	private async handleBrowse(): Promise<void> {
@@ -251,7 +170,12 @@ export class ConfigurePathPage extends BasePage {
 			if (this.usingCustomPath) {
 				existingValues[0] = newValue;
 			} else {
-				existingValues.unshift(newValue);
+				if (this.noPathsFound) {
+					// Replace "No paths found" placeholder
+					existingValues[0] = newValue;
+				} else {
+					existingValues.unshift(newValue);
+				}
 				this.usingCustomPath = true;
 			}
 

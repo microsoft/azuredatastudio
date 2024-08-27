@@ -1,10 +1,4 @@
 steps:
-  - task: InstallAppleCertificate@2
-    displayName: 'Install developer certificate'
-    inputs:
-      certSecureFile: 'osx_signing_key.p12'
-    condition: eq(variables['signed'], true)
-
   - task: DownloadPipelineArtifact@2
     inputs:
       artifact: Compilation
@@ -28,20 +22,13 @@ steps:
       versionSpec: '3.11'
       addToPath: true
 
-  - task: AzureKeyVault@1
-    displayName: 'Azure Key Vault: Get Secrets'
-    inputs:
-      azureSubscription: 'ADS Pipelines'
-      KeyVaultName: ado-secrets
-      SecretsFilter: 'github-distro-mixin-password'
-
   - script: |
       set -e
 
       cat << EOF > ~/.netrc
       machine github.com
       login azuredatastudio
-      password $(github-distro-mixin-password)
+      password $(Github-Mixin-Password)
       EOF
 
       git config user.email "sqltools@service.microsoft.com"
@@ -82,7 +69,7 @@ steps:
       CHILD_CONCURRENCY=1 yarn --frozen-lockfile
     displayName: Install dependencies
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
     condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
 
   - script: |
@@ -110,8 +97,8 @@ steps:
       yarn gulp vscode-darwin-$(VSCODE_ARCH)-min-ci
     displayName: Build
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
-      VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
+      VSCODE_MIXIN_PASSWORD: $(Github-Mixin-Password)
     condition: and(succeeded(), ne(variables['VSCODE_ARCH'], 'universal'))
 
   - script: |
@@ -119,7 +106,7 @@ steps:
       ./scripts/test.sh --build --tfs "Unit Tests" --coverage
     displayName: Run unit tests
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
@@ -134,7 +121,7 @@ steps:
       ./scripts/test-integration.sh --build --tfs "Integration Tests"
     displayName: Run core integration tests
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
@@ -153,7 +140,7 @@ steps:
     displayName: Run core smoke tests (Continue on Error)
     continueOnError: true
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
     condition: and(succeeded(), and(or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')), ne(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
   - script: |
@@ -163,7 +150,7 @@ steps:
       yarn smoketest --build "$APP_ROOT/$APP_NAME" --log "$(build.artifactstagingdirectory)/logs/darwin/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions"
     displayName: Run core smoke tests (Fail on Error)
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
     condition: and(succeeded(), and(or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')), eq(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
   # - script: |
@@ -265,4 +252,4 @@ steps:
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection'
     inputs:
-      failOnAlert: true
+      failOnAlert: false # revert once CG is uploading dependencies to ADO

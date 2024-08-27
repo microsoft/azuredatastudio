@@ -742,8 +742,14 @@ Default Skipped Commands:
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/api/common/extHostModelView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="columnHeaderLabel">
+      <source xml:lang="en">, With Column Headers: </source>
+    </trans-unit>
     <trans-unit id="invalidIndex">
       <source xml:lang="en">The index {0} is invalid.</source>
+    </trans-unit>
+    <trans-unit id="rowNumLabel">
+      <source xml:lang="en">Table has </source>
     </trans-unit>
     <trans-unit id="unknownComponentType">
       <source xml:lang="en">Unknown component type. Must use ModelBuilder to create objects</source>

@@ -12,13 +12,6 @@ steps:
       versionSpec: '3.11'
       addToPath: true
 
-  - task: AzureKeyVault@1
-    inputs:
-      azureSubscription: 'ADS Pipelines'
-      KeyVaultName: ado-secrets
-      SecretsFilter: 'github-distro-mixin-password,standalone-extensions-uri,esrp-pki,esrp-aad-username,esrp-aad-password'
-    displayName: 'Azure Key Vault: Get Secrets'
-
   - task: DownloadPipelineArtifact@2
     inputs:
       artifact: Compilation
@@ -35,7 +28,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      "machine github.com`nlogin azuredatastudio`npassword $(github-distro-mixin-password)" | Out-File "$env:USERPROFILE\_netrc" -Encoding ASCII
+      "machine github.com`nlogin azuredatastudio`npassword $(Github-Mixin-Password)" | Out-File "$env:USERPROFILE\_netrc" -Encoding ASCII
 
       exec { git config user.email "sqltools@service.microsoft.com" }
       exec { git config user.name "AzureDataStudio" }
@@ -81,7 +74,7 @@ steps:
       $env:CHILD_CONCURRENCY="1"
       exec { yarn --frozen-lockfile }
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
     condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
     displayName: Install dependencies
 
@@ -115,8 +108,8 @@ steps:
       exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-inno-updater" }
     displayName: Build
     env:
-      GITHUB_TOKEN: $(github-distro-mixin-password)
-      VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
+      GITHUB_TOKEN: $(Github-Mixin-Password)
+      VSCODE_MIXIN_PASSWORD: $(Github-Mixin-Password)
 
   - task: UniversalPackages@0
     displayName: Download SAW Python package
@@ -127,19 +120,6 @@ steps:
       vstsFeed: '2191dd5f-4aec-491b-ac50-568bbc331c8a'
       vstsFeedPackage: '2e355f03-a97e-499a-949b-f02d62b6160c'
       vstsPackageVersion: '*'
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'), ne(variables['VSCODE_ARCH'], 'arm64'))
-
-  - powershell: |
-      # Install TSGOps specific extensions
-      $ErrorActionPreference = "Stop"
-      $tempFilePath = (New-TemporaryFile).FullName
-      $zipFilePath = $tempFilePath + ".zip"
-      $extensionUri = "$(standalone-extensions-uri)"
-      $adsExtensionPath = "$(agent.builddirectory)\azuredatastudio-win32-x64\resources\app\extensions"
-      Invoke-WebRequest -Uri $extensionUri -OutFile $tempFilePath
-      Move-Item $tempFilePath $zipFilePath
-      Expand-Archive $zipFilePath -DestinationPath $adsExtensionPath
-    displayName: Install SAW Extensions
     condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'), ne(variables['VSCODE_ARCH'], 'arm64'))
 
   # - powershell: | @anthonydresser unit tests timeout never existing the node process
@@ -176,158 +156,14 @@ steps:
     displayName: Run core integration tests (arm64)
     condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['VSCODE_ARCH'], 'arm64')))
 
-  - task: EsrpCodeSigning@3
-    displayName: 'Sign out code'
-    inputs:
-      ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(agent.builddirectory)/azuredatastudio-win32-$(VSCODE_ARCH)'
-      Pattern: '*.exe,*.node,resources/app/node_modules.asar.unpacked/*.dll,d3dcompiler_47.dll,vulkan-1.dll,libGLESv2.dll,ffmpeg.dll,libEGL.dll,Microsoft.SqlTools.Hosting.dll,Microsoft.SqlTools.ResourceProvider.Core.dll,Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll,MicrosoftSqlToolsCredentials.dll,MicrosoftSqlToolsServiceLayer.dll,Newtonsoft.Json.dll,SqlSerializationService.dll,SqlToolsResourceProviderService.dll,Microsoft.SqlServer.*.dll,Microsoft.Data.Tools.Sql.BatchParser.dll'
-      signConfigType: inlineSignParams
-      inlineOperation: |
-        [
-          {
-            "keyCode": "CP-230012",
-            "operationSetCode": "SigntoolSign",
-            "parameters": [
-            {
-              "parameterName": "OpusName",
-              "parameterValue": "Azure Data Studio"
-            },
-            {
-              "parameterName": "OpusInfo",
-              "parameterValue": "https://github.com/microsoft/azuredatastudio"
-            },
-            {
-              "parameterName": "PageHash",
-              "parameterValue": "/NPH"
-            },
-            {
-              "parameterName": "FileDigest",
-              "parameterValue": "/fd sha256"
-            },
-            {
-              "parameterName": "TimeStamp",
-              "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-            }
-            ],
-            "toolName": "signtool.exe",
-            "toolVersion": "6.2.9304.0"
-          },
-          {
-            "keyCode": "CP-230012",
-            "operationSetCode": "SigntoolVerify",
-            "parameters": [
-            {
-              "parameterName": "VerifyAll",
-              "parameterValue": "/all"
-            }
-                ],
-            "toolName": "signtool.exe",
-            "toolVersion": "6.2.9304.0"
-          }
-        ]
-      SessionTimeout: 600
-      MaxConcurrency: 5
-      MaxRetryAttempts: 20
-    condition: and(succeeded(), eq(variables['signed'], true))
-
-  - task: UseDotNet@2
-    displayName: 'Install .NET 6.x for ESRP signing'
-    inputs:
-      version: 6.x
-    condition: and(succeeded(), eq(variables['signed'], true))
-
-  - task: EsrpClientTool@1
-    displayName: Download ESRPClient
-    condition: and(succeeded(), eq(variables['signed'], true))
-
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      $EsrpClientTool = (gci -directory -filter EsrpClientTool_* $(Agent.RootDirectory)\_tasks | Select-Object -last 1).FullName
-      $EsrpCliZip = (gci -recurse -filter esrpcli.*.zip $EsrpClientTool | Select-Object -last 1).FullName
-      mkdir -p $(Agent.TempDirectory)\esrpcli
-      Expand-Archive -Path $EsrpCliZip -DestinationPath $(Agent.TempDirectory)\esrpcli
-      $EsrpCliDllPath = (gci -recurse -filter esrpcli.dll $(Agent.TempDirectory)\esrpcli | Select-Object -last 1).FullName
-      echo "##vso[task.setvariable variable=EsrpCliDllPath]$EsrpCliDllPath"
-    displayName: Find ESRP CLI
-    condition: and(succeeded(), eq(variables['signed'], true))
-
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-user-setup" }
       exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-system-setup" }
       exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-archive" }
-    displayName: Archive & User & System setup (Unsigned)
-    condition: and(succeeded(), eq(variables['signed'], false))
-
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      $env:ESRPPKI = "$(ESRP-PKI)"
-      $env:ESRPAADUsername = "$(esrp-aad-username)"
-      $env:ESRPAADPassword = "$(esrp-aad-password)"
-      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-user-setup" --sign }
-      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-system-setup" --sign }
-      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-archive" --sign }
-    displayName: Archive & User & System setup (Signed)
-    condition: and(succeeded(), eq(variables['signed'], true))
-
-  - task: EsrpCodeSigning@3
-    displayName: 'Sign installers'
-    inputs:
-      ConnectedServiceName: 'Code Signing'
-      FolderPath: '.build'
-      Pattern: '*.exe'
-      signConfigType: inlineSignParams
-      inlineOperation: |
-        [
-          {
-            "keyCode": "CP-230012",
-            "operationSetCode": "SigntoolSign",
-            "parameters": [
-            {
-              "parameterName": "OpusName",
-              "parameterValue": "Azure Data Studio"
-            },
-            {
-              "parameterName": "OpusInfo",
-              "parameterValue": "https://github.com/microsoft/azuredatastudio"
-            },
-            {
-              "parameterName": "PageHash",
-              "parameterValue": "/NPH"
-            },
-            {
-              "parameterName": "FileDigest",
-              "parameterValue": "/fd sha256"
-            },
-            {
-              "parameterName": "TimeStamp",
-              "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-            }
-            ],
-            "toolName": "signtool.exe",
-            "toolVersion": "6.2.9304.0"
-          },
-          {
-            "keyCode": "CP-230012",
-            "operationSetCode": "SigntoolVerify",
-            "parameters": [
-            {
-              "parameterName": "VerifyAll",
-              "parameterValue": "/all"
-            }
-                ],
-            "toolName": "signtool.exe",
-            "toolVersion": "6.2.9304.0"
-          }
-        ]
-      SessionTimeout: 600
-      MaxConcurrency: 5
-      MaxRetryAttempts: 20
-    condition: and(succeeded(), eq(variables['signed'], true))
+    displayName: Archive & User & System setup
+    condition: succeeded()
 
   - task: ArchiveFiles@2
     displayName: 'Archive build scripts source'

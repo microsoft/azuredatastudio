@@ -31,14 +31,6 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 	echo "Running integration tests with '%INTEGRATION_TEST_ELECTRON_PATH%' as build."
 )
 
-if "%SKIP_PYTHON_INSTALL_TEST%" == "1" (
-	echo Skipping Python installation tests.
-) else (
-	set PYTHON_TEST_PATH=%VSCODEUSERDATADIR%\TestPythonInstallation
-	echo %PYTHON_TEST_PATH%
-	call %INTEGRATION_TEST_ELECTRON_PATH% --extensionDevelopmentPath=%~dp0\..\extensions\notebook --extensionTestsPath=%~dp0\..\extensions\notebook\out\integrationTest --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
-)
-
 call %INTEGRATION_TEST_ELECTRON_PATH% --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222 ^
 --extensionDevelopmentPath=%~dp0\..\extensions\integration-tests --extensionTestsPath=%~dp0\..\extensions\integration-tests\out\test --disable-telemetry --disable-crash-reporter --disable-updates -nogpu
 

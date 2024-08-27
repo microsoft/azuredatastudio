@@ -67,7 +67,6 @@ export interface NotebookConfig {
 	showCellStatusBar: boolean;
 	sqlStopOnError: boolean;
 	trustedBooks: Array<string>;
-	useExistingPython: boolean;
 }
 
 export interface NotebookConfig {
@@ -87,7 +86,6 @@ export interface NotebookConfig {
 	showNotebookConvertActions: boolean;
 	sqlStopOnError: boolean;
 	trustedBooks: Array<string>;
-	useExistingPython: boolean;
 }
 
 export class SqlSessionManager implements nb.SessionManager {

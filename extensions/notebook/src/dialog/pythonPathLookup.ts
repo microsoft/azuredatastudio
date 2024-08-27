@@ -42,16 +42,24 @@ export class PythonPathLookup {
 		}
 
 		this._pythonCommands = [
-			{ command: 'python3.7' },
-			{ command: 'python3.6' },
+			{ command: 'python3.13' },
+			{ command: 'python3.12' },
+			{ command: 'python3.11' },
+			{ command: 'python3.10' },
+			{ command: 'python3.9' },
+			{ command: 'python3.8' },
 			{ command: 'python3' },
 			{ command: 'python' }
 		];
 
 		if (process.platform === constants.winPlatform) {
 			this._pythonCommands.concat([
-				{ command: 'py', args: ['-3.7'] },
-				{ command: 'py', args: ['-3.6'] },
+				{ command: 'py', args: ['-3.13'] },
+				{ command: 'py', args: ['-3.12'] },
+				{ command: 'py', args: ['-3.11'] },
+				{ command: 'py', args: ['-3.10'] },
+				{ command: 'py', args: ['-3.9'] },
+				{ command: 'py', args: ['-3.8'] },
 				{ command: 'py', args: ['-3'] }
 			]);
 		}

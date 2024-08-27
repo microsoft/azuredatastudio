@@ -58,6 +58,9 @@
     <trans-unit id="sql.migration.resource.group.description">
       <source xml:lang="en">A resource group is a container that holds related resources for an Azure solution.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.target.provisioning.template.display.limit">
+      <source xml:lang="en">A single ARM template has a deployment limitation of a maximum 50 Azure SQL Databases. The template for the first 50 databases is displayed below. To view all templates, save the template JSON file in a local storage or Azure Blob storage.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.pre.req.2">
       <source xml:lang="en">A source SQL Server database(s) running on on-premises, or on SQL Server on Azure Virtual Machine or any virtual machine running in the cloud (private, public).</source>
     </trans-unit>
@@ -397,6 +400,9 @@
     <trans-unit id="sql.migration.sku.location">
       <source xml:lang="en">Azure region for your Azure SQL target. Only regions that contain a target eligible for migration will be shown.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.storage.account.location">
+      <source xml:lang="en">Azure region for your Storage Account. Only regions that contain a storage account will be shown.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.summary.azure.storage">
       <source xml:lang="en">Azure storage</source>
     </trans-unit>
@@ -429,6 +435,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.wizard.sku.all">
       <source xml:lang="en">Based on the assessment results, all {0} of your databases in an online state can be migrated to Azure SQL.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.target.provisioning.description">
+      <source xml:lang="en">Below is the ARM script for the recommended target SKU. You can save the script as template.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.targetStorageConfiguration.info">
       <source xml:lang="en">Below is the target storage configuration required to meet your storage performance needs.</source>
@@ -587,6 +596,9 @@
       <source xml:lang="en">Close</source>
     </trans-unit>
     <trans-unit id="sql.migration.close">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.target.provisioning.close">
       <source xml:lang="en">Close</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.azureRecommendation.collectData.method">
@@ -1027,6 +1039,9 @@
     <trans-unit id="sql.migration.enter.your.sql.cred">
       <source xml:lang="en">Enter the credentials for the source SQL Server instance. These credentials will be used while migrating databases to Azure SQL.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.select.storage.account.heading">
+      <source xml:lang="en">Enter the details below to select the Azure Storage account and save the script as template</source>
+    </trans-unit>
     <trans-unit id="sql.migration.services.container.description">
       <source xml:lang="en">Enter the information below to add a new Azure Database Migration Service.</source>
     </trans-unit>
@@ -1129,6 +1144,12 @@
     <trans-unit id="sql.migration.dms.provision.failed">
       <source xml:lang="en">Failed to provision a Database Migration Service. Wait a few minutes and then try again.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.target.provisioning.save.template.fail">
+      <source xml:lang="en">Failed to save ARM Template</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.target.provisioning.upload.template.fail">
+      <source xml:lang="en">Failed to upload ARM Template</source>
+    </trans-unit>
     <trans-unit id="sql.migration.tab.button.feedback.description">
       <source xml:lang="en">Feedback</source>
     </trans-unit>
@@ -1203,6 +1224,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.sku.azureConfiguration.generalPurpose">
       <source xml:lang="en">General purpose</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.target.provisioning.generate.template">
+      <source xml:lang="en">Generate Template</source>
     </trans-unit>
     <trans-unit id="sql.migration.status.generatingscript">
       <source xml:lang="en">Generating script</source>
@@ -1716,6 +1740,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.saved.assessment.next">
       <source xml:lang="en">Next</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sku.azureConfiguration.nextGenGeneralPurpose">
+      <source xml:lang="en">Next-gen General Purpose</source>
     </trans-unit>
     <trans-unit id="sql.migration.no">
       <source xml:lang="en">No</source>
@@ -2233,6 +2260,12 @@
     <trans-unit id="sql.migration.sku.sql.temp">
       <source xml:lang="en">SQL tempdb</source>
     </trans-unit>
+    <trans-unit id="sql.migration.target.provisioning.save">
+      <source xml:lang="en">Save</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.target.provisioning.title">
+      <source xml:lang="en">Save Template</source>
+    </trans-unit>
     <trans-unit id="sql.migration.save.close">
       <source xml:lang="en">Save and close</source>
     </trans-unit>
@@ -2244,6 +2277,9 @@
     </trans-unit>
     <trans-unit id="sql.ir.save.script">
       <source xml:lang="en">Save script</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.target.upload.to.azure">
+      <source xml:lang="en">Save to Azure blob container</source>
     </trans-unit>
     <trans-unit id="sql.migration.saved.assessment.result">
       <source xml:lang="en">Saved session</source>
@@ -2317,6 +2353,9 @@
     <trans-unit id="sql.migration.select">
       <source xml:lang="en">Select</source>
     </trans-unit>
+    <trans-unit id="sql.migration.select.storage.account.title">
+      <source xml:lang="en">Select Azure Storage Account</source>
+    </trans-unit>
     <trans-unit id="sql.migration.select.service.title">
       <source xml:lang="en">Select Database Migration Service</source>
     </trans-unit>
@@ -2331,6 +2370,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.status.select.service.MESSAGE">
       <source xml:lang="en">Select a Database Migration Service to monitor migrations.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.storage.select.a.storage.account">
+      <source xml:lang="en">Select a Storage Account</source>
     </trans-unit>
     <trans-unit id="sql.migration.blob.container.select">
       <source xml:lang="en">Select a blob container value first.</source>
@@ -2623,8 +2665,8 @@
     <trans-unit id="sql.migration.sku.targetStorageConfiguration.storage">
       <source xml:lang="en">Storage</source>
     </trans-unit>
-    <trans-unit id="sql.migration.storage.account">
-      <source xml:lang="en">Storage account</source>
+    <trans-unit id="sql.migration.select.storage.account.label">
+      <source xml:lang="en">Storage Account</source>
     </trans-unit>
     <trans-unit id="sql.migration.storage.account.details.label">
       <source xml:lang="en">Storage account</source>
@@ -2646,6 +2688,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.sku.subscription">
       <source xml:lang="en">Subscription name for your Azure SQL target</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.storage.account.subscription">
+      <source xml:lang="en">Subscription name for your Storage Account</source>
     </trans-unit>
     <trans-unit id="sql.migration.state.succeeded">
       <source xml:lang="en">Succeeded</source>
@@ -2784,6 +2829,12 @@
     </trans-unit>
     <trans-unit id="sql.migration.target.version">
       <source xml:lang="en">Target version</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.target.provisioning.save.template.success">
+      <source xml:lang="en">Template saved successfully</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.target.provisioning.upload.template.success">
+      <source xml:lang="en">Template uploaded successfully</source>
     </trans-unit>
     <trans-unit id="sql.migration.test.connection">
       <source xml:lang="en">Test connection</source>
@@ -3165,6 +3216,12 @@
     </trans-unit>
     <trans-unit id="sql.migration.sku.resource.port">
       <source xml:lang="en">Your Azure SQL target resource port number : 0 - 65535</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.storage.account.blob.container">
+      <source xml:lang="en">Your Blob Container name</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.storage.account">
+      <source xml:lang="en">Your Storage Account name</source>
     </trans-unit>
     <trans-unit id="sql.migration.pre.req.4">
       <source xml:lang="en">Your database backup location details, either a network file share or an Azure Blob Storage container (not required for Azure SQL Database targets).</source>

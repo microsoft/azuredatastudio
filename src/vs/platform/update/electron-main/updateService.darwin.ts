@@ -15,7 +15,7 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { IRequestService } from 'vs/platform/request/common/request';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IUpdate, State, StateType, UpdateType } from 'vs/platform/update/common/update';
-import { AbstractUpdateService, createUpdateURL, UpdateNotAvailableClassification } from 'vs/platform/update/electron-main/abstractUpdateService';
+import { AbstractUpdateService, UpdateNotAvailableClassification } from 'vs/platform/update/electron-main/abstractUpdateService'; // {{SQL CARBON EDIT}}
 
 export class DarwinUpdateService extends AbstractUpdateService implements IRelaunchHandler {
 
@@ -71,22 +71,36 @@ export class DarwinUpdateService extends AbstractUpdateService implements IRelau
 		this.setState(State.Idle(UpdateType.Archive, message));
 	}
 
-	protected buildUpdateFeedUrl(quality: string): string | undefined {
-		let assetID: string;
+	// {{SQL CARBON EDIT}}
+	protected buildPlatform(): string {
 		if (!this.productService.darwinUniversalAssetId) {
-			assetID = process.arch === 'x64' ? 'darwin' : 'darwin-arm64';
+			return process.arch === 'x64' ? 'darwin' : 'darwin-arm64';
 		} else {
-			assetID = this.productService.darwinUniversalAssetId;
+			return 'darwin-universal';
 		}
-		const url = createUpdateURL(assetID, quality, this.productService);
+	}
+
+	protected buildUpdateFeedUrl(quality: string): string | undefined {
+		let feedUrl: string;
+
+		// {{SQL CARBON EDIT}} - Use the metadata files from the Download Center as the update feed.
+		if (!this.productService.darwinUniversalAssetId) {
+			feedUrl = process.arch === 'x64' ? this.productService.updateMetadataMacUrl : this.productService.updateMetadataMacArmUrl;
+		} else {
+			feedUrl = this.productService.updateMetadataMacUniversalUrl;
+		}
+
 		try {
-			electron.autoUpdater.setFeedURL({ url });
+			electron.autoUpdater.setFeedURL({
+				url: feedUrl,
+				serverType: 'json',
+			});
 		} catch (e) {
 			// application is very likely not signed
 			this.logService.error('Failed to set update feed URL', e);
 			return undefined;
 		}
-		return url;
+		return feedUrl;
 	}
 
 	protected doCheckForUpdates(context: any): void {

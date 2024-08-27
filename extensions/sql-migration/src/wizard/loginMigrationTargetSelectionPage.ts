@@ -12,10 +12,10 @@ import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH, WizardController } from './wizardController';
 import * as utils from '../api/utils';
-import { MigrationTargetType } from '../api/utils';
+import { getSourceLogins, MigrationTargetType } from '../api/utils';
 import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
-import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionProfile, isSourceConnectionSysAdmin, LoginTableInfo } from '../api/sqlUtils';
+import { collectTargetLogins, getSourceConnectionProfile, isSourceConnectionSysAdmin } from '../api/sqlUtils';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
 import { ConnectingToTargetFailed, } from '../models/loginMigrationModel';
@@ -343,13 +343,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			await this.populateSubscriptionDropdown();
 			await this.populateLocationDropdown();
 
-			// Collect source login info here, as it will speed up loading the next page
-			const sourceLogins: LoginTableInfo[] = [];
-			sourceLogins.push(...await collectSourceLogins(
-				await getSourceConnectionId(),
-				this.migrationStateModel.isWindowsAuthMigrationSupported));
-			this.migrationStateModel._loginMigrationModel.collectedSourceLogins = true;
-			this.migrationStateModel._loginMigrationModel.loginsOnSource = sourceLogins;
+			await getSourceLogins(this.migrationStateModel);
 		}));
 
 		const flexContainer = this._view.modelBuilder.flexContainer()
@@ -1131,3 +1125,4 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 		}
 	}
 }
+

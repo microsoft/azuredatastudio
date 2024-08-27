@@ -1,5 +1,25 @@
 # Change Log
 
+## July 2024
+
+Azure Data Studio 1.49.0 is the latest general availability (GA) release.
+
+- Release number: 1.49.0
+- Release date: July 31, 2024
+
+### What's new in 1.49.0
+
+| New Item | Details |
+| --- | --- |
+| SQL Database Projects Extension | Support for Fabric mirrored SQL database (preview) target platform |
+
+### Bug fixes in 1.49.0
+
+| New Item | Details |
+| --- | --- |
+| Accessibility | Accessibility improvements were made in the Database Properties dialog. |
+| Query editor | Fixed query editor override of transaction isolation level setting in T-SQL script. |
+
 ## February 2024
 
 Azure Data Studio 1.48.0 is the latest general availability (GA) release.

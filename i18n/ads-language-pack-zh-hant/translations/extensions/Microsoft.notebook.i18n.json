@@ -108,17 +108,13 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "瀏覽",
-			"configurePython.installationType": "安裝類型",
-			"configurePython.newInstall": "新增 Python 安裝",
 			"configurePythyon.noVersionsFound": "找不到支援的 Python 版本。",
 			"configurePython.descriptionWithoutKernel": "Notebook 核心需要設定 Python 執行階段並安裝相依性。",
-			"configurePython.locationTextBoxText": "Python 安裝位置",
-			"configurePython.pythonConfigured": "已設定 Python 執行階段!",
+			"configurePython.locationTextBoxText": "Python 位置",
 			"configurePython.selectFileLabel": "選取",
 			"configurePython.descriptionWithKernel": "'{0}' 核心需要設定 Python 執行階段並安裝相依性。",
-			"configurePython.existingInstall": "使用現有的 Python 安裝",
+			"configurePythyon.existingInstance": "{0} (目前的 Python 執行個體)",
 			"configurePythyon.customPathLabel": "{0} (自訂)",
-			"configurePythyon.defaultPathLabel": "{0} (預設)",
 			"configurePythyon.dropdownPathLabel": "{0} (Python {1})"
 		},
 		"dist/dialog/configurePython/configurePythonWizard": {
@@ -190,28 +186,14 @@
 			"errNotebookUriMissing": "筆記本路徑為必要項"
 		},
 		"dist/jupyter/jupyterServerInstallation": {
-			"msgShutdownNotebookSessions": "為了進行更新，將關閉使用中的 Python 筆記本工作階段。您要立即繼續嗎?",
 			"msgWaitingForInstall": "目前在進行另一個 Python 安裝。請等它完成。",
-			"msgPythonRunningError": "當 Python 正在執行時，無法覆寫現有的 Python 安裝。請先關閉所有使用中的筆記本再繼續。",
-			"dontAskAgain": "不要再詢問",
-			"msgDownloadPython": "正在將平台的本機 python: {0} 下載至 {1}",
-			"msgPythonDownloadPending": "正在下載 python 套件",
 			"msgGetPythonUserDirFailed": "取得 Python 使用者路徑時發生錯誤: {0}",
 			"msgPackageRetrievalFailed": "嘗試擷取已安裝套件的清單時發生錯誤: {0}",
-			"msgPythonDirectoryError": "建立 python 安裝目錄時發生錯誤",
-			"msgPythonDownloadError": "下載 python 設定時發生錯誤",
-			"msgPythonUnpackError": "將 python 套件組合解壓縮時發生錯誤",
 			"msgTaskName": "正在安裝 Notebook 相依性",
 			"msgDependenciesInstallationFailed": "安裝 Notebook 相依性失敗。錯誤: {0}",
 			"msgInstallPkgStart": "正在安裝 Notebook 相依性，請參閱 [工作] 檢視以取得詳細資訊",
-			"no": "否",
 			"msgInstallPkgFinish": "Notebook 相依性安裝完成",
-			"msgInstallPkgProgress": "正在安裝 Notebook 相依性",
-			"msgPythonDownloadComplete": "Python 下載完成",
-			"msgPythonVersionUpdatePrompt": "Azure Data Studio 現已提供 Python {0}。目前的 Python 版本 (3.6.6) 將在 2021 年 12 月時取消支援。您要立即更新為 Python {0} 嗎?",
-			"msgPythonVersionUpdateWarning": "將安裝 Python {0} 並取代 Python 3.6.6。某些套件可能不再與新版本相容，或可能需要重新安裝。將建立筆記本以協助您重新安裝所有 pip 套件。您要立即繼續更新嗎?",
-			"msgPythonUnpackPending": "正在解壓縮 python 套件",
-			"yes": "是"
+			"msgInstallPkgProgress": "正在安裝 Notebook 相依性"
 		},
 		"dist/jupyter/jupyterServerManager": {
 			"shutdownError": "無法關閉 Notebook 伺服器: {0}"

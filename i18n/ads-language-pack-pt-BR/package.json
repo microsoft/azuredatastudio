@@ -2,7 +2,7 @@
 	"name": "ads-language-pack-pt-br",
 	"displayName": "Portuguese (Brazil) Language Pack for Azure Data Studio",
 	"description": "Language pack extension for Portuguese (Brazil)",
-	"version": "1.48.0",
+	"version": "1.49.0",
 	"publisher": "Microsoft",
 	"repository": {
 		"type": "git",
@@ -11,7 +11,7 @@
 	"license": "SEE MIT License IN LICENSE.txt",
 	"engines": {
 		"vscode": "*",
-		"azdata": "^1.48.0"
+		"azdata": "^1.49.0"
 	},
 	"icon": "languagepack.png",
 	"categories": [

@@ -384,14 +384,6 @@
         <source xml:lang="en">Browse</source>
         <target state="translated">参照</target>
       </trans-unit>
-      <trans-unit id="configurePython.installationType">
-        <source xml:lang="en">Installation Type</source>
-        <target state="translated">インストールの種類</target>
-      </trans-unit>
-      <trans-unit id="configurePython.newInstall">
-        <source xml:lang="en">New Python installation</source>
-        <target state="translated">新しい Python インストール</target>
-      </trans-unit>
       <trans-unit id="configurePythyon.noVersionsFound">
         <source xml:lang="en">No supported Python versions found.</source>
         <target state="translated">サポートされている Python バージョンが見つかりません。</target>
@@ -401,12 +393,8 @@
         <target state="translated">Notebook カーネルには、Python ランタイムが構成され、依存関係がインストールされている必要があります。</target>
       </trans-unit>
       <trans-unit id="configurePython.locationTextBoxText">
-        <source xml:lang="en">Python Install Location</source>
-        <target state="translated">Python のインストール場所</target>
-      </trans-unit>
-      <trans-unit id="configurePython.pythonConfigured">
-        <source xml:lang="en">Python runtime configured!</source>
-        <target state="translated">Python ランタイムが構成されました!</target>
+        <source xml:lang="en">Python Location</source>
+        <target state="translated">Python の場所</target>
       </trans-unit>
       <trans-unit id="configurePython.selectFileLabel">
         <source xml:lang="en">Select</source>
@@ -416,17 +404,13 @@
         <source xml:lang="en">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</source>
         <target state="translated">'{0}' カーネルにって、Python ランタイムを構成し、依存関係をインストールする必要があります。</target>
       </trans-unit>
-      <trans-unit id="configurePython.existingInstall">
-        <source xml:lang="en">Use existing Python installation</source>
-        <target state="translated">既存の Python インストールを使用する</target>
+      <trans-unit id="configurePythyon.existingInstance">
+        <source xml:lang="en">{0} (Current Python Instance)</source>
+        <target state="translated">{0} (現在の Python インスタンス)</target>
       </trans-unit>
       <trans-unit id="configurePythyon.customPathLabel">
         <source xml:lang="en">{0} (Custom)</source>
         <target state="translated">{0} (カスタム)</target>
-      </trans-unit>
-      <trans-unit id="configurePythyon.defaultPathLabel">
-        <source xml:lang="en">{0} (Default)</source>
-        <target state="translated">{0} (既定値)</target>
       </trans-unit>
       <trans-unit id="configurePythyon.dropdownPathLabel">
         <source xml:lang="en">{0} (Python {1})</source>
@@ -676,29 +660,9 @@
   </file>
   <file original="extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation" source-language="en" datatype="plaintext" target-language="ja">
     <body>
-      <trans-unit id="msgShutdownNotebookSessions">
-        <source xml:lang="en">Active Python notebook sessions will be shutdown in order to update. Would you like to proceed now?</source>
-        <target state="translated">更新のために、アクティブな Python ノートブック セッションがシャットダウンされます。今すぐ続行しますか?</target>
-      </trans-unit>
       <trans-unit id="msgWaitingForInstall">
         <source xml:lang="en">Another Python installation is currently in progress. Waiting for it to complete.</source>
         <target state="translated">別の Python のインストールが現在進行中です。完了するのを待っています。</target>
-      </trans-unit>
-      <trans-unit id="msgPythonRunningError">
-        <source xml:lang="en">Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.</source>
-        <target state="translated">Python の実行中は、既存の Python インストールを上書きできません。続行する前に、アクティブなノートブックを閉じてください。</target>
-      </trans-unit>
-      <trans-unit id="dontAskAgain">
-        <source xml:lang="en">Don't Ask Again</source>
-        <target state="translated">今後このメッセージを表示しない</target>
-      </trans-unit>
-      <trans-unit id="msgDownloadPython">
-        <source xml:lang="en">Downloading local python for platform: {0} to {1}</source>
-        <target state="translated">{0} から {1} にプラットフォーム用のローカル Python をダウンロードしています</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadPending">
-        <source xml:lang="en">Downloading python package</source>
-        <target state="translated">Python パッケージをダウンロードしています</target>
       </trans-unit>
       <trans-unit id="msgGetPythonUserDirFailed">
         <source xml:lang="en">Encountered an error when getting Python user path: {0}</source>
@@ -707,18 +671,6 @@
       <trans-unit id="msgPackageRetrievalFailed">
         <source xml:lang="en">Encountered an error when trying to retrieve list of installed packages: {0}</source>
         <target state="translated">インストールされているパッケージの一覧を取得しようとしてエラーが発生しました: {0}</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDirectoryError">
-        <source xml:lang="en">Error while creating python installation directory</source>
-        <target state="translated">Python インストール ディレクトリの作成中にエラーが発生しました</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadError">
-        <source xml:lang="en">Error while downloading python setup</source>
-        <target state="translated">Python セットアップのダウンロード中にエラーが発生しました</target>
-      </trans-unit>
-      <trans-unit id="msgPythonUnpackError">
-        <source xml:lang="en">Error while unpacking python bundle</source>
-        <target state="translated">Python バンドルのアンパック中にエラーが発生しました</target>
       </trans-unit>
       <trans-unit id="msgTaskName">
         <source xml:lang="en">Installing Notebook dependencies</source>
@@ -732,10 +684,6 @@
         <source xml:lang="en">Installing Notebook dependencies, see Tasks view for more information</source>
         <target state="translated">Notebook 依存関係のインストールについて詳しくは、[タスク ビュー] を参照してください</target>
       </trans-unit>
-      <trans-unit id="no">
-        <source xml:lang="en">No</source>
-        <target state="translated">いいえ</target>
-      </trans-unit>
       <trans-unit id="msgInstallPkgFinish">
         <source xml:lang="en">Notebook dependencies installation is complete</source>
         <target state="translated">Notebook 依存関係のインストールが完了しました</target>
@@ -743,26 +691,6 @@
       <trans-unit id="msgInstallPkgProgress">
         <source xml:lang="en">Notebook dependencies installation is in progress</source>
         <target state="translated">Notebook 依存関係のインストールが進行中です</target>
-      </trans-unit>
-      <trans-unit id="msgPythonDownloadComplete">
-        <source xml:lang="en">Python download is complete</source>
-        <target state="translated">Python のダウンロードが完了しました</target>
-      </trans-unit>
-      <trans-unit id="msgPythonVersionUpdatePrompt">
-        <source xml:lang="en">Python {0} is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python {0} now?</source>
-        <target state="translated">Python {0} が Azure Data Studio で利用できるようになりました。現在の Python バージョン (3.6.6) は、2021 年 12 月にサポートされなくなります。今すぐ Python {0} に更新しますか?</target>
-      </trans-unit>
-      <trans-unit id="msgPythonVersionUpdateWarning">
-        <source xml:lang="en">Python {0} will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?</source>
-        <target state="translated">Python {0} がインストールされ、Python 3.6.6 が置換されます。一部のパッケージは、新しいバージョンとの互換性がなくなったか、再インストールが必要になる可能性があります。すべての pip パッケージの再インストールを支援するためにノートブックが作成されます。今すぐ更新を続行しますか?</target>
-      </trans-unit>
-      <trans-unit id="msgPythonUnpackPending">
-        <source xml:lang="en">Unpacking python package</source>
-        <target state="translated">Python パッケージをアンパックしています</target>
-      </trans-unit>
-      <trans-unit id="yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">はい</target>
       </trans-unit>
     </body>
   </file>

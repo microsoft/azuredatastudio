@@ -106,6 +106,10 @@ export namespace GetSqlMigrationAssessmentItemsRequest {
 	export const type = new RequestType<SqlMigrationAssessmentParams, AssessmentResult, void, void>('migration/getassessments');
 }
 
+export namespace GetSqlMigrationGenerateArmTemplateRequest {
+	export const type = new RequestType<string, string[], void, void>('migration/getarmtemplate');
+}
+
 export interface SqlMigrationSkuRecommendationsParams {
 	dataFolder: string;
 	perfQueryIntervalInSec: number;
@@ -118,6 +122,7 @@ export interface SqlMigrationSkuRecommendationsParams {
 	includePreviewSkus: boolean;
 	databaseAllowList: string[];
 	isPremiumSSDV2Enabled: boolean;
+	isNextGenGPEnabled: boolean;
 }
 
 export interface AzureSqlSkuCategory {
@@ -169,6 +174,8 @@ export interface AzureSqlSku {
 export interface AzureSqlPaaSSku extends AzureSqlSku {
 	category: AzureSqlSkuPaaSCategory;
 	storageMaxSizeInMb: number;
+	maxStorageIops: Float32Array;
+	maxThroughputMBps: Float32Array;
 }
 
 export interface AzureSqlIaaSSku extends AzureSqlSku {
@@ -309,6 +316,7 @@ export const enum AzureSqlPaaSServiceTier {
 	GeneralPurpose = 0,
 	BusinessCritical,
 	HyperScale,
+	NextGenGeneralPurpose
 }
 
 export const enum AzureSqlPaaSHardwareType {
@@ -541,6 +549,7 @@ export interface ISqlMigrationService {
 	startPerfDataCollection(ownerUri: string, dataFolder: string, perfQueryIntervalInSec: number, staticQueryIntervalInSec: number, numberOfIterations: number): Promise<StartPerfDataCollectionResult | undefined>;
 	stopPerfDataCollection(): Promise<StopPerfDataCollectionResult | undefined>;
 	refreshPerfDataCollection(lastRefreshedTime: Date): Promise<RefreshPerfDataCollectionResult | undefined>;
+	getArmTemplate(targetType: string): Promise<string[] | undefined>;
 	startLoginMigration(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
 	validateLoginMigration(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationResult | undefined>;
 	validateSysAdminPermission(sourceConnectionString: string, targetConnectionString: string, loginList: string[], aadDomainName: string): Promise<StartLoginMigrationPreValidationResult | undefined>;

@@ -24,6 +24,7 @@ import { CssStyles } from 'azdata';
 import { DeclarativeTableCellValue } from 'azdata';
 import path = require('path');
 import { spawn } from "child_process"
+import { collectSourceLogins, getSourceConnectionId, getSourceConnectionString, LoginTableInfo } from './sqlUtils';
 
 export type TargetServerType = azure.SqlVMServer | azureResource.AzureSqlManagedInstance | azure.AzureSqlDatabaseServer;
 
@@ -904,6 +905,41 @@ export async function createManualIRconfigContentContainer(view: azdata.ModelVie
 	return container;
 }
 
+export async function getSourceLogins(migrationStateModel: MigrationStateModel) {
+	var sourceLogins: LoginTableInfo[] = [];
+
+	// execute a query against the source to get the logins
+	sourceLogins.push(...await collectSourceLogins(
+		await getSourceConnectionId(),
+		migrationStateModel.isWindowsAuthMigrationSupported));
+
+	// validate Login Eligibility result contains system logins in Exception map from which system login names can be extracted.
+	// These system logins are not to be displayed in the source logins list
+	var validateLoginEligibilityResult: contracts.StartLoginMigrationPreValidationResult | undefined = await migrationStateModel.migrationService.validateLoginEligibility(
+		await getSourceConnectionString(),
+		"",
+		sourceLogins.map(row => row.loginName),
+		""
+	);
+
+	var sourceSystemLoginsName: string[] = [];
+	var sourceSystemLogins: LoginTableInfo[] = [];
+
+	if (validateLoginEligibilityResult !== undefined) {
+		sourceSystemLoginsName = Object.keys(validateLoginEligibilityResult.exceptionMap).map(loginName => loginName.toLocaleLowerCase());
+
+		// separate out system logins from non system logins
+		sourceSystemLogins = sourceLogins.filter(login => sourceSystemLoginsName.includes(login.loginName.toLocaleLowerCase()));
+		sourceLogins = sourceLogins.filter(login => !sourceSystemLoginsName.includes(login.loginName.toLocaleLowerCase()));
+	} else {
+		logError(TelemetryViews.Utils, 'utils.getSourceLogins', new Error(constants.VALIDATE_LOGIN_ELIGIBILITY_FAILED));
+	}
+
+	migrationStateModel._loginMigrationModel.collectedSourceLogins = true;
+	migrationStateModel._loginMigrationModel.loginsOnSource = sourceLogins;
+	migrationStateModel._loginMigrationModel.systemLoginsOnSource = sourceSystemLogins;
+}
+
 export async function getAzureSqlDatabaseServers(account?: Account, subscription?: azureResource.AzureResourceSubscription): Promise<azure.AzureSqlDatabaseServer[]> {
 	let sqlDatabaseServers: azure.AzureSqlDatabaseServer[] = [];
 	try {
@@ -1582,8 +1618,10 @@ export async function getRecommendedConfiguration(targetType: MigrationTargetTyp
 			}
 			else {
 				const serviceTier = recommendation.targetSku.category?.sqlServiceTier === contracts.AzureSqlPaaSServiceTier.GeneralPurpose
-					? constants.GENERAL_PURPOSE
-					: constants.BUSINESS_CRITICAL;
+					? constants.GENERAL_PURPOSE :
+					recommendation.targetSku.category?.sqlServiceTier === contracts.AzureSqlPaaSServiceTier.NextGenGeneralPurpose ?
+						constants.NEXTGEN_GENERAL_PURPOSE
+						: constants.BUSINESS_CRITICAL;
 				const hardwareType = recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.Gen5
 					? constants.GEN5
 					: recommendation.targetSku.category?.hardwareType === contracts.AzureSqlPaaSHardwareType.PremiumSeries
@@ -1629,6 +1667,27 @@ export async function promptUserForFile(filters: { [name: string]: string[] }): 
 
 	return '';
 }
+
+export function generateTemplatePath(model: MigrationStateModel, targetType: MigrationTargetType, batchNumber: number): string {
+	let date = new Date().toISOString().split('T')[0];
+	let time = new Date().toLocaleTimeString('it-IT');
+	let fileName;
+
+	// source instance same would be same across all recommendations MI/DB/VM.
+	let instanceName = model._skuRecommendationResults.recommendations?.sqlMiRecommendationResults[0].sqlInstanceName;
+
+	if (model._armTemplateResult.templates?.length! > 1 && targetType === MigrationTargetType.SQLDB) {
+		fileName = `ARMTemplate-${targetType}-${instanceName}-${date}-${time}-batch${batchNumber}.json`;
+	}
+	else {
+		fileName = `ARMTemplate-${targetType}-${instanceName}-${date}-${time}.json`;
+	}
+
+	// replacing invalid characters for a file name.
+	fileName = fileName.replace(/[/\\?%*:|"<>]/g, '-');
+	return fileName;
+}
+
 export async function refreshIntegrationRuntimeTable(_view: ModelView, _integrationRuntimeTable: DeclarativeTableComponent,
 	migrationServiceMonitoringStatus: azure.IntegrationRuntimeMonitoringData): Promise<void> {
 	if (migrationServiceMonitoringStatus.nodes.length === 0) {

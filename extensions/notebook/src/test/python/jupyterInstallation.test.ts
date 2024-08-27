@@ -8,11 +8,9 @@ import * as should from 'should';
 import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
 import * as uuid from 'uuid';
-import * as fs from 'fs-extra';
-import * as request from 'request';
 import * as utils from '../../common/utils';
-import { JupyterServerInstallation, PythonInstallSettings, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
-import { allKernelsName, ipykernelDisplayName, powershellDisplayName, python3DisplayName, winPlatform } from '../../common/constants';
+import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
+import { allKernelsName, ipykernelDisplayName, powershellDisplayName, python3DisplayName } from '../../common/constants';
 import { requiredJupyterPackages } from '../../jupyter/requiredJupyterPackages';
 
 describe('Jupyter Server Installation', function () {
@@ -243,45 +241,5 @@ describe('Jupyter Server Installation', function () {
 			allPackages = allPackages.concat(kernel.packages);
 		}
 		should(packages).be.deepEqual(allPackages);
-	});
-
-	it('Install python test - Run install while Python is already running', async function () {
-		// Should reject overwriting an existing python install if running on Windows and python is currently running.
-		if (process.platform === winPlatform) {
-			sinon.stub(utils, 'executeBufferedCommand').resolves('python.exe');
-
-			let installSettings: PythonInstallSettings = {
-				installPath: `${process.env['USERPROFILE']}\\ads-python`,
-				existingPython: false,
-				packages: []
-			};
-			await should(installation.startInstallProcess(false, installSettings)).be.rejected();
-		}
-	});
-
-	it('Install python test - Run install with existing Python instance', async function () {
-		let installSettings: PythonInstallSettings = {
-			installPath: `${process.env['USERPROFILE']}\\ads-python`,
-			existingPython: true,
-			packages: installation.getRequiredPackagesForKernel(python3DisplayName)
-		};
-
-		sinon.stub(utils, 'exists').resolves(true);
-		sinon.stub(fs, 'pathExists').resolves(false);
-		sinon.stub(utils, 'executeBufferedCommand').resolves(`${installSettings.installPath}\\site-packages`);
-
-		// Both of these are called from upgradePythonPackages
-		sinon.stub(installation, 'getInstalledPipPackages').resolves([]);
-		let pipInstallStub = sinon.stub(installation, 'installPipPackages').resolves();
-
-		let httpRequestSpy = sinon.spy(request, 'get');
-
-		await should(installation.startInstallProcess(false, installSettings)).be.resolved();
-
-		should(httpRequestSpy.callCount).be.equal(0);
-		should(pipInstallStub.callCount).be.equal(1);
-
-		let packagesToInstall = pipInstallStub.firstCall.args[0] as PythonPkgDetails[];
-		should(packagesToInstall).be.deepEqual(installation.getRequiredPackagesForKernel(python3DisplayName));
 	});
 });

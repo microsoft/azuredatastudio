@@ -56,7 +56,7 @@ const errorTextClass = 'error-text';
 			</div>
 		</div>
 		<ng-template #noDiv>
-			<div #textContainer id="textContainer" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden" [attr.aria-live]="ariaLive" [ngStyle]="this.CSSStyles"></div>
+			<div #textContainer id="textContainer" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden" [attr.aria-live]="ariaLive" [ngStyle]="this.CSSStyles" tabindex="0"></div>
 		</ng-template>
 	</ng-template>`
 })

@@ -108,17 +108,13 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "参照",
-			"configurePython.installationType": "インストールの種類",
-			"configurePython.newInstall": "新しい Python インストール",
 			"configurePythyon.noVersionsFound": "サポートされている Python バージョンが見つかりません。",
 			"configurePython.descriptionWithoutKernel": "Notebook カーネルには、Python ランタイムが構成され、依存関係がインストールされている必要があります。",
-			"configurePython.locationTextBoxText": "Python のインストール場所",
-			"configurePython.pythonConfigured": "Python ランタイムが構成されました!",
+			"configurePython.locationTextBoxText": "Python の場所",
 			"configurePython.selectFileLabel": "選択",
 			"configurePython.descriptionWithKernel": "'{0}' カーネルにって、Python ランタイムを構成し、依存関係をインストールする必要があります。",
-			"configurePython.existingInstall": "既存の Python インストールを使用する",
+			"configurePythyon.existingInstance": "{0} (現在の Python インスタンス)",
 			"configurePythyon.customPathLabel": "{0} (カスタム)",
-			"configurePythyon.defaultPathLabel": "{0} (既定値)",
 			"configurePythyon.dropdownPathLabel": "{0} (Python {1})"
 		},
 		"dist/dialog/configurePython/configurePythonWizard": {
@@ -190,28 +186,14 @@
 			"errNotebookUriMissing": "ノートブック パスが必須です"
 		},
 		"dist/jupyter/jupyterServerInstallation": {
-			"msgShutdownNotebookSessions": "更新のために、アクティブな Python ノートブック セッションがシャットダウンされます。今すぐ続行しますか?",
 			"msgWaitingForInstall": "別の Python のインストールが現在進行中です。完了するのを待っています。",
-			"msgPythonRunningError": "Python の実行中は、既存の Python インストールを上書きできません。続行する前に、アクティブなノートブックを閉じてください。",
-			"dontAskAgain": "今後このメッセージを表示しない",
-			"msgDownloadPython": "{0} から {1} にプラットフォーム用のローカル Python をダウンロードしています",
-			"msgPythonDownloadPending": "Python パッケージをダウンロードしています",
 			"msgGetPythonUserDirFailed": "Python ユーザー パスの取得時にエラーが発生しました: {0}",
 			"msgPackageRetrievalFailed": "インストールされているパッケージの一覧を取得しようとしてエラーが発生しました: {0}",
-			"msgPythonDirectoryError": "Python インストール ディレクトリの作成中にエラーが発生しました",
-			"msgPythonDownloadError": "Python セットアップのダウンロード中にエラーが発生しました",
-			"msgPythonUnpackError": "Python バンドルのアンパック中にエラーが発生しました",
 			"msgTaskName": "Notebook 依存関係のインストール",
 			"msgDependenciesInstallationFailed": "Notebook 依存関係のインストールに失敗しました。エラー: {0}",
 			"msgInstallPkgStart": "Notebook 依存関係のインストールについて詳しくは、[タスク ビュー] を参照してください",
-			"no": "いいえ",
 			"msgInstallPkgFinish": "Notebook 依存関係のインストールが完了しました",
-			"msgInstallPkgProgress": "Notebook 依存関係のインストールが進行中です",
-			"msgPythonDownloadComplete": "Python のダウンロードが完了しました",
-			"msgPythonVersionUpdatePrompt": "Python {0} が Azure Data Studio で利用できるようになりました。現在の Python バージョン (3.6.6) は、2021 年 12 月にサポートされなくなります。今すぐ Python {0} に更新しますか?",
-			"msgPythonVersionUpdateWarning": "Python {0} がインストールされ、Python 3.6.6 が置換されます。一部のパッケージは、新しいバージョンとの互換性がなくなったか、再インストールが必要になる可能性があります。すべての pip パッケージの再インストールを支援するためにノートブックが作成されます。今すぐ更新を続行しますか?",
-			"msgPythonUnpackPending": "Python パッケージをアンパックしています",
-			"yes": "はい"
+			"msgInstallPkgProgress": "Notebook 依存関係のインストールが進行中です"
 		},
 		"dist/jupyter/jupyterServerManager": {
 			"shutdownError": "Notebook サーバーをシャットダウンできませんでした: {0}"

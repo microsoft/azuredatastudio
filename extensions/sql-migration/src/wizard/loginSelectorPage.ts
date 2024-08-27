@@ -8,30 +8,39 @@ import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
-import { debounce, getLoginStatusImage, getLoginStatusMessage } from '../api/utils';
+import { debounce, getLoginStatusImage, getLoginStatusMessage, getSourceLogins } from '../api/utils';
 import * as styles from '../constants/styles';
-import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, LoginTableInfo } from '../api/sqlUtils';
+import { collectTargetLogins, LoginTableInfo } from '../api/sqlUtils';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import * as utils from '../api/utils';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
 import { CollectingSourceLoginsFailed, CollectingTargetLoginsFailed } from '../models/loginMigrationModel';
 import { WizardController } from './wizardController';
-
+import { Tab } from 'azdata';
 
 export class LoginSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
-	private _loginSelectorTable!: azdata.TableComponent;
-	private _loginNames!: string[];
-	private _loginCount!: azdata.TextComponent;
-	private _loginTableValues!: any[];
 	private _disposables: vscode.Disposable[] = [];
 	private _isCurrentPage: boolean;
 	private _refreshResultsInfoBox!: azdata.InfoBoxComponent;
 	private _windowsAuthInfoBox!: azdata.InfoBoxComponent;
 	private _refreshButton!: azdata.ButtonComponent;
 	private _refreshLoading!: azdata.LoadingComponent;
-	private _filterTableValue!: string;
 	private _aadDomainNameContainer!: azdata.FlexContainer;
+	private _tabs!: azdata.TabbedPanelComponent;
+	// variables for source non-system type logins
+	private _nonSystemloginTablesTab!: Tab;
+	private _loginSelectorTable!: azdata.TableComponent;
+	private _loginNames!: string[];
+	private _loginCount!: azdata.TextComponent;
+	private _loginTableValues!: any[];
+	private _filterTableValue!: string;
+	// variables for source system type logins
+	private _systemLoginTablesTab!: Tab;
+	private _systemLoginTable!: azdata.TableComponent;
+	private _systemLoginTableValues!: any[];
+	private _filterSystemLoginTableValue!: string;
+
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
 		super(wizard, azdata.window.createWizardPage(constants.LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE), migrationStateModel);
@@ -98,9 +107,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 		// Refresh login list
 		await this._loadLoginList(false);
-
-		// load unfiltered table list and pre-select list of logins saved in state
-		await this._filterTableList('', this.migrationStateModel._loginMigrationModel.loginsForMigration);
 	}
 
 	public async onPageLeave(): Promise<void> {
@@ -115,15 +121,21 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
 	}
 
-	private createSearchComponent(): azdata.DivContainer {
+	private createSearchComponent(isSystemLogin: boolean): azdata.DivContainer {
 		let resourceSearchBox = this._view.modelBuilder.inputBox().withProps({
 			stopEnterPropagation: true,
 			placeHolder: constants.SEARCH,
 			width: 200
 		}).component();
 
-		this._disposables.push(
-			resourceSearchBox.onTextChanged(value => this._filterTableList(value, this.migrationStateModel._loginMigrationModel.loginsForMigration || [])));
+		if (isSystemLogin) {
+			this._disposables.push(
+				resourceSearchBox.onTextChanged(value => this._filterSystemTableList(value)));
+		}
+		else {
+			this._disposables.push(
+				resourceSearchBox.onTextChanged(value => this._filterTableList(value, this.migrationStateModel._loginMigrationModel.loginsForMigration || [])));
+		}
 
 		const searchContainer = this._view.modelBuilder.divContainer().withItems([resourceSearchBox]).withProps({
 			CSSStyles: {
@@ -199,17 +211,25 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		await this.updateValuesOnSelection();
 	}
 
+	private async _filterSystemTableList(value: string): Promise<void> {
+		this._filterSystemLoginTableValue = value;
+		let tableRows = this._systemLoginTableValues ?? [];
+		if (this._systemLoginTableValues && value?.length > 0) {
+			tableRows = this._systemLoginTableValues
+				.filter(row => {
+					const searchText = value?.toLowerCase();
+					return row[0]?.toLowerCase()?.indexOf(searchText) > -1			// source login
+						|| row[1]?.toLowerCase()?.indexOf(searchText) > -1			// login type
+						|| row[2]?.toLowerCase()?.indexOf(searchText) > -1  		// default database
+						|| row[3]?.toLowerCase()?.indexOf(searchText) > -1  	// status
+						|| row[4]?.title?.toLowerCase()?.indexOf(searchText) > -1;			// target status
+				});
+		}
+
+		await this._systemLoginTable.updateProperty('data', tableRows);
+	}
 
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
-
-		this._windowsAuthInfoBox = this._view.modelBuilder.infoBox()
-			.withProps({
-				style: 'information',
-				text: constants.LOGIN_MIGRATIONS_SELECT_LOGINS_WINDOWS_AUTH_WARNING,
-				CSSStyles: { ...styles.BODY_CSS, 'display': 'none', }
-			}).component();
-
-
 		this._refreshButton = this._view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
@@ -255,11 +275,43 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			})
 			.component();
 
-		await this._loadLoginList();
+		this._windowsAuthInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				style: 'information',
+				text: constants.LOGIN_MIGRATIONS_SELECT_LOGINS_WINDOWS_AUTH_WARNING,
+				CSSStyles: { ...styles.BODY_CSS, 'display': 'none', }
+			}).component();
+
+		await this._createSystemLoginTablesTab(view);
+		await this._createNonSystemLoginTablesTab(view);
+
+		this._tabs = view.modelBuilder.tabbedPanel()
+			.withTabs([this._nonSystemloginTablesTab, this._systemLoginTablesTab])
+			.withProps({
+				CSSStyles: { 'margin-top': '8px', }
+			})
+			.component();
+
+		const flex = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+			height: '100%',
+		}).withProps({
+			CSSStyles: {
+				'margin': '-20px 28px 0px 28px'
+			}
+		}).component();
+		flex.addItem(this._windowsAuthInfoBox, { flex: '0 0 auto' });
+		flex.addItem(refreshContainer, { flex: '0 0 auto' });
+		flex.addItem(this._tabs, { flex: '0 0 auto' });
+		return flex;
+	}
+
+	private async _createNonSystemLoginTablesTab(view: azdata.ModelView): Promise<void> {
+
 		this._loginCount = this._view.modelBuilder.text().withProps({
 			value: constants.LOGINS_SELECTED(
 				this.selectedLogins().length,
-				this._loginTableValues.length),
+				this._loginSelectorTable?.data?.length || 0),
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin-top': '8px'
@@ -267,12 +319,76 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			ariaLive: 'polite'
 		}).component();
 
+		this._loginSelectorTable = this._createNonSystemLoginTablesTable(view);
+
+		this._disposables.push(this._loginSelectorTable.onRowSelected(async (e) => {
+			await this.updateValuesOnSelection();
+		}));
+
+		// load unfiltered table list and pre-select list of logins saved in state
+		await this._filterTableList('', this.migrationStateModel._loginMigrationModel.loginsForMigration);
+
+		const flex = view.modelBuilder.flexContainer()
+			.withProps({ CSSStyles: { 'margin': '10px 0 0 15px' } })
+			.withLayout({
+				flexFlow: 'column',
+				height: '100%',
+				width: 550,
+			}).component();
+
+		flex.addItem(this.createSearchComponent(false), { flex: '0 0 auto' });
+		flex.addItem(this._loginCount, { flex: '0 0 auto' });
+		flex.addItem(this._loginSelectorTable);
+		flex.addItem(this.createAadDomainNameComponent(), { flex: '0 0 auto', CSSStyles: { 'margin-top': '8px' } });
+
+		this._nonSystemloginTablesTab = {
+			content: flex,
+			id: 'tableSelectionTab',
+			title: constants.LOGIN_MIGRATIONS_SELECT_LOGINS_TAB_NON_SYSTEM_LOGIN_TITLE,
+		};
+	}
+
+	private async _createSystemLoginTablesTab(view: azdata.ModelView): Promise<void> {
+		this._systemLoginTable = this._createSystemLoginTablesTable(view);
+
+		await this._filterSystemTableList('');
+
+		const systemLoginInfoBox = view.modelBuilder.infoBox().withProps({
+			text: constants.LOGIN_MIGRATIONS_SELECT_LOGINS_SYSTEM_LOGIN_INFO_BOX,
+			style: 'information',
+			width: 650,
+			CSSStyles: {
+				...styles.BODY_CSS
+			}
+		}).component();
+
+		const flex = view.modelBuilder.flexContainer()
+			.withProps({ CSSStyles: { 'margin': '10px 0 0 15px' } })
+			.withLayout({
+				flexFlow: 'column',
+				height: '100%',
+				width: 550,
+			}).component();
+
+		flex.addItem(systemLoginInfoBox, { flex: '0 0 auto' });
+		flex.addItem(this.createSearchComponent(true), { flex: '0 0 auto' });
+		flex.addItem(this._systemLoginTable, { flex: '0 0 auto' });
+
+		this._systemLoginTablesTab = {
+			content: flex,
+			id: 'tableSelectionTab',
+			title: constants.LOGIN_MIGRATIONS_SELECT_LOGINS_TAB_SYSTEM_LOGIN_TITLE,
+		};
+	}
+
+	private _createNonSystemLoginTablesTable(view: azdata.ModelView): azdata.TableComponent {
 		const cssClass = 'no-borders';
-		this._loginSelectorTable = this._view.modelBuilder.table()
+		const table = this._view.modelBuilder.table()
 			.withProps({
 				data: [],
 				width: 650,
-				height: '100%',
+				height: '600px',
+				display: 'flex',
 				forceFitColumns: azdata.ColumnSizingMode.ForceFit,
 				columns: [
 					<azdata.CheckboxColumn>{
@@ -327,43 +443,78 @@ export class LoginSelectorPage extends MigrationWizardPage {
 						headerCssClass: cssClass,
 					},
 				]
-			}).component();
+			})
+			.component();
 
-		this._disposables.push(this._loginSelectorTable.onRowSelected(async (e) => {
-			await this.updateValuesOnSelection();
-		}));
+		return table;
+	}
 
-		// load unfiltered table list and pre-select list of logins saved in state
-		await this._filterTableList('', this.migrationStateModel._loginMigrationModel.loginsForMigration);
+	private _createSystemLoginTablesTable(view: azdata.ModelView): azdata.TableComponent {
+		const cssClass = 'no-borders';
+		const table = this._view.modelBuilder.table()
+			.withProps({
+				data: [],
+				width: 650,
+				height: '600px',
+				display: 'flex',
+				forceFitColumns: azdata.ColumnSizingMode.ForceFit,
+				columns: [
+					{
+						name: constants.SOURCE_LOGIN,
+						value: 'sourceLogin',
+						type: azdata.ColumnType.text,
+						width: 250,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+					{
+						name: constants.LOGIN_TYPE,
+						value: 'loginType',
+						type: azdata.ColumnType.text,
+						width: 90,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+					{
+						name: constants.DEFAULT_DATABASE,
+						value: 'defaultDatabase',
+						type: azdata.ColumnType.text,
+						width: 130,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+					{
+						name: constants.LOGIN_STATUS_COLUMN,
+						value: 'status',
+						type: azdata.ColumnType.text,
+						width: 90,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+					<azdata.HyperlinkColumn>{
+						name: constants.LOGIN_TARGET_STATUS_COLUMN,
+						value: 'targetStatus',
+						width: 150,
+						type: azdata.ColumnType.hyperlink,
+						icon: IconPathHelper.inProgressMigration,
+						showText: true,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+				],
+				CSSStyles: { 'margin-top': '8px' }
+			})
+			.component();
 
-		const flex = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column',
-			height: '100%',
-		}).withProps({
-			CSSStyles: {
-				'margin': '-20px 28px 0px 28px'
-			}
-		}).component();
-		flex.addItem(this._windowsAuthInfoBox, { flex: '0 0 auto' });
-		flex.addItem(refreshContainer, { flex: '0 0 auto' });
-		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
-		flex.addItem(this._loginCount, { flex: '0 0 auto' });
-		flex.addItem(this._loginSelectorTable);
-		flex.addItem(this.createAadDomainNameComponent(), { flex: '0 0 auto', CSSStyles: { 'margin-top': '8px' } });
-		return flex;
+		return table;
 	}
 
 	private async _getSourceLogins() {
 		const stateMachine: MigrationStateModel = this.migrationStateModel;
-		const sourceLogins: LoginTableInfo[] = [];
 
 		// execute a query against the source to get the logins
 		try {
-			sourceLogins.push(...await collectSourceLogins(
-				await getSourceConnectionId(),
-				stateMachine.isWindowsAuthMigrationSupported));
-			stateMachine._loginMigrationModel.collectedSourceLogins = true;
-			stateMachine._loginMigrationModel.loginsOnSource = sourceLogins;
+			await getSourceLogins(stateMachine);
 		} catch (error) {
 			this._refreshLoading.loading = false;
 			this._refreshResultsInfoBox.style = 'error';
@@ -440,8 +591,9 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		this._refreshResultsInfoBox.style = 'information';
 	}
 
-	private _markRefreshDataComplete(numSourceLogins: number, numTargetLogins: number) {
+	private async _markRefreshDataComplete(numSourceLogins: number, numTargetLogins: number) {
 		this._refreshLoading.loading = false;
+		await utils.updateControlDisplay(this._refreshResultsInfoBox, true);
 		this._refreshResultsInfoBox.text = constants.LOGIN_MIGRATION_REFRESH_LOGIN_DATA_SUCCESSFUL(numSourceLogins, numTargetLogins);
 		this._refreshResultsInfoBox.style = 'success';
 		this.updateNextButton();
@@ -463,7 +615,9 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			await this._getTargetLogins();
 		}
 
-		const sourceLogins: LoginTableInfo[] = stateMachine._loginMigrationModel.loginsOnSource;
+		var sourceLogins: LoginTableInfo[] = stateMachine._loginMigrationModel.loginsOnSource;
+		var sourceSystemLogins: LoginTableInfo[] = stateMachine._loginMigrationModel.systemLoginsOnSource;
+
 		const targetLogins: string[] = stateMachine._loginMigrationModel.loginsOnTarget;
 		this._loginNames = [];
 
@@ -483,9 +637,24 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				},
 			];
 		}) || [];
-
 		await this._filterTableList(this._filterTableValue);
-		this._markRefreshDataComplete(sourceLogins.length, targetLogins.length);
+
+		this._systemLoginTableValues = sourceSystemLogins.map(row => {
+			const isLoginOnTarget = targetLogins.some(targetLogin => targetLogin.toLowerCase() === row.loginName.toLowerCase());
+			return [
+				row.loginName,
+				row.loginType,
+				row.defaultDatabaseName,
+				row.status,
+				<azdata.HyperlinkColumnCellValue>{
+					icon: getLoginStatusImage(isLoginOnTarget),
+					title: getLoginStatusMessage(isLoginOnTarget),
+				},
+			];
+		}) || [];
+		await this._filterSystemTableList(this._filterSystemLoginTableValue);
+
+		await this._markRefreshDataComplete(sourceLogins.length, targetLogins.length);
 	}
 
 	public selectedLogins(): LoginTableInfo[] {

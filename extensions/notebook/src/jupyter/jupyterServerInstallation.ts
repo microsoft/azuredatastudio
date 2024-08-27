@@ -9,9 +9,6 @@ import * as path from 'path';
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import { ExecOptions } from 'child_process';
-import * as request from 'request';
-import * as zip from 'adm-zip';
-import * as tar from 'tar';
 
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
@@ -22,34 +19,17 @@ import { requiredJupyterPackages } from './requiredJupyterPackages';
 
 const localize = nls.loadMessageBundle();
 const msgInstallPkgProgress = localize('msgInstallPkgProgress', "Notebook dependencies installation is in progress");
-const msgPythonDownloadComplete = localize('msgPythonDownloadComplete', "Python download is complete");
-const msgPythonDownloadError = localize('msgPythonDownloadError', "Error while downloading python setup");
-const msgPythonDownloadPending = localize('msgPythonDownloadPending', "Downloading python package");
-const msgPythonUnpackPending = localize('msgPythonUnpackPending', "Unpacking python package");
-const msgPythonDirectoryError = localize('msgPythonDirectoryError', "Error while creating python installation directory");
-const msgPythonUnpackError = localize('msgPythonUnpackError', "Error while unpacking python bundle");
 const msgTaskName = localize('msgTaskName', "Installing Notebook dependencies");
 const msgInstallPkgStart = localize('msgInstallPkgStart', "Installing Notebook dependencies, see Tasks view for more information");
 const msgInstallPkgFinish = localize('msgInstallPkgFinish', "Notebook dependencies installation is complete");
-const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.");
 const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python installation is currently in progress. Waiting for it to complete.");
-const msgShutdownJupyterNotebookSessions = localize('msgShutdownNotebookSessions', "Active Python notebook sessions will be shutdown in order to update. Would you like to proceed now?");
-function msgPythonVersionUpdatePrompt(pythonVersion: string): string { return localize('msgPythonVersionUpdatePrompt', "Python {0} is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python {0} now?", pythonVersion); }
-function msgPythonVersionUpdateWarning(pythonVersion: string): string { return localize('msgPythonVersionUpdateWarning', "Python {0} will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?", pythonVersion); }
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
-function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 function msgPackageRetrievalFailed(errorMessage: string): string { return localize('msgPackageRetrievalFailed', "Encountered an error when trying to retrieve list of installed packages: {0}", errorMessage); }
 function msgGetPythonUserDirFailed(errorMessage: string): string { return localize('msgGetPythonUserDirFailed', "Encountered an error when getting Python user path: {0}", errorMessage); }
 
-const yes = localize('yes', "Yes");
-const no = localize('no', "No");
-const dontAskAgain = localize('dontAskAgain', "Don't Ask Again");
-
 export interface PythonInstallSettings {
 	installPath: string;
-	existingPython: boolean;
 	packages: PythonPkgDetails[];
-	packageUpgradeOnly?: boolean;
 }
 export interface IJupyterServerInstallation {
 	/**
@@ -89,19 +69,12 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private _pythonInstallationPath: string;
 	private _pythonExecutable: string;
 	private _condaExecutable: string | undefined;
-	private _usingExistingPython: boolean;
 	private _installedPythonVersion: string;
-
-	private _upgradeInProcess: boolean = false;
-	private _oldPythonExecutable: string | undefined;
-	private _oldPythonInstallationPath: string | undefined;
-	private _oldUserInstalledPipPackages: PythonPkgDetails[] = [];
-	private _upgradePrompted: boolean = false;
 
 	private _installInProgress = false;
 	private _installCompletion: Deferred<void>;
 
-	public static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
+	private static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
 	private readonly _kernelSetupCache = new Map<string, boolean>();
 	private readonly _requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
@@ -120,14 +93,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		if (this._runningOnSAW) {
 			this._pythonInstallationPath = `${vscode.env.appRoot}\\ads-python`;
-			this._usingExistingPython = true;
 		} else if (this._tsgopsweb) {
 			this._pythonInstallationPath = `/usr`;
-			this._usingExistingPython = true;
-		}
-		else {
+		} else {
 			this._pythonInstallationPath = JupyterServerInstallation.getPythonInstallPath();
-			this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting();
 		}
 
 		let allPackages = requiredJupyterPackages.sharedPackages;
@@ -154,47 +123,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgInstallPkgProgress);
 
 		try {
-			let pythonExists = await utils.exists(this._pythonExecutable);
-			let upgradePython = false;
-			// Warn users that some packages may need to be reinstalled after updating Python versions
-			if (!this._usingExistingPython && this._oldPythonExecutable && utils.compareVersions(await this.getInstalledPythonVersion(this._oldPythonExecutable), constants.pythonVersion) < 0) {
-				upgradePython = await vscode.window.showInformationMessage(msgPythonVersionUpdateWarning(constants.pythonVersion), yes, no) === yes;
-				if (upgradePython) {
-					this._upgradeInProcess = true;
-					if (await this.isPythonRunning(this._oldPythonExecutable)) {
-						let proceed = await vscode.window.showInformationMessage(msgShutdownJupyterNotebookSessions, yes, no) === yes;
-						if (!proceed) {
-							throw Error('Python update failed due to active Python notebook sessions.');
-						}
-						// Temporarily change the pythonExecutable to the old Python path so that the
-						// correct path is used to shutdown the old Python server.
-						let newPythonExecutable = this._pythonExecutable;
-						this._pythonExecutable = this._oldPythonExecutable;
-						await vscode.commands.executeCommand('notebook.action.stopJupyterNotebookSessions');
-						this._pythonExecutable = newPythonExecutable;
-					}
-
-					this._oldUserInstalledPipPackages = await this.getInstalledPipPackages(this._oldPythonExecutable, true);
-
-					if (await this.getInstalledPythonVersion(this._oldPythonExecutable) === '3.6.6') {
-						// Remove '0.0.1' from python executable path since the bundle version is removed from the path for ADS-Python 3.8.10+.
-						this._pythonExecutable = path.join(this._pythonInstallationPath, process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
-					}
-				}
-			}
-
-			if (!pythonExists || forceInstall || upgradePython) {
-				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
-				// reinstall pip to make sure !pip command works on Windows
-				if (!this._usingExistingPython && process.platform === constants.winPlatform) {
-					let packages: PythonPkgDetails[] = await this.getInstalledPipPackages(this._pythonExecutable);
-					let pip: PythonPkgDetails = packages.find(x => x.name === 'pip');
-					if (pip) {
-						let cmd = `"${this._pythonExecutable}" -m pip install --force-reinstall pip=="${pip.version}"`;
-						await this.executeBufferedCommand(cmd);
-					}
-				}
-			}
 			await this.upgradePythonPackages(forceInstall, packages);
 		} catch (err) {
 			this.outputChannel.appendLine(msgDependenciesInstallationFailed(utils.getErrorMessage(err)));
@@ -204,122 +132,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this.outputChannel.appendLine(msgInstallPkgFinish);
 		backgroundOperation.updateStatus(azdata.TaskStatus.Succeeded, msgInstallPkgFinish);
 		void vscode.window.showInformationMessage(msgInstallPkgFinish);
-	}
-
-	private installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel): Promise<void> {
-		if (usingExistingPython) {
-			return Promise.resolve();
-		}
-
-		let pythonVersion = constants.pythonVersion;
-		let platformId = utils.getOSPlatformId();
-		let packageName: string;
-		let pythonDownloadUrl: string;
-
-		let extension = process.platform === constants.winPlatform ? 'zip' : 'tar.gz';
-		packageName = `python-${pythonVersion}-${platformId}.${extension}`;
-
-		switch (process.platform) {
-			case constants.winPlatform:
-				pythonDownloadUrl = constants.pythonWindowsInstallUrl;
-				break;
-			case constants.macPlatform:
-				pythonDownloadUrl = constants.pythonMacInstallUrl;
-				break;
-			default:
-				// Default to linux
-				pythonDownloadUrl = constants.pythonLinuxInstallUrl;
-				break;
-		}
-
-		return new Promise((resolve, reject) => {
-			let installPath = pythonInstallationPath;
-			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgDownloadPython(platformId, pythonDownloadUrl));
-			fs.mkdirs(installPath, (err) => {
-				if (err) {
-					backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDirectoryError);
-					return reject(err);
-				}
-
-				let totalMegaBytes: number = undefined;
-				let receivedBytes = 0;
-				let printThreshold = 0.1;
-				let downloadRequest = request.get(pythonDownloadUrl, { timeout: 20000 })
-					.on('error', (downloadError) => {
-						backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadError);
-						reject(downloadError);
-					})
-					.on('response', (response) => {
-						if (response.statusCode !== 200) {
-							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadError);
-							return reject(response.statusMessage);
-						}
-
-						let totalBytes = parseInt(response.headers['content-length']);
-						totalMegaBytes = totalBytes / (1024 * 1024);
-						outputChannel.appendLine(`${msgPythonDownloadPending} (0 / ${totalMegaBytes.toFixed(2)} MB)`);
-					})
-					.on('data', (data) => {
-						receivedBytes += data.length;
-						if (totalMegaBytes) {
-							let receivedMegaBytes = receivedBytes / (1024 * 1024);
-							let percentage = receivedMegaBytes / totalMegaBytes;
-							if (percentage >= printThreshold) {
-								outputChannel.appendLine(`${msgPythonDownloadPending} (${receivedMegaBytes.toFixed(2)} / ${totalMegaBytes.toFixed(2)} MB)`);
-								printThreshold += 0.1;
-							}
-						}
-					});
-
-				let pythonPackagePathLocal = path.join(installPath, packageName);
-				downloadRequest.pipe(fs.createWriteStream(pythonPackagePathLocal))
-					.on('close', async () => {
-						//unpack python zip/tar file
-						outputChannel.appendLine(msgPythonUnpackPending);
-						if (process.platform === constants.winPlatform) {
-							try {
-								let zippedFile = new zip(pythonPackagePathLocal);
-								zippedFile.extractAllTo(installPath);
-							} catch (err) {
-								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
-								reject(err);
-							}
-							// Delete zip file
-							fs.unlink(pythonPackagePathLocal, (err) => {
-								if (err) {
-									backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
-									reject(err);
-								}
-							});
-
-							outputChannel.appendLine(msgPythonDownloadComplete);
-							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
-							resolve();
-						} else {
-							tar.extract({ file: pythonPackagePathLocal, cwd: installPath }).then(() => {
-								// Delete tar file
-								fs.unlink(pythonPackagePathLocal, (err) => {
-									if (err) {
-										backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
-										reject(err);
-									}
-								});
-								outputChannel.appendLine(msgPythonDownloadComplete);
-								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
-								resolve();
-							}).catch(err => {
-								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
-								reject(err);
-							});
-						}
-					})
-					.on('error', (downloadError) => {
-						backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadError);
-						reject(downloadError);
-						downloadRequest.abort();
-					});
-			});
-		});
 	}
 
 	public async configurePackagePaths(): Promise<void> {
@@ -374,21 +186,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		};
 	}
 
-	private async isPythonRunning(pythonExePath: string): Promise<boolean> {
-		if (process.platform === constants.winPlatform) {
-			let cmd = `powershell.exe -NoProfile -Command "& {Get-Process python | Where-Object {$_.Path -eq '${pythonExePath}'}}"`;
-			let cmdResult: string;
-			try {
-				cmdResult = await this.executeBufferedCommand(cmd);
-			} catch (err) {
-				return false;
-			}
-			return cmdResult !== undefined && cmdResult.length > 0;
-		}
-
-		return false;
-	}
-
 	/**
 	 * Installs Python and associated dependencies to the specified directory.
 	 * @param forceInstall Indicates whether an existing installation should be overwritten, if it exists.
@@ -399,20 +196,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		if (!installSettings) {
 			installSettings = {
 				installPath: this._pythonInstallationPath,
-				existingPython: this._usingExistingPython,
 				packages: this.getRequiredPackagesForKernel(constants.python3DisplayName)
 			};
-		}
-
-		// Check if Python is running before attempting to overwrite the installation.
-		// This step is skipped when using an existing installation or when upgrading
-		// packages, since those cases wouldn't overwrite the installation.
-		if (!installSettings.existingPython && !installSettings.packageUpgradeOnly) {
-			let pythonExePath = JupyterServerInstallation.getPythonExePath(installSettings.installPath);
-			let isPythonRunning = await this.isPythonRunning(pythonExePath);
-			if (isPythonRunning) {
-				return Promise.reject(msgPythonRunningError);
-			}
 		}
 
 		if (this._installInProgress) {
@@ -424,7 +209,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this._installCompletion = new Deferred<void>();
 		try {
 			this._pythonInstallationPath = installSettings.installPath;
-			this._usingExistingPython = installSettings.existingPython;
 			await this.configurePackagePaths();
 
 			azdata.tasks.startBackgroundOperation({
@@ -436,30 +220,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 						.then(async () => {
 							let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
 							await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, vscode.ConfigurationTarget.Global);
-							await notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, vscode.ConfigurationTarget.Global);
 							await this.configurePackagePaths();
 
 							await vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.CommandContext.NotebookPythonInstalled, true);
 							this._installCompletion.resolve();
 							this._installInProgress = false;
-
-							if (this._upgradeInProcess) {
-								// Pass in false for restartJupyterServer parameter since the jupyter server has already been shutdown
-								// when removing the old Python version on Windows.
-								if (process.platform === constants.winPlatform) {
-									await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions', false);
-								} else {
-									await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions');
-								}
-								if (this._oldUserInstalledPipPackages.length !== 0) {
-									await this.createInstallPipPackagesHelpNotebook(this._oldUserInstalledPipPackages);
-								}
-
-								await fs.remove(this._oldPythonInstallationPath);
-								this._upgradeInProcess = false;
-							} else if (!installSettings.packageUpgradeOnly) {
-								await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions');
-							}
 						})
 						.catch(err => {
 							let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
@@ -490,13 +255,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled();
-
-		// If the latest version of ADS-Python is not installed, then prompt the user to upgrade
-		if (!this._upgradePrompted && isPythonInstalled && !this._usingExistingPython && utils.compareVersions(await this.getInstalledPythonVersion(this._pythonExecutable), constants.pythonVersion) < 0) {
-			this._upgradePrompted = true;
-			await this.promptUserForPythonUpgrade();
-		}
-
 		let areRequiredPackagesInstalled = await this.areRequiredPackagesInstalled(kernelDisplayName);
 		if (!isPythonInstalled || !areRequiredPackagesInstalled) {
 			let pythonWizard = new ConfigurePythonWizard(this);
@@ -504,22 +262,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			return pythonWizard.setupComplete.then(() => {
 				this._kernelSetupCache.set(kernelDisplayName, true);
 			});
-		}
-	}
-
-	private async promptUserForPythonUpgrade(): Promise<void> {
-		let notebookConfig: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(constants.notebookConfigKey);
-		if (notebookConfig && notebookConfig[constants.dontPromptPythonUpdate]) {
-			return;
-		}
-
-		let response = await vscode.window.showInformationMessage(msgPythonVersionUpdatePrompt(constants.pythonVersion), yes, no, dontAskAgain);
-		if (response === yes) {
-			this._oldPythonInstallationPath = path.join(this._pythonInstallationPath, '0.0.1');
-			this._oldPythonExecutable = this._pythonExecutable;
-			void vscode.commands.executeCommand(constants.jupyterConfigurePython);
-		} else if (response === dontAskAgain) {
-			await notebookConfig.update(constants.dontPromptPythonUpdate, true, vscode.ConfigurationTarget.Global);
 		}
 	}
 
@@ -755,15 +497,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		return userPath ? userPath : JupyterServerInstallation.DefaultPythonLocation;
 	}
 
-	public static getExistingPythonSetting(): boolean {
-		let useExistingPython = false;
-		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
-		if (notebookConfig) {
-			useExistingPython = !!notebookConfig[constants.existingPythonConfigKey];
-		}
-		return useExistingPython;
-	}
-
 	public static getPythonPathSetting(): string {
 		let path = undefined;
 		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
@@ -857,39 +590,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let kernelSpec = <IKernelInfo>JSON.parse(fileContents.toString());
 		kernelSpec.argv = kernelSpec.argv?.map(arg => arg.replace('{ADS_PYTHONDIR}', this._pythonInstallationPath));
 		await fs.writeFile(kernelPath, JSON.stringify(kernelSpec, undefined, '\t'));
-	}
-
-	private async createInstallPipPackagesHelpNotebook(userInstalledPipPackages: PythonPkgDetails[]): Promise<void> {
-		let packagesList: string[] = userInstalledPipPackages.map(pkg => { return pkg.name; });
-		// Filter out prose-codeaccelerator since we no longer ship it and it is not on Pypi.
-		packagesList = packagesList.filter(pkg => pkg !== 'prose-codeaccelerator');
-		let installPackagesCode = `import sys\n!{sys.executable} -m pip install --user ${packagesList.join(' ')}`;
-		let initialContent: azdata.nb.INotebookContents = {
-			cells: [{
-				cell_type: 'markdown',
-				source: ['# Install Pip Packages\n\nThis notebook will help you reinstall the pip packages you were previously using so that they can be used with Python 3.8.\n\n**Note:** Some packages may have a dependency on Python 3.6 and will not work with Python 3.8.\n\nRun the following code cell after Python 3.8 installation is complete.'],
-			}, {
-				cell_type: 'code',
-				source: [installPackagesCode],
-			}],
-			metadata: {
-				kernelspec: {
-					name: 'python3',
-					language: 'python3',
-					display_name: 'Python 3'
-				},
-				language_info: {
-					name: 'python3'
-				}
-			},
-			nbformat: constants.NBFORMAT,
-			nbformat_minor: constants.NBFORMAT_MINOR
-		};
-
-		await vscode.commands.executeCommand('notebook.command.new', {
-			initialContent: JSON.stringify(initialContent),
-			defaultKernel: 'Python 3'
-		});
 	}
 }
 

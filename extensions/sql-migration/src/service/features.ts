@@ -45,7 +45,8 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		contracts.MigrateLoginsRequest.type,
 		contracts.EstablishUserMappingRequest.type,
 		contracts.MigrateServerRolesAndSetPermissionsRequest.type,
-		contracts.TdeMigrateRequest.type
+		contracts.TdeMigrateRequest.type,
+		contracts.GetSqlMigrationGenerateArmTemplateRequest.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
@@ -87,6 +88,18 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		return undefined;
 	}
 
+	async getArmTemplate(skuRecommendationReportFilePath: string): Promise<string[] | undefined> {
+		try {
+			const response = this._client.sendRequest(contracts.GetSqlMigrationGenerateArmTemplateRequest.type, skuRecommendationReportFilePath);
+			return response;
+		}
+		catch (e) {
+			this._client.logFailedRequest(contracts.GetSqlMigrationGenerateArmTemplateRequest.type, e);
+		}
+
+		return undefined;
+	}
+
 	async getSkuRecommendations(
 		dataFolder: string,
 		perfQueryIntervalInSec: number,
@@ -110,6 +123,7 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 			includePreviewSkus: includePreviewSkus,
 			databaseAllowList: databaseAllowList,
 			isPremiumSSDV2Enabled: true,
+			isNextGenGPEnabled: includePreviewSkus
 		};
 
 		try {
