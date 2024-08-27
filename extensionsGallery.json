@@ -5571,9 +5571,68 @@
 					  ],
 					  "statistics": [],
 					  "flags": ""
-					}
-
-
+				},
+				{
+					  "extensionId": "110",
+					  "extensionName": "sql-deployer",
+					  "displayName": "Deployer",
+					  "shortDescription": "The Deployer extension makes deploying many SQL scripts easy, and provides shortcuts for common developer tasks.",
+					  "publisher": {
+					    "displayName": "Rollersoft",
+					    "publisherId": "rollersoft",
+					    "publisherName": "rollersoft"
+					  },
+					  "versions": [
+					    {
+					      "version": "3.5.3",
+					      "lastUpdated": "08/27/2024",
+					      "assetUri": "",
+					      "fallbackAssetUri": "fallbackAssetUri",
+					      "files": [
+					        {
+					          "assetType": "Microsoft.SQLOps.DownloadPage",
+					          "source": "https://github.com/ShawnRoller/deployer-azs-extension/releases/latest"
+					        },
+					        {
+					          "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+					          "source": "https://raw.githubusercontent.com/ShawnRoller/deployer-azs-extension/main/deployer-icon.png"
+					        },
+					        {
+					          "assetType": "Microsoft.VisualStudio.Services.Content.Details",
+					          "source": "https://raw.githubusercontent.com/ShawnRoller/deployer-azs-extension/main/README.md"
+					        },
+					        {
+					          "assetType": "Microsoft.VisualStudio.Code.Manifest",
+					          "source": "https://raw.githubusercontent.com/ShawnRoller/deployer-azs-extension/main/package.json"
+					        },
+					        {
+					          "assetType": "Microsoft.VisualStudio.Services.Content.License",
+					          "source": "https://raw.githubusercontent.com/ShawnRoller/deployer-azs-extension/main/LICENSE"
+					        }
+					      ],
+					      "properties": [
+					        {
+					          "key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+					          "value": ""
+					        },
+					        {
+					          "key": "Microsoft.VisualStudio.Services.Links.Source",
+					          "value": "https://github.com/ShawnRoller/deployer-azs-extension"
+					        },
+					        {
+					          "key": "Microsoft.VisualStudio.Code.Engine",
+					          "value": "*"
+					        },
+					        {
+					          "key": "Microsoft.AzDataEngine",
+					          "value": "*"
+					        }
+					      ]
+					    }
+					  ],
+					  "statistics": [],
+					  "flags": ""
+				}
 			],
 			"resultMetadata": [
 				{
@@ -5581,7 +5640,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 91
+							"count": 92
 						}
 					]
 				}
