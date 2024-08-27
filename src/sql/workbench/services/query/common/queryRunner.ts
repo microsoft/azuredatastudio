@@ -32,7 +32,6 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ServerConnID } from 'sql/workbench/services/query/common/query';
-import { getRemoteAuthority, getRemoteName } from 'vs/platform/remote/common/remoteHosts';
 
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
@@ -496,19 +495,11 @@ export default class QueryRunner extends Disposable {
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
 	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<azdata.CopyResultsRequestResult> {
-		let copyInBackend = false;
-		const remoteAuthority = getRemoteAuthority(URI.parse(this.uri));
-		const remoteName = getRemoteName(remoteAuthority);
-		if (!remoteName) {
-			copyInBackend = true;
-		}
-
 		return this.queryManagementService.copyResults({
 			ownerUri: this.uri,
 			batchIndex: batchId,
 			resultSetIndex: resultId,
 			includeHeaders: includeHeaders,
-			copyInBackend: copyInBackend,
 			selections: selections.map(selection => {
 				return {
 					fromRow: selection.fromRow,

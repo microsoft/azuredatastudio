@@ -893,9 +893,9 @@ declare module 'azdata' {
 		 */
 		selections: SelectionRange[];
 		/**
-		 * Whether to copy the results directly from the backend.
+		 * Whether to copy results from the UI process.
 		 */
-		copyInBackend: boolean;
+		copyFromUIProcess?: boolean;
 	}
 
 	export interface CopyResultsRequestResult {
