@@ -618,12 +618,10 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	private async handleCopyRequestByProvider(selections: Slick.Range[], includeHeaders?: boolean): Promise<void> {
 		executeCopyWithNotification(this._notificationService, this._configurationService, selections, async () => {
 			let results = await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldIncludeHeaders(includeHeaders));
-			if (results.results) {
-				let clipboardData: ClipboardData = {
-					text: results.results
-				}
-				this._clipboardService.write(clipboardData);
+			let clipboardData: ClipboardData = {
+				text: results.results
 			}
+			this._clipboardService.write(clipboardData);
 		});
 	}
 
