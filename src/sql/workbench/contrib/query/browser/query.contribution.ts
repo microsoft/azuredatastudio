@@ -335,8 +335,8 @@ const queryEditorConfiguration: IConfigurationNode = {
 		},
 		'queryEditor.results.preferProvidersCopyHandler': {
 			'type': 'boolean',
-			'description': localize('queryEditor.results.preferProvidersCopyHandler', "Whether the copy result request should be handled by the query provider when it is supported. The default value is true, set this to false to force all copy handling to be done by Azure Data Studio."),
-			'default': true
+			'description': localize('queryEditor.results.preferProvidersCopyHandler', "Whether the copy result request should be handled by the query provider when it is supported. The default value is false, set this to true to force all copy handling to be done by the query provider."),
+			'default': false
 		},
 		'queryEditor.results.inMemoryDataProcessingThreshold': {
 			'type': 'number',
