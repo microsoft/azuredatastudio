@@ -257,7 +257,7 @@
     "underscore": "^1.12.1",
     "util": "^0.12.4",
     "vscode-nls-dev": "^3.3.1",
-    "webpack": "^5.42.0",
+    "webpack": "^5.94.0",
     "webpack-cli": "^5.0.1",
     "webpack-stream": "^7.0.0",
     "yaserver": "^0.2.0"
