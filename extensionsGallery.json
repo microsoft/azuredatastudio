@@ -5632,6 +5632,67 @@
 					  ],
 					  "statistics": [],
 					  "flags": ""
+				},
+				{
+					"extensionId": "111",
+					"extensionName": "couchbase",
+					"displayName": "Couchbase",
+					"shortDescription": "Welcome to the official Visual Studio Code extension for Couchbase! This extension is designed to provide a seamless experience for Couchbase Server users who want to work within the popular Visual Studio Code editor.",
+					"publisher": {
+						"displayName": "Aayush Tyagi",
+						"publisherId": "AayushTyagi1",
+						"publisherName": "Aayush Tyagi"
+					},
+					"versions": [
+						{
+							"version": "2.1.4",
+							"lastUpdated": "09/03/2024",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.Couchbase.DownloadPage",
+									"source": "https://github.com/Couchbase-Ecosystem/VSCode-Couchbase/releases/latest"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/Couchbase-Ecosystem/VSCode-Couchbase/main/images/cb-logo-icon.svg"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/Couchbase-Ecosystem/VSCode-Couchbase/main/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/Couchbase-Ecosystem/VSCode-Couchbase/main/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Couchbase-Ecosystem/VSCode-Couchbase/main/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Couchbase-Ecosystem/VSCode-Couchbase"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -5640,7 +5701,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 92
+							"count": 93
 						}
 					]
 				}
