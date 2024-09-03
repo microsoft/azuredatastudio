@@ -480,8 +480,9 @@ export function LOGIN_MIGRATIONS_GET_LOGINS_ERROR_TITLE(targetType: string): str
 export function LOGIN_MIGRATIONS_GET_LOGINS_ERROR(message: string): string {
 	return localize('sql.migration.wizard.target.login.error', "Error getting login information: {0}", message);
 }
-export const SELECT_LOGIN_TO_CONTINUE = localize('sql.migration.select.database.to.continue', "Please select 1 or more logins for migration");
-export const ENTER_AAD_DOMAIN_NAME = localize('sql.login.migration.enter.AAD.domain.name.to.continue', "Microsoft Entra ID Domain name is required to migrate Windows login. Please enter an AAD Domain Name or deselect windows login(s).");
+export const SELECT_LOGIN_TO_CONTINUE = localize('sql.migration.select.login.to.continue', "Select one or more logins to run validation.");
+export const SELECT_LOGIN_AND_RUN_VALIDATION_TO_CONTINUE = localize('sql.migration.select.login.run.validation.to.continue', "To perform login migration, please run validation for one or more logins.");
+export const ENTER_ENTRA_ID = localize('sql.login.migration.enter.entra.id.to.continue', "Microsoft Entra ID is required to migrate Windows login. Please enter an Entra ID or deselect windows login(s).");
 export const LOGIN_MIGRATE_BUTTON_TEXT = localize('sql.migration.start.login.migration.button', "Migrate");
 export function LOGIN_MIGRATIONS_GET_CONNECTION_STRING(dataSource: string, id: string, pass: string): string {
 	return localize('sql.login.migration.get.connection.string', "data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;", dataSource, id, pass);
@@ -509,8 +510,8 @@ export const LOGINS_NOT_FOUND = localize('sql.login.migration.logins.not.found',
 export const LOGIN_MIGRATION_STATUS_SUCCEEDED = localize('sql.login.migration.status.succeeded', "Succeeded");
 export const LOGIN_MIGRATION_STATUS_FAILED = localize('sql.login.migration.status.failed', "Failed");
 export const LOGIN_MIGRATION_STATUS_IN_PROGRESS = localize('sql.login.migration.status.in.progress', "In progress");
-export const LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_LABEL = localize('sql.login.migration.aad.domain.name.input.box.label', "Microsoft Entra ID Domain Name (only required to migrate Windows Authenication Logins)");
-export const LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_PLACEHOLDER = localize('sql.login.migration.aad.domain.name.input.box.placeholder', "Enter AAD Domain Name");
+export const LOGIN_MIGRATIONS_ENTRA_ID_INPUT_BOX_LABEL = localize('sql.login.migration.entra.id.input.box.label', "Microsoft Entra ID (only required to migrate Windows Authenication Logins)");
+export const LOGIN_MIGRATIONS_ENTRA_ID_INPUT_BOX_PLACEHOLDER = localize('sql.login.migration.entra.id.input.box.placeholder', "Enter Entra ID");
 export function LOGIN_MIGRATIONS_LOGIN_STATUS_DETAILS_TITLE(loginName: string): string {
 	return localize('sql.login.migration.login.status.details.title', "Migration status details for {0}", loginName);
 }
@@ -823,6 +824,7 @@ export const TABLE_SELECTION_HASROWS_COLUMN = localize('sql.migration.table.sele
 
 export const VALIDATION_DIALOG_TITLE = localize('sql.migration.validation.dialog.title', "Running validation");
 export const VALIDATION_MESSAGE_SUCCESS = localize('sql.migration.validation.success', "Validation completed successfully.  Please click Next to proceed with the migration.");
+export const LOGIN_MIGRATION_VALIDATION_MESSAGE_SUCCESS = localize('login.migration.validation.success', "Validation completed successfully.  Please click migrate to proceed with the migration.");
 export function VALIDATION_MESSAGE_CANCELED_ERRORS(msg: string): string {
 	return localize(
 		'sql.migration.validation.canceled.errors',
@@ -1016,6 +1018,12 @@ export const VALIDATE_IR_COLUMN_VALIDATION_STEPS = localize('sql.migration.valid
 export const VALIDATE_IR_COLUMN_STATUS = localize('sql.migration.validate.ir.column.status', "Status");
 export const VALIDATE_IR_VALIDATION_RESULT_LABEL_SHIR = localize('sql.migration.validate.ir.validation.result.label.shir', "Integration runtime connectivity");
 export const VALIDATE_IR_VALIDATION_RESULT_LABEL_STORAGE = localize('sql.migration.validate.ir.validation.result.label.storage', "Azure storage connectivity");
+export const VALIDATE_LOGIN_MIGRATION_VALIDATION_RESULT_LABEL_SYSADMIN = localize('sql.migration.validate.login.migration.validation.result.label.sysadmin',
+	"Validating the sysadmin permission on source and target");
+export const VALIDATE_LOGIN_MIGRATION_VALIDATION_RESULT_LABEL_ENTRAID = localize('sql.migration.validate.login.migration.validation.result.label.entraid',
+	"Validating the microsoft entra id");
+export const VALIDATE_LOGIN_MIGRATION_VALIDATION_RESULT_LABEL_USERMAPPING = localize('sql.migration.validate.login.migration.validation.result.label.user.mapping',
+	"Validating the user mapping");
 
 export function VALIDATE_IR_VALIDATION_RESULT_LABEL_SOURCE_DATABASE(databaseName: string): string {
 	return localize(
@@ -1077,6 +1085,113 @@ export function VALIDATION_IR_BUTTON_MISSING_ERROR_MESSAGE(details: string[]): s
 		'sql.migration.validate.ir.error.message',
 		"Details for {0} are mandatory and missing.",
 		missingDetails);
+}
+
+// Validate Login migration validation dialog
+export const VALIDATE_LOGIN_MIGRATION_DONE_BUTTON = localize('sql.migration.validate.login.migration.done.button', "Done");
+export const VALIDATE_LOGIN_MIGRATION_HEADING = localize('sql.migration.validate.login.migration.heading', "We are validating the following:");
+export const VALIDATE_LOGIN_MIGRATION_START_VALIDATION = localize('sql.migration.validate.login.migration.start.validation', "Start validation");
+export const VALIDATE_LOGIN_MIGRATION_UNSUCCESSFUL_REVALIDATION = localize('sql.migration.validate.login.migration.unsuccessful.revalidation', "Revalidate unsuccessful steps");
+export const VALIDATE_LOGIN_MIGRATION_STOP_VALIDATION = localize('sql.migration.validate.login.migration.stop.validation', "Stop validation");
+export const VALIDATE_LOGIN_MIGRATION_COPY_RESULTS = localize('sql.migration.validate.login.migration.copy.results', "Copy validation results");
+export const VALIDATE_LOGIN_MIGRATION_RESULTS_HEADING = localize('sql.migration.validate.login.migration.results.heading', "Validation step details");
+export const VALIDATE_LOGIN_MIGRATION_VALIDATION_COMPLETED = localize('sql.migration.validate.login.migration.validation.completed', "Validation completed successfully.");
+export const VALIDATE_LOGIN_MIGRATION_VALIDATION_CANCELED = localize('sql.migration.validate.login.migration.validation.camceled', "Validation check canceled");
+
+export function VALIDATE_LOGIN_MIGRATION_VALIDATION_COMPLETED_ERRORS(msg: string): string {
+	return localize(
+		'sql.migration.validate.login.migration.completed.errors',
+		"Validation completed with the following error(s):{0}{1}", EOL, msg);
+}
+export function VALIDATE_LOGIN_MIGRATION_VALIDATION_STATUS(state: string | undefined, errors?: string[]): string {
+	const status = state ?? '';
+	if (errors && errors.length > 0) {
+		return localize(
+			'sql.migration.validate.login.migration.status.errors',
+			"Validation status: {0}{1}{2}", status, EOL, errors.join(EOL));
+	} else {
+		return localize(
+			'sql.migration.validate.login.migration.status',
+			"Validation status: {0}", status);
+	}
+}
+
+export const VALIDATE_LOGIN_MIGRATION_ERROR_GATEWAY_TIMEOUT = localize('sql.migration.validate.error.gatewaytimeout', "A time-out was encountered while validating a resource connection. Learn more: https://aka.ms/dms-migrations-troubleshooting.");
+
+export function VALIDATE_LOGIN_MIGRATION_VALIDATION_STATUS_ERROR_COUNT(state: string | undefined, errorCount: number): string {
+	const status = state ?? '';
+	return errorCount > 1
+		? localize(
+			'sql.migration.validate.login.migration.status.error.count.many',
+			"{0} - {1} errors",
+			status,
+			errorCount)
+		: localize(
+			'sql.migration.validate.login.migration.status.error.count.one',
+			"{0} - 1 error",
+			status);
+}
+
+export function VALIDATE_LOGIN_MIGRATION_VALIDATION_STATUS_ERROR(state: string | undefined, errors: string[]): string {
+	const status = state ?? '';
+	return localize(
+		'sql.migration.validate.login.migration.status.error',
+		"{0}{1}{2}",
+		status,
+		EOL,
+		errors.join(EOL));
+}
+
+export function VALIDATE_LOGIN_MIGRATION_SYSADMIN_PERMISSION_VALIDATION_RESULT_ERROR(serverName: string, error: any,): string {
+	return localize(
+		'sql.migration.validate.ir.sqldb.validation.result.error',
+		"Sys Admin Permission Pre Validation check error{0}server: {1}{0}Error: {2} - {3}{0}Follow the steps mentioned here https://aka.ms/loginvalidationerror and re-run the validation before performing login/s migration.",
+		EOL,
+		serverName,
+		error.ErrorCodeString,
+		error.Message);
+}
+
+export function VALIDATE_LOGIN_MIGRATION_ENTRA_ID_VALIDATION_RESULT_ERROR(entraID: string, error: any,): string {
+	return localize(
+		'sql.migration.validate.ir.sqldb.validation.result.error',
+		"Entra ID Pre Validation check error{0}Entra ID: {1}{0}Error: {2} - {3}{0}Follow the steps mentioned here https://aka.ms/loginvalidationerror and re-run the validation or uncheck the failed logins before performing login/s migration.",
+		EOL,
+		entraID,
+		error.ErrorCodeString,
+		error.Message);
+}
+
+export function VALIDATE_LOGIN_MIGRATION_USER_MAPPING_VALIDATION_RESULT_ERROR(name: string, error: any,): string {
+	return localize(
+		'sql.migration.validate.ir.sqldb.validation.result.error',
+		"User Mapping Pre Validation check error{0}Name: {1}{0}Error: {2} - {3}{0}Follow the steps mentioned here https://aka.ms/loginvalidationerror and re-run the validation or uncheck the failed logins before performing login/s migration.",
+		EOL,
+		name,
+		error.ErrorCodeString,
+		error.Message);
+}
+
+export function GET_LOGIN_MIGRATION_VALIDATION_ERROR(validationFunctionName: any, name: string, error: any): any {
+	switch (validationFunctionName) {
+		case 'validateUserMapping':
+			return VALIDATE_LOGIN_MIGRATION_USER_MAPPING_VALIDATION_RESULT_ERROR(name, error);
+		case 'validateAADDomainName':
+			return VALIDATE_LOGIN_MIGRATION_ENTRA_ID_VALIDATION_RESULT_ERROR(name, error)
+		case 'validateSysAdminPermission':
+			return VALIDATE_LOGIN_MIGRATION_SYSADMIN_PERMISSION_VALIDATION_RESULT_ERROR(name, error)
+		default:
+			return '';
+	}
+}
+
+export function VALIDATE_LOGIN_MIGRATION_VALIDATION_RESULT_API_ERROR(error: Error): string {
+	return localize(
+		'sql.migration.validate.login.migration.validation.result.api.error',
+		"Validation check error{0}Error: {1} - {2}",
+		EOL,
+		error.name,
+		error.message);
 }
 
 // common strings

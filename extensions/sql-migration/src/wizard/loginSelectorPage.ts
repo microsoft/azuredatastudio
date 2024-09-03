@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
+import { LoginMigrationValidationResult, MigrationStateModel, StateChangeEvent, ValidateLoginMigrationValidationState } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { debounce, getLoginStatusImage, getLoginStatusMessage, getSourceLogins } from '../api/utils';
 import * as styles from '../constants/styles';
@@ -17,6 +17,10 @@ import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryActi
 import { CollectingSourceLoginsFailed, CollectingTargetLoginsFailed } from '../models/loginMigrationModel';
 import { WizardController } from './wizardController';
 import { Tab } from 'azdata';
+import { LoginPreMigrationValidationDialog } from '../dialog/loginMigration/loginPreMigrationValidationDialog';
+import { EOL } from 'os';
+
+const VALIDATE_LOGIN_MIGRATION_CUSTOM_BUTTON_INDEX = 0;
 
 export class LoginSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -57,6 +61,10 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		}).component();
 		flex.addItem(await this.createRootContainer(view), { flex: '1 1 auto' });
 
+		this._disposables.push(
+			this.wizard.customButtons[VALIDATE_LOGIN_MIGRATION_CUSTOM_BUTTON_INDEX].onClick(
+				async e => await this._validateLoginPreMigration()));
+
 		this._disposables.push(this._view.onClosed(e => {
 			this._disposables.forEach(
 				d => { try { d.dispose(); } catch { } });
@@ -71,8 +79,11 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			constants.WIZARD_CANCEL_REASON_NEED_TO_REVIEW_LOGIN_SELECTION
 		]);
 
+		this.wizard.customButtons[VALIDATE_LOGIN_MIGRATION_CUSTOM_BUTTON_INDEX].hidden = false;
+
 		this._isCurrentPage = true;
 		this.updateNextButton();
+
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = {
 				text: '',
@@ -83,9 +94,9 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				return true;
 			}
 
-			if (this.selectedLogins().length === 0) {
+			if (this.selectedLogins().length === 0 || !this.migrationStateModel.isLoginMigrationTargetValidated) {
 				this.wizard.message = {
-					text: constants.SELECT_LOGIN_TO_CONTINUE,
+					text: constants.SELECT_LOGIN_AND_RUN_VALIDATION_TO_CONTINUE,
 					level: azdata.window.MessageLevel.Error
 				};
 				return false;
@@ -93,7 +104,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 			if (this.migrationStateModel._loginMigrationModel.selectedWindowsLogins && !this.migrationStateModel._aadDomainName) {
 				this.wizard.message = {
-					text: constants.ENTER_AAD_DOMAIN_NAME,
+					text: constants.ENTER_ENTRA_ID,
 					level: azdata.window.MessageLevel.Error
 				};
 				return false;
@@ -110,6 +121,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	}
 
 	public async onPageLeave(): Promise<void> {
+		this.wizard.customButtons[VALIDATE_LOGIN_MIGRATION_CUSTOM_BUTTON_INDEX].hidden = true;
+
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			return true;
 		});
@@ -151,7 +164,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		// target user name
 		const aadDomainNameLabel = this._view.modelBuilder.text()
 			.withProps({
-				value: constants.LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_LABEL,
+				value: constants.LOGIN_MIGRATIONS_ENTRA_ID_INPUT_BOX_LABEL,
 				requiredIndicator: false,
 				CSSStyles: { ...styles.LABEL_CSS }
 			}).component();
@@ -160,7 +173,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			.withProps({
 				width: '300px',
 				inputType: 'text',
-				placeHolder: constants.LOGIN_MIGRATIONS_AAD_DOMAIN_NAME_INPUT_BOX_PLACEHOLDER,
+				placeHolder: constants.LOGIN_MIGRATIONS_ENTRA_ID_INPUT_BOX_PLACEHOLDER,
 				required: false,
 			}).component();
 
@@ -680,6 +693,56 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		await this._loginSelectorTable.updateProperty("height", selectedWindowsLogins ? 600 : 650);
 	}
 
+	public updateValidationResultUI(initializing?: boolean): void {
+		const succeeded = this.migrationStateModel.isLoginMigrationTargetValidated;
+		if (succeeded) {
+			this.wizard.message = {
+				level: azdata.window.MessageLevel.Information,
+				text: constants.LOGIN_MIGRATION_VALIDATION_MESSAGE_SUCCESS,
+			};
+		} else {
+			const results = this.migrationStateModel._validateLoginMigration;
+			const hasResults = results.length > 0;
+			if (initializing && !hasResults) {
+				return;
+			}
+
+			const canceled = results.some(result => result.state === ValidateLoginMigrationValidationState.Canceled);
+			const errors: string[] = results.flatMap(result => result.errors) ?? [];
+			const errorsMessage: string = errors.join(EOL);
+			const hasErrors = errors.length > 0;
+			const msg = hasResults
+				? hasErrors
+					? canceled
+						? constants.VALIDATION_MESSAGE_CANCELED_ERRORS(errorsMessage)
+						: constants.VALIDATE_LOGIN_MIGRATION_VALIDATION_COMPLETED_ERRORS(errorsMessage)
+					: constants.VALIDATION_MESSAGE_CANCELED
+				: constants.VALIDATION_MESSAGE_NOT_RUN;
+
+			this.wizard.message = {
+				level: azdata.window.MessageLevel.Error,
+				text: msg,
+			};
+		}
+	}
+
+	private async _validateLoginPreMigration(): Promise<void> {
+		if (this.migrationStateModel?._loginMigrationModel.loginsForMigration?.length <= 0) {
+			this.wizard.message = {
+				text: constants.SELECT_LOGIN_TO_CONTINUE,
+				level: azdata.window.MessageLevel.Error
+			};
+			return;
+		}
+
+		const dialog = new LoginPreMigrationValidationDialog(
+			this.migrationStateModel,
+			() => this.updateValidationResultUI());
+		let results: LoginMigrationValidationResult[] = [];
+		results = this.migrationStateModel._validateLoginMigration;
+		await dialog.openDialog(constants.VALIDATION_DIALOG_TITLE, results);
+	}
+
 	private async updateValuesOnSelection() {
 		const selectedLogins = this.selectedLogins() || [];
 		await this._loginCount.updateProperties({
@@ -688,7 +751,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				this._loginSelectorTable.data?.length || 0)
 		});
 
-		this.migrationStateModel._loginMigrationModel.loginsForMigration = selectedLogins;
 		this.migrationStateModel._loginMigrationModel.loginsForMigration = selectedLogins;
 		await this.refreshAADInputBox();
 		this.updateNextButton();

@@ -43,6 +43,7 @@ export enum TelemetryViews {
 	LoginMigrationTargetSelectionPage = 'LoginMigrationTargetSelectionPage',
 	LoginMigrationSelectorPage = 'LoginMigrationSelectorPage',
 	LoginMigrationStatusPage = 'LoginMigrationStatusPage',
+	LoginMigrationPreValdationDialog = 'LoginMigrationPreValdationDialog',
 	TdeConfigurationDialog = 'TdeConfigurationDialog',
 	TdeMigrationDialog = 'TdeMigrationDialog',
 	ValidIrDialog = 'validIrDialog',
