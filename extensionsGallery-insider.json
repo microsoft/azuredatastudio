@@ -5516,7 +5516,7 @@
 					"extensionId": "109",
 					"extensionName": "couchbase",
 					"displayName": "Couchbase",
-					"shortDescription": "Welcome to the official Visual Studio Code extension for Couchbase! This extension is designed to provide a seamless experience for Couchbase Server users who want to work within the popular Visual Studio Code editor.",
+					"shortDescription": "Welcome to the official Azure Data Studio extension for Couchbase! This extension is designed to provide a seamless experience for Couchbase Server users who want to work within the popular Visual Studio Code editor.",
 					"publisher": {
 						"displayName": "Aayush Tyagi",
 						"publisherId": "AayushTyagi1",
