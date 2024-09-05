@@ -5651,7 +5651,7 @@
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
-									"assetType": "Microsoft.Couchbase.DownloadPage",
+									"assetType": "Microsoft.SQLOps.DownloadPage",
 									"source": "https://github.com/Couchbase-Ecosystem/VSCode-Couchbase/releases/latest"
 								},
 								{
