@@ -5535,7 +5535,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://github.com/Couchbase-Ecosystem/VSCode-Couchbase/blob/main/images/couchbase.png"
+									"source": "https://raw.githubusercontent.com/Couchbase-Ecosystem/VSCode-Couchbase/main/images/couchbase.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
