@@ -314,9 +314,11 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			data['TextData'] = ' ';
 			for (let key in e.values) {
 				let columnName = this._columnMapping[key];
+				let value = e.values[key];
 				if (columnName) {
-					let value = e.values[key];
 					data[columnName] = value;
+				} else {
+					data[key] = value;
 				}
 			}
 			newEvents.push(data);
