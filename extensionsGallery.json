@@ -5584,8 +5584,8 @@
 					  },
 					  "versions": [
 					    {
-					      "version": "3.5.3",
-					      "lastUpdated": "08/27/2024",
+					      "version": "3.6.0",
+					      "lastUpdated": "09/11/2024",
 					      "assetUri": "",
 					      "fallbackAssetUri": "fallbackAssetUri",
 					      "files": [
