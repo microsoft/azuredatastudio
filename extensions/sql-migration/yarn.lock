@@ -195,9 +195,9 @@ chownr@^2.0.0:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-2.0.0.tgz#15bfbe53d2eab4cf70f18a8cd68ebe5b3cb1dece"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
-"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#2.0.0":
-  version "2.0.0"
-  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/39d7544771a4f44e707d0a38eb2fda1f08793d08"
+"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#2.0.1":
+  version "2.0.1"
+  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/7e8dff4aee7e674516367421a3e84fe9a1aa37b1"
   dependencies:
     vscode-languageclient "5.2.1"
 
