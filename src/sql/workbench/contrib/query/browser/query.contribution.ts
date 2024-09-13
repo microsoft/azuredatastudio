@@ -9,6 +9,7 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IConfigurationRegistry, Extensions as ConfigExtensions, IConfigurationNode } from 'vs/platform/configuration/common/configurationRegistry';
 import { MenuId, MenuRegistry, registerAction2 } from 'vs/platform/actions/common/actions';
 import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
+import * as platform from 'vs/base/common/platform';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ContextKeyExpr, ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 
@@ -335,8 +336,8 @@ const queryEditorConfiguration: IConfigurationNode = {
 		},
 		'queryEditor.results.preferProvidersCopyHandler': {
 			'type': 'boolean',
-			'description': localize('queryEditor.results.preferProvidersCopyHandler', "Whether the copy result request should be handled by the query provider when it is supported. The default value is true, set this to false to force all copy handling to be done by Azure Data Studio."),
-			'default': true
+			'description': localize('queryEditor.results.preferProvidersCopyHandler', "Whether the copy result request should be handled by the query provider when it is supported. The default value is true for Windows and Mac, and false for Linux, set this to false to force all copy handling to be done by Azure Data Studio."),
+			'default': platform.isLinux ? false : true
 		},
 		'queryEditor.results.inMemoryDataProcessingThreshold': {
 			'type': 'number',

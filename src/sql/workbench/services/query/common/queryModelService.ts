@@ -22,7 +22,6 @@ import Severity from 'vs/base/common/severity';
 import EditQueryRunner from 'sql/workbench/services/editData/common/editQueryRunner';
 import { IRange } from 'vs/editor/common/core/range';
 import { ServerConnID } from 'sql/workbench/services/query/common/query';
-import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 
 const selectionSnippetMaxLen = 100;
@@ -88,7 +87,6 @@ export class QueryModelService implements IQueryModelService {
 		@IQueryManagementService protected queryManagementService: IQueryManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotificationService private _notificationService: INotificationService,
-		@IClipboardService private _clipboardService: IClipboardService,
 		@ILogService private _logService: ILogService
 	) {
 		this._queryInfoMap = new Map<string, QueryInfo>();
@@ -178,11 +176,7 @@ export class QueryModelService implements IQueryModelService {
 
 	public async copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<void> {
 		if (this._queryInfoMap.has(uri)) {
-			const results = await this._queryInfoMap.get(uri)!.queryRunner!.copyResults(selection, batchId, resultId, includeHeaders);
-			let clipboardData: ClipboardData = {
-				text: results.results
-			};
-			this._clipboardService.write(clipboardData);
+			return this._queryInfoMap.get(uri)!.queryRunner!.copyResults(selection, batchId, resultId, includeHeaders);
 		}
 	}
 

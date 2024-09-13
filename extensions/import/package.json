@@ -77,7 +77,7 @@
     }
   },
   "dependencies": {
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#2.0.0",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#2.0.1",
     "htmlparser2": "^3.10.1",
     "@microsoft/ads-service-downloader": "^1.2.1",
     "@microsoft/ads-extension-telemetry": "^3.0.1",
