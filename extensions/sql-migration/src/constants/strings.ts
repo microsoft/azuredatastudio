@@ -482,7 +482,7 @@ export function LOGIN_MIGRATIONS_GET_LOGINS_ERROR(message: string): string {
 }
 export const SELECT_LOGIN_TO_CONTINUE = localize('sql.migration.select.login.to.continue', "Select one or more logins to run validation.");
 export const SELECT_LOGIN_AND_RUN_VALIDATION_TO_CONTINUE = localize('sql.migration.select.login.run.validation.to.continue', "To perform login migration, please run validation for one or more logins.");
-export const ENTER_ENTRA_ID = localize('sql.login.migration.enter.entra.id.to.continue', "Microsoft Entra ID is required to migrate Windows login. Please enter an Entra ID or deselect windows login(s).");
+export const ENTER_ENTRA_ID = localize('sql.login.migration.enter.entra.id.to.continue', "Microsoft Entra Domain is required to migrate Windows login. Please enter Microsoft Entra Domain name or deselect windows login(s)");
 export const LOGIN_MIGRATE_BUTTON_TEXT = localize('sql.migration.start.login.migration.button', "Migrate");
 export function LOGIN_MIGRATIONS_GET_CONNECTION_STRING(dataSource: string, id: string, pass: string): string {
 	return localize('sql.login.migration.get.connection.string', "data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;", dataSource, id, pass);
@@ -510,8 +510,8 @@ export const LOGINS_NOT_FOUND = localize('sql.login.migration.logins.not.found',
 export const LOGIN_MIGRATION_STATUS_SUCCEEDED = localize('sql.login.migration.status.succeeded', "Succeeded");
 export const LOGIN_MIGRATION_STATUS_FAILED = localize('sql.login.migration.status.failed', "Failed");
 export const LOGIN_MIGRATION_STATUS_IN_PROGRESS = localize('sql.login.migration.status.in.progress', "In progress");
-export const LOGIN_MIGRATIONS_ENTRA_ID_INPUT_BOX_LABEL = localize('sql.login.migration.entra.id.input.box.label', "Microsoft Entra ID (only required to migrate Windows Authenication Logins)");
-export const LOGIN_MIGRATIONS_ENTRA_ID_INPUT_BOX_PLACEHOLDER = localize('sql.login.migration.entra.id.input.box.placeholder', "Enter Entra ID");
+export const LOGIN_MIGRATIONS_ENTRA_ID_INPUT_BOX_LABEL = localize('sql.login.migration.entra.id.input.box.label', "Microsoft Entra Domain Name (only required to migrate Windows Authentication Logins)");
+export const LOGIN_MIGRATIONS_ENTRA_ID_INPUT_BOX_PLACEHOLDER = localize('sql.login.migration.entra.id.input.box.placeholder', "Enter Microsoft Entra Domain name");
 export function LOGIN_MIGRATIONS_LOGIN_STATUS_DETAILS_TITLE(loginName: string): string {
 	return localize('sql.login.migration.login.status.details.title', "Migration status details for {0}", loginName);
 }

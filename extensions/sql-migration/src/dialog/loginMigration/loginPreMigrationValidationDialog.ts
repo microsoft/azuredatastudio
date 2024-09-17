@@ -342,7 +342,7 @@ export class LoginPreMigrationValidationDialog {
 		return this._validationResult.map(result => {
 			const state = result[ValidationResultIndex.state];
 			const finalState = this._canceled
-				? state === ValidateLoginMigrationValidationState.Running || state === ValidateLoginMigrationValidationState.Pending
+				? (state === ValidateLoginMigrationValidationState.Running || state === ValidateLoginMigrationValidationState.Pending)
 					? ValidateLoginMigrationValidationState.Canceled
 					: state
 				: state;
