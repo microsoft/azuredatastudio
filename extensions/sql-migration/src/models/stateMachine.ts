@@ -29,9 +29,22 @@ export enum ValidateIrState {
 	Canceled = 'Canceled',
 }
 
+export enum ValidateLoginMigrationValidationState {
+	Pending = 'Pending',
+	Running = 'Running',
+	Succeeded = 'Succeeded',
+	Failed = 'Failed',
+	Canceled = 'Canceled',
+}
+
 export interface ValidationResult {
 	errors: string[];
 	state: ValidateIrState;
+}
+
+export interface LoginMigrationValidationResult {
+	errors: string[];
+	state: ValidateLoginMigrationValidationState;
 }
 
 export enum State {
@@ -238,6 +251,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _validateIrSqlDb: ValidationResult[] = [];
 	public _validateIrSqlMi: ValidationResult[] = [];
 	public _validateIrSqlVm: ValidationResult[] = [];
+	public _validateLoginMigration: LoginMigrationValidationResult[] = [];
 
 	public _skuRecommendationResults!: SkuRecommendation;
 	public _skuRecommendationPerformanceDataSource!: PerformanceDataSourceOptions;
@@ -356,6 +370,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			&& results.every(r =>
 				r.errors.length === 0 &&
 				r.state === ValidateIrState.Succeeded)
+	}
+
+	public get isLoginMigrationTargetValidated(): boolean {
+		const results = this._validateLoginMigration ?? [];
+		return results.length > 1
+			&& results.every(r =>
+				r.errors.length === 0 &&
+				r.state === ValidateLoginMigrationValidationState.Succeeded)
 	}
 
 	public get migrationTargetServerName(): string {
