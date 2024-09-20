@@ -69,13 +69,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
-		const loginMigrationInfoBox = this._view.modelBuilder.infoBox()
-			.withProps({
-				style: 'information',
-				text: constants.LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING,
-				CSSStyles: { ...styles.BODY_CSS }
-			}).component();
-
 		const hasSysAdminPermissions: boolean = await isSourceConnectionSysAdmin();
 		const connectionProfile: azdata.connection.ConnectionProfile = await getSourceConnectionProfile();
 		const permissionsInfoBox = this._view.modelBuilder.infoBox()
@@ -97,10 +90,67 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS, 'margin': '0' }
 			}).component();
 
+		const preRequisiteListTitle = view.modelBuilder.text()
+			.withProps({
+				value: constants.LOGIN_MIGRATIONS_PRE_REQ_TITLE,
+				CSSStyles: {
+					...styles.LABEL_CSS,
+					'margin': '0px',
+				}
+			}).component();
+
+		const preRequisiteListSubTitle = view.modelBuilder.text()
+			.withProps({
+				value: constants.LOGIN_MIGRATIONS_PRE_REQ_SUBTITLE,
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'margin-top': '10px',
+				}
+			}).component();
+
+		const preRequisiteListElement = view.modelBuilder.text()
+			.withProps({
+				value: [
+					constants.LOGIN_MIGRATIONS_PRE_REQ_1,
+					constants.LOGIN_MIGRATIONS_PRE_REQ_2,
+					constants.LOGIN_MIGRATIONS_PRE_REQ_3,
+					constants.LOGIN_MIGRATIONS_PRE_REQ_4,
+					constants.LOGIN_MIGRATIONS_PRE_REQ_5
+				],
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'padding-left': '20px',
+				}
+			}).component();
+
+		const preRequisiteListInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				style: 'information',
+				text: constants.LOGIN_MIGRATIONS_PRE_REQ_INFO,
+				CSSStyles: { ...styles.BODY_CSS },
+				links: [
+					{ text: constants.VIEW_TUTORIAL, url: 'https://learn.microsoft.com/en-us/azure/dms/tutorial-login-migration-ads' },
+				]
+			}).component();
+
+		const preReqContainer = view.modelBuilder.flexContainer()
+			.withItems([
+				preRequisiteListTitle,
+				preRequisiteListSubTitle,
+				preRequisiteListElement,
+				preRequisiteListInfoBox])
+			.withLayout({ flexFlow: 'column' })
+			.component();
+
+		const tasksContainer = view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'row',
+				width: '100%',
+			}).component();
+
 		const form = this._view.modelBuilder.formContainer()
 			.withFormItems([
 				{ component: loginMigrationPreviewInfoBox },
-				{ component: loginMigrationInfoBox },
 				{ component: permissionsInfoBox },
 				{ component: this._pageDescription },
 				{ component: this.createAzureSqlTargetTypeDropdown() },
@@ -111,12 +161,17 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				CSSStyles: { 'padding-top': '0' }
 			}).component();
 
+		tasksContainer.addItem(form, {});
+		tasksContainer.addItems(
+			[preReqContainer],
+			{ CSSStyles: { 'margin': '10px' } });
+
 		this._disposables.push(
 			this._view.onClosed(e => {
 				this._disposables.forEach(
 					d => { try { d.dispose(); } catch { } });
 			}));
-		await this._view.initializeModel(form);
+		await this._view.initializeModel(tasksContainer);
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
