@@ -442,14 +442,23 @@ export function LOGIN_WIZARD_TITLE(instanceName: string): string {
 	return localize('sql-migration.login.wizard.title', "Migrate logins from '{0}' to Azure SQL", instanceName);
 }
 export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DESCRIPTION = localize('sql.login.migration.wizard.target.description', "Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.");
-export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PREVIEW_WARNING = localize('sql.login.migration.wizard.target.data.migration.warning', "Please note that login migration feature is in public preview mode.");
+export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PREVIEW_WARNING = localize('sql.login.migration.wizard.target.data.migration.warning', "Please note that login migration feature is in public preview.");
 export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING = localize('sql.login.migration.wizard.target.data.migration.warning', "We recommend migrating your databases(s) to the Azure SQL target before starting the login migration to avoid failures in the process. Nevertheless, you can run this migration process whenever want you want if your goal is to update the user mapping for recently migrated databases.\n\n If the source and database names are not the same, then it is possible that some permissions may not be applied properly.");
 export function LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PERMISSIONS_WARNING(userName: string, instanceName: string): string {
 	if (!userName || !userName.length) {
-		return localize('sql.login.migration.wizard.target.permission.warning', "Please ensure that the current user has sysadmin permissions to get all login information for the current instance ({0}).", instanceName);
+		return localize('sql.login.migration.wizard.target.permission.warning', "Please ensure that the current user has Sysadmin permissions to get all login information for the current instance ({0}).", instanceName);
 	}
-	return localize('sql.login.migration.wizard.target.permission.warning', "Please ensure that the current user ({0}) has sysadmin permissions to get all login information for the current instance ({1}).", userName, instanceName);
+	return localize('sql.login.migration.wizard.target.permission.warning', "Please ensure that the current user ({0}) has Sysadmin permissions to get all login information for the current instance ({1}).", userName, instanceName);
 }
+export const LOGIN_MIGRATIONS_PRE_REQ_TITLE = localize('login.migration.pre.req.title', "Login migration pre-requisites:");
+export const LOGIN_MIGRATIONS_PRE_REQ_SUBTITLE = localize('login.migration.pre.req.subtitle', "Before you start your login migration to Azure SQL, check the list of pre-requites below:");
+export const LOGIN_MIGRATIONS_PRE_REQ_1 = localize('login.migration.pre.req.1', "You must successfully migrate all your databases to the target before starting the login migration else the migration will fail.");
+export const LOGIN_MIGRATIONS_PRE_REQ_2 = localize('login.migration.pre.req.2', "The source and target databases names must be same otherwise permissions may not be applied properly.");
+export const LOGIN_MIGRATIONS_PRE_REQ_3 = localize('login.migration.pre.req.3', "Login migration requires 'Sysadmin' permissions on both source and target.");
+export const LOGIN_MIGRATIONS_PRE_REQ_4 = localize('login.migration.pre.req.4', "Source and target must be connected.");
+export const LOGIN_MIGRATIONS_PRE_REQ_5 = localize('login.migration.pre.req.5', "For Windows account migration, ensure the target has 'Read' permissions on Microsoft Entra and ensure domain federation between local AD and Microsoft Entra ID.");
+export const LOGIN_MIGRATIONS_PRE_REQ_INFO = localize('login.migration.pre.req.info', "For more details about login migrations to Azure SQL, {0}.");
+export const VIEW_TUTORIAL = localize('login.migration.pre.req.view.tutorial', "see the tutorial");
 export const LOGIN_MIGRATIONS_TARGET_TYPE_SELECTION_TITLE = localize('sql.login.migration.wizard.target.type.title', "Azure SQL target type");
 export const LOGIN_MIGRATIONS_MI_TEXT = localize('sql.login.migration.mi.title', "Azure SQL Managed Instance");
 export const LOGIN_MIGRATIONS_DB_TEXT = localize('sql.login.migration.db.title', "Azure SQL Database");
