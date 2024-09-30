@@ -155,7 +155,7 @@
     "@types/mark.js": "^8.11.8",
     "@types/minimist": "^1.2.1",
     "@types/mocha": "^9.1.1",
-    "@types/node": "18.x",
+    "@types/node": "20.x",
     "@types/plotly.js": "^1.44.9",
     "@types/sanitize-html": "^1.18.2",
     "@types/sinon": "10.0.2",
