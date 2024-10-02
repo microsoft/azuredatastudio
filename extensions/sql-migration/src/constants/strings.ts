@@ -492,6 +492,8 @@ export function LOGIN_MIGRATIONS_GET_LOGINS_ERROR(message: string): string {
 export const SELECT_LOGIN_TO_CONTINUE = localize('sql.migration.select.login.to.continue', "Select one or more logins to run validation.");
 export const SELECT_LOGIN_AND_RUN_VALIDATION_TO_CONTINUE = localize('sql.migration.select.login.run.validation.to.continue', "To perform login migration, please run validation for one or more logins.");
 export const ENTER_ENTRA_ID = localize('sql.login.migration.enter.entra.id.to.continue', "Microsoft Entra Domain is required to migrate Windows login. Please enter Microsoft Entra Domain name or deselect windows login(s)");
+export const ENTRA_DOMAIN_NOT_VALIDATED = localize('sql.login.migration.entra.not.validated', "Microsoft Entra Domain is not validated, please run validations to proceed with migration.");
+export const VALIDATE_ALL_LOGINS = localize('sql.login.migration.validate.all.logins', "All selected logins are not validated, please run validations for all selected logins to proceed with migration.");
 export const LOGIN_MIGRATE_BUTTON_TEXT = localize('sql.migration.start.login.migration.button', "Migrate");
 export function LOGIN_MIGRATIONS_GET_CONNECTION_STRING(dataSource: string, id: string, pass: string): string {
 	return localize('sql.login.migration.get.connection.string', "data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;", dataSource, id, pass);
