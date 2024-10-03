@@ -44,6 +44,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	private _systemLoginTable!: azdata.TableComponent;
 	private _systemLoginTableValues!: any[];
 	private _filterSystemLoginTableValue!: string;
+	private _successfullyValidatedLogins: Set<string> = new Set<string>();
+	private _successfullyValidatedEntraDomain!: String;
 
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
@@ -102,14 +104,30 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				return false;
 			}
 
-			if (this.migrationStateModel._loginMigrationModel.selectedWindowsLogins && !this.migrationStateModel._aadDomainName) {
+			if (this.migrationStateModel._loginMigrationModel.selectedWindowsLogins) {
+				if (!this.migrationStateModel._aadDomainName) {
+					this.wizard.message = {
+						text: constants.ENTER_ENTRA_ID,
+						level: azdata.window.MessageLevel.Error
+					};
+					return false;
+				}
+				else if (this._successfullyValidatedEntraDomain !== this.migrationStateModel._aadDomainName) {
+					this.wizard.message = {
+						text: constants.ENTRA_DOMAIN_NOT_VALIDATED,
+						level: azdata.window.MessageLevel.Error
+					};
+					return false;
+				}
+			}
+
+			if (!this._isAllSelectedLoginsValidated()) {
 				this.wizard.message = {
-					text: constants.ENTER_ENTRA_ID,
+					text: constants.VALIDATE_ALL_LOGINS,
 					level: azdata.window.MessageLevel.Error
 				};
 				return false;
 			}
-
 			return true;
 		});
 
@@ -522,6 +540,10 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		return table;
 	}
 
+	private _isAllSelectedLoginsValidated(): boolean {
+		return this.selectedLogins().every(login => this._successfullyValidatedLogins.has(login.loginName));
+	}
+
 	private async _getSourceLogins() {
 		const stateMachine: MigrationStateModel = this.migrationStateModel;
 
@@ -695,7 +717,12 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 	public updateValidationResultUI(initializing?: boolean): void {
 		const succeeded = this.migrationStateModel.isLoginMigrationTargetValidated;
+		this._successfullyValidatedLogins.clear();
 		if (succeeded) {
+			this.selectedLogins().forEach(login => this._successfullyValidatedLogins.add(login.loginName));
+			if (this.migrationStateModel._loginMigrationModel.selectedWindowsLogins) {
+				this._successfullyValidatedEntraDomain = this.migrationStateModel._aadDomainName;
+			}
 			this.wizard.message = {
 				level: azdata.window.MessageLevel.Information,
 				text: constants.LOGIN_MIGRATION_VALIDATION_MESSAGE_SUCCESS,
