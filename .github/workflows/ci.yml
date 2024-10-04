@@ -283,9 +283,6 @@ jobs:
       - name: Run Hygiene Checks
         run: yarn gulp hygiene
 
-      - name: Compile /build/
-        run: yarn --cwd build compile
-
       - name: Check clean git state
         run: ./.github/workflows/check-clean-git-state.sh
 
