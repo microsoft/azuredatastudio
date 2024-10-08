@@ -826,13 +826,6 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 				const proxyBypassRules = newNoProxy ? `${newNoProxy},<local>` : '<local>';
 				this.logService.trace(`Setting proxy to '${proxyRules}', bypassing '${proxyBypassRules}'`);
 				this._win.webContents.session.setProxy({ proxyRules, proxyBypassRules, pacScript: '' });
-				type appWithProxySupport = Electron.App & {
-					setProxy(config: Electron.Config): Promise<void>;
-					resolveProxy(url: string): Promise<string>;
-				};
-				if (typeof (app as appWithProxySupport).setProxy === 'function') {
-					(app as appWithProxySupport).setProxy({ proxyRules, proxyBypassRules, pacScript: '' });
-				}
 			}
 		}
 	}

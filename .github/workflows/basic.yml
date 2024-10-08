@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20.17
+          node-version: 18.15
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11.x"
@@ -86,7 +86,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20.17
+          node-version: 18.15
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11.x"
@@ -125,6 +125,12 @@ jobs:
 
       - name: Run Hygiene Checks
         run: yarn gulp hygiene
+
+      - name: Run Valid Layers Checks
+        run: yarn valid-layers-check
+
+      - name: Compile /build/
+        run: yarn --cwd build compile
 
       - name: Check clean git state
         run: ./.github/workflows/check-clean-git-state.sh

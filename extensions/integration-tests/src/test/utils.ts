@@ -81,7 +81,7 @@ export async function asyncTimeout<T>(p: Thenable<T>, timeout: number): Promise<
 }
 
 export async function pollTimeout(predicate: () => Thenable<boolean>, intervalDelay: number, timeoutTime: number): Promise<boolean> {
-	let interval: NodeJS.Timeout;
+	let interval: NodeJS.Timer;
 	return new Promise(pollOver => {
 		const complete = (success = false) => {
 			clearInterval(interval);
