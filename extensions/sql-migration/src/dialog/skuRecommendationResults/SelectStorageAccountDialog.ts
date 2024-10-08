@@ -12,7 +12,7 @@ import * as utils from '../../api/utils';
 import { StorageAccount } from '../../api/azure';
 import { logError, TelemetryViews } from '../../telemetry';
 import { MigrationStateModel } from '../../models/stateMachine';
-import { StorageSharedKeyCredential, BlockBlobClient, BlobSASPermissions, generateBlobSASQueryParameters } from '@azure/storage-blob';
+import { generateAccountSASQueryParameters, StorageSharedKeyCredential, BlockBlobClient, AccountSASServices, AccountSASResourceTypes, AccountSASPermissions, SASProtocol } from '@azure/storage-blob';
 import { getStorageAccountAccessKeys } from '../../api/azure';
 import { MigrationTargetType } from '../../api/utils';
 
@@ -70,7 +70,7 @@ export class SelectStorageAccountDialog {
 		protected readonly migrationStateModel: MigrationStateModel, public _targetType: MigrationTargetType
 	) {
 		this._dialog = azdata.window.createModelViewDialog(
-			constants.SELECT_STORAGE_ACCOUNT_TITLE,
+			constants.UPLOAD_TEMPLATE_TO_AZURE,
 			'SelectStorageAccountDialog',
 			460,
 			'normal'
@@ -89,7 +89,7 @@ export class SelectStorageAccountDialog {
 
 		});
 
-		this._dialog.okButton.label = constants.SAVE_LABEL;
+		this._dialog.okButton.label = constants.DEPLOY_LABEL;
 		this._disposables.push(
 			this._dialog.okButton.onClick(async (value) => {
 				await this.uploadTemplate();
@@ -120,7 +120,7 @@ export class SelectStorageAccountDialog {
 		return this._view.modelBuilder.text()
 			.withProps({
 				value: constants.STORAGE_ACCOUNT_SELECT_HEADING,
-				CSSStyles: { ...styles.PAGE_TITLE_CSS }
+				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 	}
 
@@ -589,23 +589,32 @@ export class SelectStorageAccountDialog {
 		const containerName = this._blobContainer.name;
 		const templates = this.migrationStateModel._armTemplateResult.templates!;
 		const sharedKeyCredential = new StorageSharedKeyCredential(this._storageAccount.name, storageKeys.keyName1);
+		var deployToAzureUrl: string = "";
 
-		const sasToken = generateBlobSASQueryParameters({
-			containerName,
-			permissions: BlobSASPermissions.parse("racwd"),
-			expiresOn: new Date(new Date().valueOf() + 86400),
-		},
+		const sasOptions = {
+			services: AccountSASServices.parse("b").toString(),          // blobs
+			resourceTypes: AccountSASResourceTypes.parse("sco").toString(), // service, container, object
+			permissions: AccountSASPermissions.parse("rwdlacupi"),          // permissions
+			protocol: SASProtocol.Https,
+			startsOn: new Date(),
+			expiresOn: new Date(new Date().valueOf() + (30 * 60 * 1000)),   // 30 minutes
+		};
+
+		const sasToken = generateAccountSASQueryParameters(
+			sasOptions,
 			sharedKeyCredential
 		).toString();
 
 		try {
 			for (let i = 0; i < templates.length; i++) {
 				const blobName = utils.generateTemplatePath(this.migrationStateModel, this._targetType, i + 1);
-				const sasUrl = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
+				var sasUrl = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
+				deployToAzureUrl = sasUrl;
 				const blockBlobClient = new BlockBlobClient(sasUrl);
 				await blockBlobClient.upload(templates[i], templates[i].length);
 			}
 			void vscode.window.showInformationMessage(constants.UPLOAD_TEMPLATE_SUCCESS);
+			this.DeployToAzure(deployToAzureUrl);
 		}
 		catch (e) {
 			logError(TelemetryViews.UploadArmTemplateDialog, 'ArmTemplateUploadError', e);
@@ -613,4 +622,16 @@ export class SelectStorageAccountDialog {
 		}
 
 	}
+
+	private DeployToAzure(deployToAzureUrl: string) {
+		deployToAzureUrl = encodeURIComponent(deployToAzureUrl);
+		let scheme = 'https';
+		let authority = 'portal.azure.com';
+		let path = '/';
+		let fragment = 'create/Microsoft.Template/uri/' + deployToAzureUrl;
+		let query = '';
+		let uri = vscode.Uri.from({ scheme, authority, path, query, fragment });
+		void vscode.env.openExternal(uri);
+	}
+
 }

@@ -260,11 +260,12 @@ export const IMPORT_PERFORMANCE_DATA = localize('sql.migration.sku.import.perfor
 export const IMPORT_PERFORMANCE_DATA_DIALOG_DESCRIPTION = localize('sql.migration.sku.import.performance.data.dialog.description', "Import this data file from an existing folder, if you have already collected it using Data Migration Assistant.");
 export const IMPORT_PERFORMANCE_DATA_DIALOG_HELPER_MESSAGE = localize('sql.migration.sku.import.performance.data.dialog.helper.message', "Select a folder on your local drive");
 export const IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FOLDER = localize('sql.migration.sku.import.performance.data.dialog.open.folder', "Select a folder");
-export const UPLOAD_TEMPLATE_TO_AZURE = localize('sql.migration.target.upload.to.azure', "Save to Azure blob container");
-export const TARGET_PROVISIONING_TITLE = localize('sql.migration.target.provisioning.title', "Save Template");
-export const GENERATE_ARM_TEMPLATE = localize('sql.migration.target.provisioning.generate.template', "Generate Template");
+export const UPLOAD_TEMPLATE_TO_AZURE = localize('sql.migration.target.provisioning.upload.to.azure', "Deploy to Azure");
+export const SAVE_TO_DEVICE = localize('sql.migration.target.provisioning.generate.template', "Save to device");
+export const COPY_TO_CLIPBOARD = localize('sql.migration.target.provisioning.copy.to.clipboard', "Copy to clipboard");
+
 export const CLOSE_DIALOG = localize('sql.migration.target.provisioning.close', "Close");
-export const TARGET_PROVISIONING_DESCRIPTION = localize('sql.migration.target.provisioning.description', "Below is the ARM script for the recommended target SKU. You can save the script as template.");
+export const TARGET_PROVISIONING_DESCRIPTION = localize('sql.migration.target.provisioning.description', "Below is the ARM script for the recommended target SKU. You can use the following two methods to deploy target SKU to Azure.\n 1.Click on the \"Deploy to Azure\" command to deploy the target resource. This option requires an Azure blob container account.\n 2.Click on \"Save to device\" to save the ARM script and then manually deploy the target resource.");
 export const DISPLAY_ARM_TEMPLATE_LIMIT = localize('sql.migration.target.provisioning.template.display.limit', "A single ARM template has a deployment limitation of a maximum 50 Azure SQL Databases. The template for the first 50 databases is displayed below. To view all templates, save the template JSON file in a local storage or Azure Blob storage.")
 
 // allow-any-unicode-next-line
@@ -1730,10 +1731,10 @@ export const MIGRATION_SERVICE_SELECT_SERVICE_LABEL = localize('sql.migration.se
 export const MIGRATION_SERVICE_SELECT_SERVICE_PROMPT = localize('sql.migration.select.service.prompt', 'Select a Database Migration Service');
 
 // Upload Arm Template Dialog
-export const SELECT_STORAGE_ACCOUNT_TITLE = localize('sql.migration.select.storage.account.title', "Select Azure Storage Account");
-export const STORAGE_ACCOUNT_SELECT_HEADING = localize('sql.migration.select.storage.account.heading', "Enter the details below to select the Azure Storage account and save the script as template");
+export const STORAGE_ACCOUNT_SELECT_HEADING = localize('sql.migration.select.storage.account.heading', "You need to provide an Azure blob container account to deploy the target SKU. Select the account details below:");
 export const STORAGE_ACCOUNT_SELECT_LABEL = localize('sql.migration.select.storage.account.label', "Storage Account");
 export const SAVE_LABEL = localize('sql.migration.target.provisioning.save', "Save");
+export const DEPLOY_LABEL = localize('sql.migration.target.provisioning.save', "Deploy");
 
 export const TARGET_STORAGE_ACCOUNT_INFO = localize('sql.migration.storage.account', "Your Storage Account name");
 export const TARGET_BLOB_CONTAINER_INFO = localize('sql.migration.storage.account.blob.container', "Your Blob Container name");
