@@ -36,6 +36,10 @@ steps:
   #   displayName: Run Monaco Editor Checks
 
   - script: |
+      yarn valid-layers-check
+    displayName: Run Valid Layers Checks
+
+  - script: |
       yarn compile
     displayName: Compile Sources
 

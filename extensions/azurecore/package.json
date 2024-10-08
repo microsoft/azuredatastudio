@@ -507,7 +507,7 @@
     "@azure/arm-resourcegraph": "^4.2.1",
     "@azure/arm-subscriptions": "^3.0.0",
     "@azure/msal-common": "11.0.0",
-    "@azure/msal-node": "^2.13.1",
+    "@azure/msal-node": "2.9.2",
     "@azure/ms-rest-js": "^2.2.0",
     "@azure/storage-blob": "^12.13.0",
     "axios": "^1.6.0",

@@ -68,7 +68,7 @@ class RemoteExtensionHostAgentServer extends Disposable implements IServerAPI {
 
 	private readonly _serverRootPath: string;
 
-	private shutdownTimer: NodeJS.Timeout | undefined;
+	private shutdownTimer: NodeJS.Timer | undefined;
 
 	constructor(
 		private readonly _socketServer: SocketServer<RemoteAgentConnectionContext>,

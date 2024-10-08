@@ -17,7 +17,7 @@ export class SimpleWebServer {
 	private readonly pathMappings = new Map<string, WebHandler>();
 	private readonly server: http.Server;
 	private lastUsed: number = new Date().getTime();
-	private shutoffInterval: NodeJS.Timeout;
+	private shutoffInterval: NodeJS.Timer;
 
 	constructor(private readonly autoShutoffTimer = 5 * 60 * 1000) { // Default to five minutes.
 		this.bumpLastUsed();
@@ -64,7 +64,7 @@ export class SimpleWebServer {
 			throw new AlreadyRunningError();
 		}
 		this.hasStarted = true;
-		let portTimeout: NodeJS.Timeout;
+		let portTimeout: NodeJS.Timer;
 		const portPromise = new Promise<string>((resolve, reject) => {
 			portTimeout = setTimeout(() => {
 				reject(new Error('Timed out waiting for the server to start'));

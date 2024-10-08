@@ -234,7 +234,7 @@ class MonacoGenerator {
 		}
 	}
 
-	private _executeSoonTimer: NodeJS.Timeout | null = null;
+	private _executeSoonTimer: NodeJS.Timer | null = null;
 	private _executeSoon(): void {
 		if (this._executeSoonTimer !== null) {
 			clearTimeout(this._executeSoonTimer);

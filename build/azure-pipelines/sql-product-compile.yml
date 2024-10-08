@@ -1,7 +1,7 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: "20.17.0"
+    versionSpec: "18.15.0"
 
 - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
   inputs:
@@ -84,7 +84,7 @@ steps:
     set -e
     yarn npm-run-all -lp core-ci
     yarn npm-run-all -lp extensions-ci
-    yarn npm-run-all -lp hygiene eslint
+    yarn npm-run-all -lp hygiene eslint valid-layers-check
   displayName: Compile & Hygiene
 
 - script: |

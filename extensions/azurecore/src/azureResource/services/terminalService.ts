@@ -169,7 +169,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 	public readonly onDidWrite: vscode.Event<string>;
 
 	private socket: WS | undefined = undefined;
-	private intervalTimer: NodeJS.Timeout | undefined = undefined;
+	private intervalTimer: NodeJS.Timer | undefined = undefined;
 	private terminalDimensions: vscode.TerminalDimensions | undefined;
 
 	constructor(private readonly consoleUri: string, private readonly token: string, private shell: string) {
