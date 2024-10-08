@@ -20,6 +20,7 @@ const INPUT_COMPONENT_WIDTH = '100%';
 const STYLE_HIDE = { 'display': 'none' };
 const STYLE_ShOW = { 'display': 'inline' };
 const CONTROL_MARGIN = '20px';
+const exec = require('child_process').exec;
 export const BODY_CSS = {
 	'font-size': '13px',
 	'line-height': '18px',
@@ -589,7 +590,6 @@ export class SelectStorageAccountDialog {
 		const containerName = this._blobContainer.name;
 		const templates = this.migrationStateModel._armTemplateResult.templates!;
 		const sharedKeyCredential = new StorageSharedKeyCredential(this._storageAccount.name, storageKeys.keyName1);
-		var deployToAzureUrl: string = "";
 
 		const sasOptions = {
 			services: AccountSASServices.parse("b").toString(),          // blobs
@@ -605,16 +605,18 @@ export class SelectStorageAccountDialog {
 			sharedKeyCredential
 		).toString();
 
+		let sasUrls: string[] = [];
+
 		try {
 			for (let i = 0; i < templates.length; i++) {
 				const blobName = utils.generateTemplatePath(this.migrationStateModel, this._targetType, i + 1);
 				var sasUrl = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
-				deployToAzureUrl = sasUrl;
+				sasUrls.push(sasUrl);
 				const blockBlobClient = new BlockBlobClient(sasUrl);
 				await blockBlobClient.upload(templates[i], templates[i].length);
 			}
-			void vscode.window.showInformationMessage(constants.UPLOAD_TEMPLATE_SUCCESS);
-			this.DeployToAzure(deployToAzureUrl);
+
+			this.DeployToAzure(sasUrls);
 		}
 		catch (e) {
 			logError(TelemetryViews.UploadArmTemplateDialog, 'ArmTemplateUploadError', e);
@@ -623,15 +625,31 @@ export class SelectStorageAccountDialog {
 
 	}
 
-	private DeployToAzure(deployToAzureUrl: string) {
-		deployToAzureUrl = encodeURIComponent(deployToAzureUrl);
-		let scheme = 'https';
-		let authority = 'portal.azure.com';
-		let path = '/';
-		let fragment = 'create/Microsoft.Template/uri/' + deployToAzureUrl;
-		let query = '';
-		let uri = vscode.Uri.from({ scheme, authority, path, query, fragment });
-		void vscode.env.openExternal(uri);
+	private DeployToAzure(sasUrls: string[]) {
+		let opener;
+		switch (process.platform) {
+			case 'darwin':
+				opener = 'open';
+				break;
+			case 'win32':
+				opener = 'start';
+				break;
+			default:
+				opener = 'xdg-open';
+				break;
+		}
+
+		for (let i = 0; i < sasUrls.length; i++) {
+			// generate custom deployment URL for each ARM template.
+			// In case of SQL DB we can have more than 1 ARM template file since a single file has a limit of 50 DBs.
+			let deployToAzureUrl = 'https://portal.azure.com/#create/Microsoft.Template/uri/' + encodeURIComponent(sasUrls[i]);
+
+			// open the custom deployment URL in browser.
+			exec(`${opener} ${deployToAzureUrl}`);
+		}
+
+		void vscode.window.showInformationMessage(constants.UPLOAD_TEMPLATE_SUCCESS);
+
 	}
 
 }
