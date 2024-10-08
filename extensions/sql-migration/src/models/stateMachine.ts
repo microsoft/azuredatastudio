@@ -375,9 +375,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public get isLoginMigrationTargetValidated(): boolean {
 		const results = this._validateLoginMigration ?? [];
 		return results.length > 1
-			&& results.every(r =>
+			&& results.slice(0, 2).every(r =>
 				r.errors.length === 0 &&
-				r.state === ValidateLoginMigrationValidationState.Succeeded)
+				r.state === ValidateLoginMigrationValidationState.Succeeded);
 	}
 
 	public get migrationTargetServerName(): string {

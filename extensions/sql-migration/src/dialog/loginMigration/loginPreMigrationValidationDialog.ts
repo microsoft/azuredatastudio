@@ -9,7 +9,7 @@ import * as constants from '../../constants/strings';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { LoginMigrationValidationResult, MigrationStateModel, ValidateLoginMigrationValidationState } from '../../models/stateMachine';
 import { getSourceConnectionString, getTargetConnectionString } from '../../api/sqlUtils';
-import { logError, TelemetryViews } from '../../telemetry';
+import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../../telemetry';
 import { EOL } from 'os';
 
 const DialogName = 'LoginPreMigrationValidationDialog';
@@ -399,6 +399,7 @@ export class LoginPreMigrationValidationDialog {
 	}
 
 	private async _validateLoginMigration(skipSuccessfulSteps: boolean = false): Promise<void> {
+		this._logLoginMigrationPreValidationStart()
 		let testNumber: number = 0;
 
 		const validate = async (
@@ -606,5 +607,19 @@ export class LoginPreMigrationValidationDialog {
 			ValidationStatusLookup[ValidateLoginMigrationValidationState.Pending],
 			[],
 			ValidateLoginMigrationValidationState.Pending]);
+	}
+
+	private _logLoginMigrationPreValidationStart(): void {
+		sendSqlMigrationActionEvent(
+			TelemetryViews.LoginMigrationSelectorPage,
+			TelemetryAction.LoginMigrationPreValidationStarted,
+			{
+				...getTelemetryProps(this._model),
+				'loginsAuthType': this._model._loginMigrationModel.loginsAuthType,
+			},
+			{
+				'numberLogins': this._model._loginMigrationModel.loginsForMigration.length,
+			}
+		);
 	}
 }

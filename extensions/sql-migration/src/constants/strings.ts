@@ -439,9 +439,9 @@ export const WIZARD_CANCEL_REASON_NEED_TO_REVIEW_LOGIN_SELECTION = localize('sql
 
 // Login Migrations
 export function LOGIN_WIZARD_TITLE(instanceName: string): string {
-	return localize('sql-migration.login.wizard.title', "Migrate logins from '{0}' to Azure SQL", instanceName);
+	return localize('sql-migration.login.wizard.title', "Migrate login(s) from '{0}' to Azure SQL", instanceName);
 }
-export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DESCRIPTION = localize('sql.login.migration.wizard.target.description', "Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.");
+export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DESCRIPTION = localize('sql.login.migration.wizard.target.description', "Select the target Azure SQL Managed Instance or Azure SQL VM where you want to migrate your login(s).");
 export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PREVIEW_WARNING = localize('sql.login.migration.wizard.target.data.migration.warning', "Please note that login migration feature is in public preview.");
 export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING = localize('sql.login.migration.wizard.target.data.migration.warning', "We recommend migrating your databases(s) to the Azure SQL target before starting the login migration to avoid failures in the process. Nevertheless, you can run this migration process whenever want you want if your goal is to update the user mapping for recently migrated databases.\n\n If the source and database names are not the same, then it is possible that some permissions may not be applied properly.");
 export function LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PERMISSIONS_WARNING(userName: string, instanceName: string): string {
@@ -466,18 +466,18 @@ export const LOGIN_MIGRATIONS_VM_TEXT = localize('sql.login.migration.vm.title',
 export const LOGIN_MIGRATIONS_AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.login.migration.target.title', "Azure SQL target");
 export const LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE = localize('sql.login.migration.select.page.title', "Select login(s) to migrate");
 export const LOGIN_MIGRATIONS_SELECT_LOGINS_WINDOWS_AUTH_WARNING = localize('sql.login.migration.select.logins.windows.auth.warning', "Please note that this wizard does not display windows authentication login types because migrating that type is currently not supported. Capability for migrating windows authentication logins is coming soon.");
-export const LOGIN_MIGRATIONS_SELECT_LOGINS_TAB_NON_SYSTEM_LOGIN_TITLE = localize('sql.login.migration.select.logins.tab.non.system.title', "Logins ready for migration");
-export const LOGIN_MIGRATIONS_SELECT_LOGINS_TAB_SYSTEM_LOGIN_TITLE = localize('sql.login.migration.select.logins.tab.system.title', "Excluded login/s");
-export const LOGIN_MIGRATIONS_SELECT_LOGINS_SYSTEM_LOGIN_INFO_BOX = localize('sql.login.migration.select.logins.system.info.box', "Below login/s is/are excluded from login migration as they are either local service or system accounts at the source.");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_TAB_NON_SYSTEM_LOGIN_TITLE = localize('sql.login.migration.select.logins.tab.non.system.title', "Login(s) ready for migration");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_TAB_SYSTEM_LOGIN_TITLE = localize('sql.login.migration.select.logins.tab.system.title', "Excluded login(s)");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_SYSTEM_LOGIN_INFO_BOX = localize('sql.login.migration.select.logins.system.info.box', "Below login(s) is/are excluded from login migration as they are either local service or system accounts at the source.");
 export const LOGIN_MIGRATIONS_STATUS_PAGE_TITLE = localize('sql.login.migration.status.page.title', "Migration Status");
 export function LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
-	return localize('sql.login.migration.status.page.description', "Migrating {0} logins to target {1} '{2}'", numLogins, targetType, targetName);
+	return localize('sql.login.migration.status.page.description', "Migrating {0} login(s) to target {1} '{2}'", numLogins, targetType, targetName);
 }
 export function LOGIN_MIGRATIONS_COMPLETED_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
-	return localize('sql.login.migration.status.page.description.completed', "Completed migrating {0} logins to {1} '{2}'", numLogins, targetType, targetName);
+	return localize('sql.login.migration.status.page.description.completed', "Completed migrating {0} login(s) to {1} '{2}'", numLogins, targetType, targetName);
 }
 export function LOGIN_MIGRATIONS_FAILED_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
-	return localize('sql.login.migration.status.page.description.failed', "Failed migrating {0} logins to {1} '{2}'", numLogins, targetType, targetName);
+	return localize('sql.login.migration.status.page.description.failed', "Failed migrating {0} login(s) to {1} '{2}'", numLogins, targetType, targetName);
 }
 export const LOGIN_MIGRATIONS_STATUS_PAGE_PREVIOUS_BUTTON_TITLE = localize('sql.login.migration.status.page.previous.button.title', "Previous (Disabled)");
 export const LOGIN_MIGRATIONS_STATUS_PAGE_PREVIOUS_BUTTON_ERROR = localize('sql.login.migration.status.page.previous.button.error', "Login migration has already been initiated and going back to prior page is disabled.");
@@ -489,11 +489,11 @@ export function LOGIN_MIGRATIONS_GET_LOGINS_ERROR_TITLE(targetType: string): str
 export function LOGIN_MIGRATIONS_GET_LOGINS_ERROR(message: string): string {
 	return localize('sql.migration.wizard.target.login.error', "Error getting login information: {0}", message);
 }
-export const SELECT_LOGIN_TO_CONTINUE = localize('sql.migration.select.login.to.continue', "Select one or more logins to run validation.");
-export const SELECT_LOGIN_AND_RUN_VALIDATION_TO_CONTINUE = localize('sql.migration.select.login.run.validation.to.continue', "To perform login migration, please run validation for one or more logins.");
+export const SELECT_LOGIN_TO_CONTINUE = localize('sql.migration.select.login.to.continue', "Select one or more login(s) to run validation.");
+export const SELECT_LOGIN_AND_RUN_VALIDATION_TO_CONTINUE = localize('sql.migration.select.login.run.validation.to.continue', "To perform login migration, please run validation for one or more login(s).");
 export const ENTER_ENTRA_ID = localize('sql.login.migration.enter.entra.id.to.continue', "Microsoft Entra Domain is required to migrate Windows login. Please enter Microsoft Entra Domain name or deselect windows login(s)");
 export const ENTRA_DOMAIN_NOT_VALIDATED = localize('sql.login.migration.entra.not.validated', "Microsoft Entra Domain is not validated, please run validations to proceed with migration.");
-export const VALIDATE_ALL_LOGINS = localize('sql.login.migration.validate.all.logins', "All selected logins are not validated, please run validations for all selected logins to proceed with migration.");
+export const VALIDATE_ALL_LOGINS = localize('sql.login.migration.validate.all.logins', "All selected login(s) are not validated, please run validations for all selected login(s) to proceed with migration.");
 export const LOGIN_MIGRATE_BUTTON_TEXT = localize('sql.migration.start.login.migration.button', "Migrate");
 export function LOGIN_MIGRATIONS_GET_CONNECTION_STRING(dataSource: string, id: string, pass: string): string {
 	return localize('sql.login.migration.get.connection.string', "data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;", dataSource, id, pass);
@@ -501,18 +501,18 @@ export function LOGIN_MIGRATIONS_GET_CONNECTION_STRING(dataSource: string, id: s
 export const LOGIN_MIGRATION_IN_PROGRESS = localize('sql.login.migration.in.progress', "Login migration in progress");
 export const LOGIN_MIGRATION_REFRESHING_LOGIN_DATA = localize('sql.login.migration.select.in.progress', "Refreshing login list from source and target");
 export function LOGIN_MIGRATION_REFRESH_LOGIN_DATA_SUCCESSFUL(numSourceLogins: number, numTargetLogins: number): string {
-	return localize('sql.login.migration.refresh.login.data.successful', "Refreshing login list was successful. Source logins found {0}, Target logins found {1}", numSourceLogins, numTargetLogins);
+	return localize('sql.login.migration.refresh.login.data.successful', "Refreshing login list was successful. Source login(s) found {0}, Target login(s) found {1}", numSourceLogins, numTargetLogins);
 }
 export const LOGIN_MIGRATION_REFRESH_SOURCE_LOGIN_DATA_FAILED = localize('sql.login.migration.refresh.source.login.data.failed', "Refreshing login list from source failed");
 export const LOGIN_MIGRATION_REFRESH_TARGET_LOGIN_DATA_FAILED = localize('sql.login.migration.refresh.target.login.data.failed', "Refreshing login list from target failed");
-export const STARTING_LOGIN_MIGRATION = localize('sql.migration.starting.login', "Validating and migrating logins are in progress");
-export const STARTING_LOGIN_MIGRATION_FAILED = localize('sql.migration.starting.login.failed', "Validating and migrating logins failed");
-export const ESTABLISHING_USER_MAPPINGS = localize('sql.login.migration.establish.user.mappings', "Validating and migrating logins completed.\n\nEstablishing user mappings.");
+export const STARTING_LOGIN_MIGRATION = localize('sql.migration.starting.login', "Validating and migrating login(s) are in progress");
+export const STARTING_LOGIN_MIGRATION_FAILED = localize('sql.migration.starting.login.failed', "Validating and migrating login(s) failed");
+export const ESTABLISHING_USER_MAPPINGS = localize('sql.login.migration.establish.user.mappings', "Validating and migrating login(s) completed.\n\nEstablishing user mappings.");
 export const ESTABLISHING_USER_MAPPINGS_FAILED = localize('sql.login.migration.establish.user.mappings.failed', "Establishing user mappings failed");
 export const MIGRATING_SERVER_ROLES_AND_SET_PERMISSIONS = localize('sql.login.migration.migrate.server.roles.and.set.permissions', "Establishing user mappings completed.\n\nCurrently, migrating server roles, establishing server mappings and setting permissions. This will take some time.");
 export const MIGRATING_SERVER_ROLES_AND_SET_PERMISSIONS_FAILED = localize('sql.login.migration.migrate.server.roles.and.set.permissions.failed', "Migrating server roles, establishing server mappings and setting permissions failed.");
-export const LOGIN_MIGRATIONS_COMPLETE = localize('sql.login.migration.complete', "Completed migrating logins");
-export const LOGIN_MIGRATIONS_FAILED = localize('sql.login.migration.failed', "Migrating logins failed");
+export const LOGIN_MIGRATIONS_COMPLETE = localize('sql.login.migration.complete', "Completed migrating login(s)");
+export const LOGIN_MIGRATIONS_FAILED = localize('sql.login.migration.failed', "Migrating login(s) failed");
 export function LOGIN_MIGRATIONS_ERROR(message: string): string {
 	return localize('sql.login.migration.error', "Login migration error: {0}", message);
 }
@@ -521,20 +521,20 @@ export const LOGINS_NOT_FOUND = localize('sql.login.migration.logins.not.found',
 export const LOGIN_MIGRATION_STATUS_SUCCEEDED = localize('sql.login.migration.status.succeeded', "Succeeded");
 export const LOGIN_MIGRATION_STATUS_FAILED = localize('sql.login.migration.status.failed', "Failed");
 export const LOGIN_MIGRATION_STATUS_IN_PROGRESS = localize('sql.login.migration.status.in.progress', "In progress");
-export const LOGIN_MIGRATIONS_ENTRA_ID_INPUT_BOX_LABEL = localize('sql.login.migration.entra.id.input.box.label', "Microsoft Entra Domain Name (only required to migrate Windows Authentication Logins)");
+export const LOGIN_MIGRATIONS_ENTRA_ID_INPUT_BOX_LABEL = localize('sql.login.migration.entra.id.input.box.label', "Microsoft Entra Domain Name (only required to migrate Windows Authentication Login(s))");
 export const LOGIN_MIGRATIONS_ENTRA_ID_INPUT_BOX_PLACEHOLDER = localize('sql.login.migration.entra.id.input.box.placeholder', "Enter Microsoft Entra Domain name");
 export function LOGIN_MIGRATIONS_LOGIN_STATUS_DETAILS_TITLE(loginName: string): string {
 	return localize('sql.login.migration.login.status.details.title', "Migration status details for {0}", loginName);
 }
 export const NOT_STARTED = localize('sql.login.migration.steps.not.started', "Not started");
-export const MIGRATE_LOGINS = localize('sql.login.migration.steps.migrate.logins', "Migrate logins");
+export const MIGRATE_LOGINS = localize('sql.login.migration.steps.migrate.logins', "Migrate login(s)");
 export const ESTABLISH_USER_MAPPINGS = localize('sql.login.migration.steps.migrate.logins', "Establish user mappings");
 export const MIGRATE_SERVER_ROLES_AND_SET_PERMISSIONS = localize('sql.login.migration.steps.migrate.logins', "Migrate server roles, set login and server permissions");
 export const LOGIN_MIGRATION_COMPLETED = localize('sql.login.migration.steps.migrate.logins', "Login migration completed");
 export function COLLECTING_TARGET_LOGINS_FAILED(errorCode: number): string {
 	return localize('sql.login.migration.collecting.target.logins.failed', "Collecting target login failed with error code {0}", errorCode);
 }
-export const VALIDATE_LOGIN_ELIGIBILITY_FAILED = localize('sql.login.migration.validate.login.eligibility.failed', "Login migration source logins eligibility validation failed");
+export const VALIDATE_LOGIN_ELIGIBILITY_FAILED = localize('sql.login.migration.validate.login.eligibility.failed', "Login migration source login(s) eligibility validation failed");
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
@@ -1034,7 +1034,7 @@ export const VALIDATE_LOGIN_MIGRATION_VALIDATION_RESULT_LABEL_SYSADMIN = localiz
 export const VALIDATE_LOGIN_MIGRATION_VALIDATION_RESULT_LABEL_ENTRAID = localize('sql.migration.validate.login.migration.validation.result.label.entraid',
 	"Validating the microsoft entra id");
 export const VALIDATE_LOGIN_MIGRATION_VALIDATION_RESULT_LABEL_USERMAPPING = localize('sql.migration.validate.login.migration.validation.result.label.user.mapping',
-	"Validating the user mapping");
+	"Validating the user mapping (optional)");
 
 export function VALIDATE_IR_VALIDATION_RESULT_LABEL_SOURCE_DATABASE(databaseName: string): string {
 	return localize(
@@ -1119,7 +1119,7 @@ export function VALIDATE_LOGIN_MIGRATION_VALIDATION_STATUS(state: string | undef
 	if (errors && errors.length > 0) {
 		return localize(
 			'sql.migration.validate.login.migration.status.errors',
-			"Validation status: {0}{1}{2}", status, EOL, errors.join(EOL));
+			"Validation status: {0}{1}{2}", status, EOL, errors.join(EOL + EOL));
 	} else {
 		return localize(
 			'sql.migration.validate.login.migration.status',
@@ -1156,7 +1156,7 @@ export function VALIDATE_LOGIN_MIGRATION_VALIDATION_STATUS_ERROR(state: string |
 export function VALIDATE_LOGIN_MIGRATION_SYSADMIN_PERMISSION_VALIDATION_RESULT_ERROR(serverName: string, error: any,): string {
 	return localize(
 		'sql.migration.validate.ir.sqldb.validation.result.error',
-		"Sys Admin Permission Pre Validation check error{0}server: {1}{0}Error: {2} - {3}{0}Follow the steps mentioned here https://aka.ms/loginvalidationerror and re-run the validation before performing login/s migration.",
+		"Sys Admin Permission Pre Validation check error{0}server: {1}{0}Error: {2} - {3}{0}Follow the steps mentioned here https://aka.ms/loginvalidationerror and re-run the validation before performing login migration.",
 		EOL,
 		serverName,
 		error.ErrorCodeString,
@@ -1166,7 +1166,7 @@ export function VALIDATE_LOGIN_MIGRATION_SYSADMIN_PERMISSION_VALIDATION_RESULT_E
 export function VALIDATE_LOGIN_MIGRATION_ENTRA_ID_VALIDATION_RESULT_ERROR(entraID: string, error: any,): string {
 	return localize(
 		'sql.migration.validate.ir.sqldb.validation.result.error',
-		"Entra ID Pre Validation check error{0}Entra ID: {1}{0}Error: {2} - {3}{0}Follow the steps mentioned here https://aka.ms/loginvalidationerror and re-run the validation or uncheck the failed logins before performing login/s migration.",
+		"Entra ID Pre Validation check error{0}Entra ID: {1}{0}Error: {2} - {3}{0}Follow the steps mentioned here https://aka.ms/loginvalidationerror and re-run the validation or uncheck the failed login(s) before performing login migration.",
 		EOL,
 		entraID,
 		error.ErrorCodeString,
@@ -1176,7 +1176,7 @@ export function VALIDATE_LOGIN_MIGRATION_ENTRA_ID_VALIDATION_RESULT_ERROR(entraI
 export function VALIDATE_LOGIN_MIGRATION_USER_MAPPING_VALIDATION_RESULT_ERROR(name: string, error: any,): string {
 	return localize(
 		'sql.migration.validate.ir.sqldb.validation.result.error',
-		"User Mapping Pre Validation check error{0}Name: {1}{0}Error: {2} - {3}{0}Follow the steps mentioned here https://aka.ms/loginvalidationerror and re-run the validation or uncheck the failed logins before performing login/s migration.",
+		"User Mapping Pre Validation check error{0}Name: {1}{0}Error: {2} - {3}{0}Follow the steps mentioned here https://aka.ms/loginvalidationerror and re-run the validation or uncheck the failed login(s) before performing login migration.",
 		EOL,
 		name,
 		error.ErrorCodeString,
@@ -1281,8 +1281,8 @@ export const DASHBOARD_TITLE = localize('sql.migration.dashboard.title', "Azure 
 export const DASHBOARD_DESCRIPTION = localize('sql.migration.dashboard.description', "Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database.");
 export const DASHBOARD_MIGRATE_TASK_BUTTON_TITLE = localize('sql.migration.dashboard.migrate.task.button', "Migrate to Azure SQL");
 export const DASHBOARD_MIGRATE_TASK_BUTTON_DESCRIPTION = localize('sql.migration.dashboard.migrate.task.button.description', "Migrate a SQL Server instance to Azure SQL.");
-export const DASHBOARD_LOGIN_MIGRATE_TASK_BUTTON_TITLE = localize('sql.migration.dashboard.login.migrate.task.button', "Migrate logins to Azure SQL");
-export const DASHBOARD_LOGIN_MIGRATE_TASK_BUTTON_DESCRIPTION = localize('sql.migration.dashboard.login.migrate.task.button.description', "Migrate SQL Server logins to Azure SQL.");
+export const DASHBOARD_LOGIN_MIGRATE_TASK_BUTTON_TITLE = localize('sql.migration.dashboard.login.migrate.task.button', "Migrate login(s) to Azure SQL");
+export const DASHBOARD_LOGIN_MIGRATE_TASK_BUTTON_DESCRIPTION = localize('sql.migration.dashboard.login.migrate.task.button.description', "Migrate SQL Server login(s) to Azure SQL.");
 export const DATABASE_MIGRATION_STATUS = localize('sql.migration.database.migration.status', "Database migration status");
 export const HELP_TITLE = localize('sql.migration.dashboard.help.title', "Help articles and video links");
 export const PRE_REQ_TITLE = localize('sql.migration.pre.req.title', "Things you need before starting your Azure SQL migration:");
@@ -1685,10 +1685,10 @@ export function DATABASES_SELECTED(selectedCount: number, totalCount: number): s
 	return localize('sql.migration.databases.selected', "{0}/{1} databases selected", selectedCount, totalCount);
 }
 export function LOGINS_SELECTED(selectedCount: number, totalCount: number): string {
-	return localize('sql.login.migrations.selected', "{0}/{1} logins selected", selectedCount, totalCount);
+	return localize('sql.login.migrations.selected', "{0}/{1} login(s) selected", selectedCount, totalCount);
 }
 export function NUMBER_LOGINS_MIGRATING(displayedMigratingCount: number, totalMigratingCount: number): string {
-	return localize('sql.migration.number.logins.migrating', "{0}/{1} migrating logins displayed", displayedMigratingCount, totalMigratingCount);
+	return localize('sql.migration.number.logins.migrating', "{0}/{1} migrating login(s) displayed", displayedMigratingCount, totalMigratingCount);
 }
 export function ISSUES_COUNT(totalCount: number): string {
 	return localize('sql.migration.issues.count', "Issues ({0})", totalCount);
@@ -1758,7 +1758,7 @@ export const DESKTOP_IMPORT_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab
 export const DESKTOP_IMPORT_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.import.migration.description', 'Import assessment to Azure SQL');
 export const DESKTOP_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.migration.description', 'Migrate to Azure SQL');
 export const DESKTOP_LOGIN_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.button.login.migration.label', 'New login migration (PREVIEW)');
-export const DESKTOP_LOGIN_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.login.migration.description', 'Migrate logins to Azure SQL');
+export const DESKTOP_LOGIN_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.login.migration.description', 'Migrate login(s) to Azure SQL');
 export const DESKTOP_HELP_SUPPORT_BUTTON_LABEL = localize('sql.migration.tab.button.help.support.label', 'Help + Support');
 export const DESKTOP_HELP_SUPPORT_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.help.support.description', 'Help + Support');
 export const DESKTOP_FEEDBACK_BUTTON_LABEL = localize('sql.migration.tab.button.feedback.label', 'Feedback');
