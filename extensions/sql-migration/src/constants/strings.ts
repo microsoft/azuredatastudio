@@ -1744,7 +1744,7 @@ export const SELECT_A_STORAGE_ACCOUNT = localize('sql.migration.select.storage.s
 export const STORAGE_ACCOUNT_SUBSCRIPTION_INFO = localize('sql.migration.storage.account.subscription', "Subscription name for your Storage Account");
 export const SAVE_TEMPLATE_SUCCESS = localize('sql.migration.target.provisioning.save.template.success', "Template saved successfully");
 export const SAVE_TEMPLATE_FAIL = localize('sql.migration.target.provisioning.save.template.fail', "Failed to save ARM Template");
-export const UPLOAD_TEMPLATE_SUCCESS = localize('sql.migration.target.provisioning.upload.template.success', "Azure Portal Custom Deployment page with parameters pre-filled with the default values from the template has been opened in browser. There can be multiple windows if you are provisioning more than 50 Azure SQL DBs.");
+export const UPLOAD_TEMPLATE_SUCCESS = localize('sql.migration.target.provisioning.upload.template.success', "Azure Portal Custom Deployment page with parameters pre-filled with the default values from the template has been opened in browser. \n \"Note:There can be multiple windows if you are provisioning more than 50 Azure SQL DBs.\"");
 export const UPLOAD_TEMPLATE_FAIL = localize('sql.migration.target.provisioning.upload.template.fail', "Failed to upload ARM Template");
 
 

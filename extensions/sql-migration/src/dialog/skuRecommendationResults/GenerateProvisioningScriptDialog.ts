@@ -124,7 +124,7 @@ export class GenerateProvisioningScriptDialog {
 				height: 36,
 				iconHeight: 16,
 				iconWidth: 16,
-				iconPath: IconPathHelper.import,
+				iconPath: IconPathHelper.Azure,
 				CSSStyles: {
 					...styles.TOOLBAR_CSS
 				}

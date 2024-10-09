@@ -61,6 +61,7 @@ export class IconPathHelper {
 	public static emptyState: IconPath;
 	public static save: IconPath;
 	public static runScript: IconPath;
+	public static Azure: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -262,6 +263,10 @@ export class IconPathHelper {
 		IconPathHelper.runScript = {
 			light: context.asAbsolutePath('images/runScript.svg'),
 			dark: context.asAbsolutePath('images/runScript.svg')
+		};
+		IconPathHelper.Azure = {
+			light: context.asAbsolutePath('images/Azure.svg'),
+			dark: context.asAbsolutePath('images/Azure.svg')
 		};
 	}
 }
