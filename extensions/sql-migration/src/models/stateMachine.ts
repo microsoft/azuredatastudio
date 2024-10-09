@@ -374,6 +374,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public get isLoginMigrationTargetValidated(): boolean {
 		const results = this._validateLoginMigration ?? [];
+		// Validating if Sys admin and Entra Id validations have succeeded. User mapping validation is optional.
 		return results.length > 1
 			&& results.slice(0, 2).every(r =>
 				r.errors.length === 0 &&
