@@ -433,11 +433,12 @@ export class LoginPreMigrationValidationDialog {
 					if (Object.keys(validationResult.exceptionMap).length > 0) {
 						var errors: any[] = []
 						Object.keys(validationResult.exceptionMap).forEach(name => {
-							const error = validationResult?.exceptionMap[name][0]
-							errors.push(constants.GET_LOGIN_MIGRATION_VALIDATION_ERROR(
-								validationFunctionName,
-								name,
-								error))
+							const errorList = validationResult?.exceptionMap[name]
+							errorList?.forEach((error: any) =>
+								errors.push(constants.GET_LOGIN_MIGRATION_VALIDATION_ERROR(
+									validationFunctionName,
+									name,
+									error)))
 						});
 						await this._updateValidateLoginMigrationResults(testNumber, ValidateLoginMigrationValidationState.Failed, errors);
 					} else {
