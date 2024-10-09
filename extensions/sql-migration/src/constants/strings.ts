@@ -1176,7 +1176,7 @@ export function VALIDATE_LOGIN_MIGRATION_ENTRA_ID_VALIDATION_RESULT_ERROR(entraI
 export function VALIDATE_LOGIN_MIGRATION_USER_MAPPING_VALIDATION_RESULT_ERROR(name: string, error: any,): string {
 	return localize(
 		'sql.migration.validate.ir.sqldb.validation.result.error',
-		"User Mapping Pre Validation check error{0}Name: {1}{0}Error: {2} - {3}{0}Follow the steps mentioned here https://aka.ms/loginvalidationerror and re-run the validation or uncheck the failed login(s) before performing login migration.",
+		"User Mapping Pre Validation check error{0}Name: {1}{0}Error: {2} - {3}{0}Follow the steps mentioned here https://aka.ms/loginvalidationerror and re-run the validation.",
 		EOL,
 		name,
 		error.ErrorCodeString,
