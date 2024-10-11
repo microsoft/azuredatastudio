@@ -1346,20 +1346,20 @@
 					"displayName": "PowerShell",
 					"shortDescription": "Develop PowerShell scripts in Azure Data Studio",
 					"publisher": {
-						"displayName": "Microsoft",
-						"publisherId": "Microsoft",
-						"publisherName": "Microsoft"
+						"displayName": "ms-vscode",
+						"publisherId": "ms-vscode",
+						"publisherName": "ms-vscode"
 					},
 					"versions": [
 						{
-							"version": "2024.0.0",
-							"lastUpdated": "01/17/2024",
+							"version": "2024.3.2",
+							"lastUpdated": "08/15/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2024.0.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2024.3.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3918,14 +3918,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.7.2",
-							"lastUpdated": "01/05/2024",
+							"version": "0.8.0",
+							"lastUpdated": "08/23/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/ernstc/SqlDataInspector/releases/tag/0.7.2"
+									"source": "https://github.com/ernstc/SqlDataInspector/releases/tag/0.8.0"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4528,14 +4528,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.4.4",
-							"lastUpdated": "5/23/2024",
+							"version": "0.4.6",
+							"lastUpdated": "9/19/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.4.4.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.4.6.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4914,14 +4914,14 @@
 					},
 					"versions": [
 						{
-							"version": "3.0.0",
-							"lastUpdated": "07/02/2024",
+							"version": "3.1.3",
+							"lastUpdated": "08/30/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ads-extension-mongo-migration/ads-extension-mongo-migration-3.0.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ads-extension-mongo-migration/ads-extension-mongo-migration-3.1.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -5511,6 +5511,67 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "109",
+					"extensionName": "couchbase",
+					"displayName": "Couchbase",
+					"shortDescription": "Welcome to the official Azure Data Studio extension for Couchbase! This extension is designed to provide a seamless experience for Couchbase Server users who want to work within the popular Visual Studio Code editor.",
+					"publisher": {
+						"displayName": "Aayush Tyagi",
+						"publisherId": "AayushTyagi1",
+						"publisherName": "Aayush Tyagi"
+					},
+					"versions": [
+						{
+							"version": "2.1.4",
+							"lastUpdated": "09/03/2024",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/Couchbase-Ecosystem/VSCode-Couchbase/releases/latest"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/Couchbase-Ecosystem/VSCode-Couchbase/main/images/couchbase.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/Couchbase-Ecosystem/VSCode-Couchbase/main/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/Couchbase-Ecosystem/VSCode-Couchbase/main/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Couchbase-Ecosystem/VSCode-Couchbase/main/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Couchbase-Ecosystem/VSCode-Couchbase"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -5519,7 +5580,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 90
+							"count": 91
 						}
 					]
 				}

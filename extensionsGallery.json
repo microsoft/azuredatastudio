@@ -1346,20 +1346,20 @@
 					"displayName": "PowerShell",
 					"shortDescription": "Develop PowerShell scripts in Azure Data Studio",
 					"publisher": {
-						"displayName": "Microsoft",
-						"publisherId": "Microsoft",
-						"publisherName": "Microsoft"
+						"displayName": "ms-vscode",
+						"publisherId": "ms-vscode",
+						"publisherName": "ms-vscode"
 					},
 					"versions": [
 						{
-							"version": "2024.0.0",
-							"lastUpdated": "01/17/2024",
+							"version": "2024.3.2",
+							"lastUpdated": "08/15/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2024.0.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2024.3.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3377,14 +3377,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.4.2",
-							"lastUpdated": "02/22/2024",
+							"version": "1.4.3",
+							"lastUpdated": "07/25/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-1.4.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-1.4.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3918,14 +3918,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.7.2",
-							"lastUpdated": "01/05/2024",
+							"version": "0.8.0",
+							"lastUpdated": "08/23/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/ernstc/SqlDataInspector/releases/tag/0.7.2"
+									"source": "https://github.com/ernstc/SqlDataInspector/releases/tag/0.8.0"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4528,14 +4528,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.4.4",
-							"lastUpdated": "5/23/2024",
+							"version": "0.4.6",
+							"lastUpdated": "9/19/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.4.4.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.4.6.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4914,14 +4914,14 @@
 					},
 					"versions": [
 						{
-							"version": "3.0.0",
-							"lastUpdated": "07/02/2024",
+							"version": "3.1.3",
+							"lastUpdated": "08/30/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ads-extension-mongo-migration/ads-extension-mongo-migration-3.0.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ads-extension-mongo-migration/ads-extension-mongo-migration-3.1.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -5510,8 +5510,190 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					  "extensionId": "109",
+					  "extensionName": "sql-in-query-statement-generator",
+					  "displayName": "In-Query Statement Generator",
+					  "shortDescription": "The In-Query Generator is a powerful extension for Azure Data Studio that simplifies the process of creating IN clauses for SQL queries.",
+					  "publisher": {
+					    "displayName": "YakovT",
+					    "publisherId": "yakovt",
+					    "publisherName": "yakovt"
+					  },
+					  "versions": [
+					    {
+					      "version": "0.0.9",
+					      "lastUpdated": "08/08/2024",
+					      "assetUri": "",
+					      "fallbackAssetUri": "fallbackAssetUri",
+					      "files": [
+					        {
+					          "assetType": "Microsoft.SQLOps.DownloadPage",
+					          "source": "https://marketplace.visualstudio.com/items?itemName=YakovT.Sql-in-query-statement-generator"
+					        },
+					        {
+					          "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+					          "source": "https://raw.githubusercontent.com/yterterian/In-Query-Generator-AZ/main/images/logo-icon.png"
+					        },
+					        {
+					          "assetType": "Microsoft.VisualStudio.Services.Content.Details",
+					          "source": "https://raw.githubusercontent.com/yterterian/In-Query-Generator-AZ/main/ReadMe.md"
+					        },
+					        {
+					          "assetType": "Microsoft.VisualStudio.Code.Manifest",
+					          "source": "https://raw.githubusercontent.com/yterterian/In-Query-Generator-AZ/main/package.json"
+					        },
+					        {
+					          "assetType": "Microsoft.VisualStudio.Services.Content.License",
+					          "source": "https://raw.githubusercontent.com/yterterian/In-Query-Generator-AZ/main/License"
+					        }
+					      ],
+					      "properties": [
+					        {
+					          "key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+					          "value": ""
+					        },
+					        {
+					          "key": "Microsoft.VisualStudio.Services.Links.Source",
+					          "value": "https://github.com/yterterian/In-Query-Generator-AZ"
+					        },
+					        {
+					          "key": "Microsoft.VisualStudio.Code.Engine",
+					          "value": "*"
+					        },
+					        {
+					          "key": "Microsoft.AzDataEngine",
+					          "value": "*"
+					        }
+					      ]
+					    }
+					  ],
+					  "statistics": [],
+					  "flags": ""
+				},
+				{
+					  "extensionId": "110",
+					  "extensionName": "sql-deployer",
+					  "displayName": "Deployer",
+					  "shortDescription": "The Deployer extension makes deploying many SQL scripts easy, and provides shortcuts for common developer tasks.",
+					  "publisher": {
+					    "displayName": "Rollersoft",
+					    "publisherId": "rollersoft",
+					    "publisherName": "rollersoft"
+					  },
+					  "versions": [
+					    {
+					      "version": "3.6.0",
+					      "lastUpdated": "09/11/2024",
+					      "assetUri": "",
+					      "fallbackAssetUri": "fallbackAssetUri",
+					      "files": [
+					        {
+					          "assetType": "Microsoft.SQLOps.DownloadPage",
+					          "source": "https://github.com/ShawnRoller/deployer-azs-extension/releases/latest"
+					        },
+					        {
+					          "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+					          "source": "https://raw.githubusercontent.com/ShawnRoller/deployer-azs-extension/main/deployer-icon.png"
+					        },
+					        {
+					          "assetType": "Microsoft.VisualStudio.Services.Content.Details",
+					          "source": "https://raw.githubusercontent.com/ShawnRoller/deployer-azs-extension/main/README.md"
+					        },
+					        {
+					          "assetType": "Microsoft.VisualStudio.Code.Manifest",
+					          "source": "https://raw.githubusercontent.com/ShawnRoller/deployer-azs-extension/main/package.json"
+					        },
+					        {
+					          "assetType": "Microsoft.VisualStudio.Services.Content.License",
+					          "source": "https://raw.githubusercontent.com/ShawnRoller/deployer-azs-extension/main/LICENSE"
+					        }
+					      ],
+					      "properties": [
+					        {
+					          "key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+					          "value": ""
+					        },
+					        {
+					          "key": "Microsoft.VisualStudio.Services.Links.Source",
+					          "value": "https://github.com/ShawnRoller/deployer-azs-extension"
+					        },
+					        {
+					          "key": "Microsoft.VisualStudio.Code.Engine",
+					          "value": "*"
+					        },
+					        {
+					          "key": "Microsoft.AzDataEngine",
+					          "value": "*"
+					        }
+					      ]
+					    }
+					  ],
+					  "statistics": [],
+					  "flags": ""
+				},
+				{
+					"extensionId": "111",
+					"extensionName": "couchbase",
+					"displayName": "Couchbase",
+					"shortDescription": "Welcome to the official Azure Data Studio extension for Couchbase! This extension is designed to provide a seamless experience for Couchbase Server users who want to work within the popular Visual Studio Code editor.",
+					"publisher": {
+						"displayName": "Aayush Tyagi",
+						"publisherId": "AayushTyagi1",
+						"publisherName": "Aayush Tyagi"
+					},
+					"versions": [
+						{
+							"version": "2.1.4",
+							"lastUpdated": "09/03/2024",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/Couchbase-Ecosystem/VSCode-Couchbase/releases/latest"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/Couchbase-Ecosystem/VSCode-Couchbase/main/images/couchbase.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/Couchbase-Ecosystem/VSCode-Couchbase/main/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/Couchbase-Ecosystem/VSCode-Couchbase/main/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Couchbase-Ecosystem/VSCode-Couchbase/main/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Couchbase-Ecosystem/VSCode-Couchbase"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
-
 			],
 			"resultMetadata": [
 				{
@@ -5519,7 +5701,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 90
+							"count": 93
 						}
 					]
 				}
