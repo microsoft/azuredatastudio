@@ -1632,7 +1632,8 @@ export async function getRecommendedConfiguration(targetType: MigrationTargetTyp
 					hardwareType,
 					serviceTier,
 					recommendation.targetSku.computeSize!,
-					recommendation.targetSku.storageMaxSizeInMb! / 1024)];
+					recommendation.targetSku.storageMaxSizeInMb! / 1024,
+					Number(recommendation.targetSku.maxStorageIops))];
 			}
 	}
 }

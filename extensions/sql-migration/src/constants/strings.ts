@@ -328,7 +328,10 @@ export function SQLDB_CONFIGURATION_PREVIEW(hardwareType: string, computeTier: s
 export function MI_CONFIGURATION(hardwareType: string, computeTier: string, vCore: number): string {
 	return localize('sql.migration.sku.azureConfiguration.mi', "{0} - {1} - {2} vCore", hardwareType, computeTier, vCore);
 }
-export function MI_CONFIGURATION_PREVIEW(hardwareType: string, computeTier: string, vCore: number, storage: number): string {
+export function MI_CONFIGURATION_PREVIEW(hardwareType: string, computeTier: string, vCore: number, storage: number, iops: number): string {
+	if (iops > 0) {
+		return localize('sql.migration.sku.azureConfiguration.miPreviewIops', "{0} - {1} - {2} vCore - {3} GB - {4} IOPS", hardwareType, computeTier, vCore, storage, iops);
+	}
 	return localize('sql.migration.sku.azureConfiguration.miPreview', "{0} - {1} - {2} vCore - {3} GB", hardwareType, computeTier, vCore, storage);
 }
 export const GENERAL_PURPOSE = localize('sql.migration.sku.azureConfiguration.generalPurpose', "General purpose");
