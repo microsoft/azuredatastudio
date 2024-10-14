@@ -86,7 +86,7 @@ export class GenerateProvisioningScriptDialog {
 		const saveTemplateButton = _view.modelBuilder.button()
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
-				label: constants.TARGET_PROVISIONING_TITLE,
+				label: constants.SAVE_TO_DEVICE,
 				width: 117,
 				height: 36,
 				iconHeight: 16,
@@ -120,11 +120,11 @@ export class GenerateProvisioningScriptDialog {
 			.withProps({
 				buttonType: azdata.ButtonType.Normal,
 				label: constants.UPLOAD_TEMPLATE_TO_AZURE,
-				width: 180,
+				width: 125,
 				height: 36,
 				iconHeight: 16,
 				iconWidth: 16,
-				iconPath: IconPathHelper.import,
+				iconPath: IconPathHelper.Azure,
 				CSSStyles: {
 					...styles.TOOLBAR_CSS
 				}
@@ -133,6 +133,26 @@ export class GenerateProvisioningScriptDialog {
 		uploadTemlateToAzureButton.onDidClick(async () => {
 			const selectAzureAccountDialog = new SelectStorageAccountDialog(this.model, this._targetType);
 			await selectAzureAccountDialog.initialize();
+		});
+
+		const copyToClipboardButton = _view.modelBuilder.button()
+			.withProps({
+				buttonType: azdata.ButtonType.Normal,
+				label: constants.COPY_TO_CLIPBOARD,
+				width: 130,
+				height: 36,
+				iconHeight: 16,
+				iconWidth: 16,
+				iconPath: IconPathHelper.copy,
+				CSSStyles: {
+					...styles.TOOLBAR_CSS
+				}
+			}).component();
+
+		copyToClipboardButton.onDidClick(async () => {
+			if (this.model._armTemplateResult.templates) {
+				void vscode.env.clipboard.writeText(this.model._armTemplateResult.templates[0]);
+			}
 		});
 
 		const buttonsContainer = _view.modelBuilder.flexContainer().withProps({
@@ -145,8 +165,10 @@ export class GenerateProvisioningScriptDialog {
 			}
 		}).component();
 
-		buttonsContainer.addItem(saveTemplateButton);
 		buttonsContainer.addItem(uploadTemlateToAzureButton);
+		buttonsContainer.addItem(saveTemplateButton);
+		buttonsContainer.addItem(copyToClipboardButton)
+
 
 		const container = _view.modelBuilder.flexContainer().
 			withProps({
@@ -178,7 +200,7 @@ export class GenerateProvisioningScriptDialog {
 		if (!this._isOpen) {
 			this._isOpen = true;
 
-			this.dialog = azdata.window.createModelViewDialog(constants.TARGET_PROVISIONING_TITLE, 'ViewArmTemplateDialog', 'medium');
+			this.dialog = azdata.window.createModelViewDialog(constants.UPLOAD_TEMPLATE_TO_AZURE, 'ViewArmTemplateDialog', 'medium');
 
 			this.dialog.okButton.label = constants.CLOSE_DIALOG;
 			this.dialog.okButton.position = 'left';

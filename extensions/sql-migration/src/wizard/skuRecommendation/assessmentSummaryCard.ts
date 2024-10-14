@@ -408,7 +408,7 @@ export class AssessmentSummaryCard implements vscode.Disposable {
 		});
 
 		this._generateTemplateLink = view.modelBuilder.hyperlink().withProps({
-			label: constants.GENERATE_ARM_TEMPLATE,
+			label: constants.UPLOAD_TEMPLATE_TO_AZURE,
 			url: '',
 			height: 18,
 			CSSStyles: styles.VIEW_DETAILS_GENERATE_TEMPLATE_LINK

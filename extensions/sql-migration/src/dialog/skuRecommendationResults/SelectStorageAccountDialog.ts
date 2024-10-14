@@ -20,6 +20,7 @@ const INPUT_COMPONENT_WIDTH = '100%';
 const STYLE_HIDE = { 'display': 'none' };
 const STYLE_ShOW = { 'display': 'inline' };
 const CONTROL_MARGIN = '20px';
+const exec = require('child_process').exec;
 export const BODY_CSS = {
 	'font-size': '13px',
 	'line-height': '18px',
@@ -70,7 +71,7 @@ export class SelectStorageAccountDialog {
 		protected readonly migrationStateModel: MigrationStateModel, public _targetType: MigrationTargetType
 	) {
 		this._dialog = azdata.window.createModelViewDialog(
-			constants.SELECT_STORAGE_ACCOUNT_TITLE,
+			constants.UPLOAD_TEMPLATE_TO_AZURE,
 			'SelectStorageAccountDialog',
 			460,
 			'normal'
@@ -89,7 +90,7 @@ export class SelectStorageAccountDialog {
 
 		});
 
-		this._dialog.okButton.label = constants.SAVE_LABEL;
+		this._dialog.okButton.label = constants.DEPLOY_LABEL;
 		this._disposables.push(
 			this._dialog.okButton.onClick(async (value) => {
 				await this.uploadTemplate();
@@ -120,7 +121,7 @@ export class SelectStorageAccountDialog {
 		return this._view.modelBuilder.text()
 			.withProps({
 				value: constants.STORAGE_ACCOUNT_SELECT_HEADING,
-				CSSStyles: { ...styles.PAGE_TITLE_CSS }
+				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 	}
 
@@ -590,22 +591,27 @@ export class SelectStorageAccountDialog {
 		const templates = this.migrationStateModel._armTemplateResult.templates!;
 		const sharedKeyCredential = new StorageSharedKeyCredential(this._storageAccount.name, storageKeys.keyName1);
 
-		const sasToken = generateBlobSASQueryParameters({
-			containerName,
-			permissions: BlobSASPermissions.parse("racwd"),
-			expiresOn: new Date(new Date().valueOf() + 86400),
-		},
+		const sasToken = generateBlobSASQueryParameters(
+			{
+				containerName,
+				permissions: BlobSASPermissions.parse("racwd"),
+				expiresOn: new Date(new Date().valueOf() + 86400),
+			},
 			sharedKeyCredential
 		).toString();
+
+		let sasUrls: string[] = [];
 
 		try {
 			for (let i = 0; i < templates.length; i++) {
 				const blobName = utils.generateTemplatePath(this.migrationStateModel, this._targetType, i + 1);
-				const sasUrl = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
+				var sasUrl = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
+				sasUrls.push(sasUrl);
 				const blockBlobClient = new BlockBlobClient(sasUrl);
 				await blockBlobClient.upload(templates[i], templates[i].length);
 			}
-			void vscode.window.showInformationMessage(constants.UPLOAD_TEMPLATE_SUCCESS);
+
+			this.DeployToAzure(sasUrls);
 		}
 		catch (e) {
 			logError(TelemetryViews.UploadArmTemplateDialog, 'ArmTemplateUploadError', e);
@@ -613,4 +619,32 @@ export class SelectStorageAccountDialog {
 		}
 
 	}
+
+	private DeployToAzure(sasUrls: string[]) {
+		let opener;
+		switch (process.platform) {
+			case 'darwin':
+				opener = 'open';
+				break;
+			case 'win32':
+				opener = 'start';
+				break;
+			default:
+				opener = 'xdg-open';
+				break;
+		}
+
+		for (let i = 0; i < sasUrls.length; i++) {
+			// generate custom deployment URL for each ARM template.
+			// In case of SQL DB we can have more than 1 ARM template file since a single file has a limit of 50 DBs.
+			let deployToAzureUrl = 'https://portal.azure.com/#create/Microsoft.Template/uri/' + encodeURIComponent(sasUrls[i]);
+
+			// open the custom deployment URL in browser.
+			exec(`${opener} ${deployToAzureUrl}`);
+		}
+
+		void vscode.window.showInformationMessage(constants.UPLOAD_TEMPLATE_SUCCESS);
+
+	}
+
 }
