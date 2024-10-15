@@ -263,6 +263,7 @@ export const IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FOLDER = localize('sql.migratio
 export const UPLOAD_TEMPLATE_TO_AZURE = localize('sql.migration.target.provisioning.upload.to.azure', "Deploy to Azure");
 export const SAVE_TO_DEVICE = localize('sql.migration.target.provisioning.generate.template', "Save to device");
 export const COPY_TO_CLIPBOARD = localize('sql.migration.target.provisioning.copy.to.clipboard', "Copy to clipboard");
+export const ARM_TEMPLATE_GENERATE_FAILED = localize('sql.migration.target.provisioning.copy.to.clipboard', "Failed to generate ARM template");
 
 export const CLOSE_DIALOG = localize('sql.migration.target.provisioning.close', "Close");
 export const TARGET_PROVISIONING_DESCRIPTION = localize('sql.migration.target.provisioning.description', "Below is the ARM script for the recommended target SKU. You can use the following two methods to deploy target SKU to Azure.\n 1.Click on the \"Deploy to Azure\" command to deploy the target resource. This option requires an Azure blob container account.\n 2.Click on \"Save to device\" to save the ARM script and then manually deploy the target resource.");
@@ -1743,6 +1744,7 @@ export const STORAGE_ACCOUNT_RESOURCE_GROUP_INFO = localize('sql.migration.stora
 export const SELECT_A_STORAGE_ACCOUNT = localize('sql.migration.select.storage.select.a.storage.account', "Select a Storage Account");
 export const STORAGE_ACCOUNT_SUBSCRIPTION_INFO = localize('sql.migration.storage.account.subscription', "Subscription name for your Storage Account");
 export const SAVE_TEMPLATE_SUCCESS = localize('sql.migration.target.provisioning.save.template.success', "Template saved successfully");
+export const COPY_TEMPLATE_SUCCESS = localize('sql.migration.target.provisioning.copy.template.success', "Template copied successfully");
 export const SAVE_TEMPLATE_FAIL = localize('sql.migration.target.provisioning.save.template.fail', "Failed to save ARM Template");
 export const UPLOAD_TEMPLATE_SUCCESS = localize('sql.migration.target.provisioning.upload.template.success', "Azure Portal Custom Deployment page with parameters pre-filled with the default values from the template has been opened in browser. \n \"Note:There can be multiple windows if you are provisioning more than 50 Azure SQL DBs.\"");
 export const UPLOAD_TEMPLATE_FAIL = localize('sql.migration.target.provisioning.upload.template.fail', "Failed to upload ARM Template");
