@@ -191,7 +191,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			}
 			if (!this.migrationStateModel._targetServerInstance || !this.migrationStateModel._targetUserName || !this.migrationStateModel._targetPassword || !this.migrationStateModel._targetPort) {
 				this.wizard.message = {
-					text: constants.SELECT_DATABASE_TO_CONTINUE,
+					text: constants.SELECT_REQUIRED_DETAILS_TO_CONTINUE,
 					level: azdata.window.MessageLevel.Error
 				}; ``
 				return false;

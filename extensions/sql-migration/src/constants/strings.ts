@@ -445,6 +445,7 @@ export const WIZARD_CANCEL_REASON_NEED_TO_REVIEW_LOGIN_SELECTION = localize('sql
 export function LOGIN_WIZARD_TITLE(instanceName: string): string {
 	return localize('sql-migration.login.wizard.title', "Migrate login(s) from '{0}' to Azure SQL", instanceName);
 }
+export const SELECT_REQUIRED_DETAILS_TO_CONTINUE = localize('sql.login.migration.select.details.to.continue', "Please provide all the required below details before you proceed.");
 export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DESCRIPTION = localize('sql.login.migration.wizard.target.description', "Select the target Azure SQL Managed Instance or Azure SQL VM where you want to migrate your login(s).");
 export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PREVIEW_WARNING = localize('sql.login.migration.wizard.target.data.migration.warning', "Please note that login migration feature is in public preview.");
 export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING = localize('sql.login.migration.wizard.target.data.migration.warning', "We recommend migrating your databases(s) to the Azure SQL target before starting the login migration to avoid failures in the process. Nevertheless, you can run this migration process whenever want you want if your goal is to update the user mapping for recently migrated databases.\n\n If the source and database names are not the same, then it is possible that some permissions may not be applied properly.");
@@ -456,10 +457,10 @@ export function LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PERMISSIONS_WARNING(userN
 }
 export const LOGIN_MIGRATIONS_PRE_REQ_TITLE = localize('login.migration.pre.req.title', "Login migration pre-requisites:");
 export const LOGIN_MIGRATIONS_PRE_REQ_SUBTITLE = localize('login.migration.pre.req.subtitle', "Before you start your login migration to Azure SQL, check the list of pre-requites below:");
-export const LOGIN_MIGRATIONS_PRE_REQ_1 = localize('login.migration.pre.req.1', "You must successfully migrate all your databases to the target before starting the login migration else the migration will fail.");
+export const LOGIN_MIGRATIONS_PRE_REQ_1 = localize('login.migration.pre.req.1', "You must successfully migrate relevant or all databases to the Azure SQL Target before starting the login migration else it may fail.");
 export const LOGIN_MIGRATIONS_PRE_REQ_2 = localize('login.migration.pre.req.2', "The source and target databases names must be same otherwise permissions may not be applied properly.");
 export const LOGIN_MIGRATIONS_PRE_REQ_3 = localize('login.migration.pre.req.3', "Login migration requires 'Sysadmin' permissions on both source and target.");
-export const LOGIN_MIGRATIONS_PRE_REQ_4 = localize('login.migration.pre.req.4', "Source and target must be connected.");
+export const LOGIN_MIGRATIONS_PRE_REQ_4 = localize('login.migration.pre.req.4', "You must be able to connect to Source and Target from Azure SQL Migration extension.");
 export const LOGIN_MIGRATIONS_PRE_REQ_5 = localize('login.migration.pre.req.5', "For Windows account migration, ensure the target has 'Read' permissions on Microsoft Entra and ensure domain federation between local AD and Microsoft Entra ID.");
 export const LOGIN_MIGRATIONS_PRE_REQ_INFO = localize('login.migration.pre.req.info', "For more details about login migrations to Azure SQL, {0}.");
 export const VIEW_TUTORIAL = localize('login.migration.pre.req.view.tutorial', "see the tutorial");
