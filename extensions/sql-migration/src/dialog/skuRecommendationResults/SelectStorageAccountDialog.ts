@@ -12,7 +12,7 @@ import * as utils from '../../api/utils';
 import { StorageAccount } from '../../api/azure';
 import { logError, TelemetryViews, sendButtonClickEvent, TelemetryAction, sendSqlMigrationActionEvent } from '../../telemetry';
 import { MigrationStateModel } from '../../models/stateMachine';
-import { StorageSharedKeyCredential, BlockBlobClient, BlobSASPermissions, generateBlobSASQueryParameters } from '@azure/storage-blob';
+import { StorageSharedKeyCredential, BlockBlobClient, AccountSASServices, AccountSASResourceTypes, AccountSASPermissions, generateAccountSASQueryParameters } from '@azure/storage-blob';
 import { getStorageAccountAccessKeys } from '../../api/azure';
 import { MigrationTargetType } from '../../api/utils';
 
@@ -594,12 +594,15 @@ export class SelectStorageAccountDialog {
 		const templates = this.migrationStateModel._armTemplateResult.templates!;
 		const sharedKeyCredential = new StorageSharedKeyCredential(this._storageAccount.name, storageKeys.keyName1);
 
-		const sasToken = generateBlobSASQueryParameters(
-			{
-				containerName,
-				permissions: BlobSASPermissions.parse("racwd"),
-				expiresOn: new Date(new Date().valueOf() + 86400),
-			},
+		const sasOptions = {
+			services: AccountSASServices.parse("b").toString(),          // blobs
+			resourceTypes: AccountSASResourceTypes.parse("sco").toString(), // service, container, object
+			permissions: AccountSASPermissions.parse("rwdlacu"),          // permissions
+			expiresOn: new Date(new Date().valueOf() + (1440 * 60 * 1000)),   // 24 hrs
+		};
+
+		const sasToken = generateAccountSASQueryParameters(
+			sasOptions,
 			sharedKeyCredential
 		).toString();
 
