@@ -3918,14 +3918,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.8.0",
-							"lastUpdated": "08/23/2024",
+							"version": "0.8.1",
+							"lastUpdated": "10/13/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/ernstc/SqlDataInspector/releases/tag/0.8.0"
+									"source": "https://github.com/ernstc/SqlDataInspector/releases/tag/0.8.1"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4528,14 +4528,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.4.5",
-							"lastUpdated": "7/21/2024",
+							"version": "0.4.6",
+							"lastUpdated": "9/19/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.4.5.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.4.6.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4914,14 +4914,14 @@
 					},
 					"versions": [
 						{
-							"version": "3.1.3",
-							"lastUpdated": "08/30/2024",
+							"version": "3.1.4",
+							"lastUpdated": "10/14/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ads-extension-mongo-migration/ads-extension-mongo-migration-3.1.3.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ads-extension-mongo-migration/ads-extension-mongo-migration-3.1.4.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -5088,8 +5088,8 @@
 				{
 					"extensionId": "102",
 					"extensionName": "storeprocdure2SQL",
-					"displayName": "Store Procdure To SQL",
-					"shortDescription": "Store Procedure,Convert",
+					"displayName": "Store Procdure To SQL Debug",
+					"shortDescription": "Store Procedure,Convert,Debug,Git",
 					"publisher": {
 						"displayName": "lozn",
 						"publisherId": "lozn",
@@ -5097,14 +5097,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.0.4",
-							"lastUpdated": "07/04/2024",
+							"version": "1.0.5",
+							"lastUpdated": "10/11/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/lozn00/AzureSQLProcConvertSQL/raw/master/StoredProcedureConverter-1.0.4.vsix"
+									"source": "https://github.com/lozn00/AzureSQLProcConvertSQL/raw/master/StoredProcedureConverter-1.0.5.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
