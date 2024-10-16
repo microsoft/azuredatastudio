@@ -5518,9 +5518,9 @@
 					"displayName": "Couchbase",
 					"shortDescription": "Welcome to the official Azure Data Studio extension for Couchbase! This extension is designed to provide a seamless experience for Couchbase Server users who want to work within the popular Visual Studio Code editor.",
 					"publisher": {
-						"displayName": "Aayush Tyagi",
-						"publisherId": "AayushTyagi1",
-						"publisherName": "Aayush Tyagi"
+						"displayName": "Couchbase",
+						"publisherId": "couchbase",
+						"publisherName": "Couchbase"
 					},
 					"versions": [
 						{
