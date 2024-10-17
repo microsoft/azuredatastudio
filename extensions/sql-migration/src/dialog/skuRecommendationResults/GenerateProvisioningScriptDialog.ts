@@ -258,9 +258,10 @@ export class GenerateProvisioningScriptDialog {
 		let fileName;
 		let paths = this.model._skuRecommendationReportFilePaths;
 		paths.forEach(function (filePath) {
-			if (filePath.includes(targetType) && filePath.includes("Baseline") && filePath.includes(".json")) {
+			if (filePath.includes(targetType) && filePath.includes("Baseline")) {
 				console.log("logging file name and path.------------------------------");
 				fileName = filePath.split("\\").pop();
+				fileName = fileName?.substring(0, fileName.lastIndexOf("."));
 				console.log("------------------------------------------");
 				console.log(fileName);
 				console.log("------------------------------------------");
