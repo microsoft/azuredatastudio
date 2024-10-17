@@ -21,7 +21,7 @@ export class GenerateProvisioningScriptDialog {
 
 	private _disposables: vscode.Disposable[] = [];
 	private _armTemplateTextBox!: azdata.TextComponent;
-	private _armTemplateText: string | undefined;
+	private _armTemplateText: string | undefined = "";
 
 	constructor(public model: MigrationStateModel, public _targetType: utils.MigrationTargetType) { }
 
@@ -200,7 +200,10 @@ export class GenerateProvisioningScriptDialog {
 	}
 
 	private async displayArmTemplate(): Promise<void> {
+		console.log("inside display arm template ---------------------------------------");
 		if (this.model._armTemplateResult.templates?.[0]) {
+			console.log("logging arm template text ---------------------------------------------------");
+			console.log(this.model._armTemplateResult.templates[0]);
 			this._armTemplateTextBox.value = this.model._armTemplateResult.templates[0];
 		}
 		else {
@@ -237,10 +240,13 @@ export class GenerateProvisioningScriptDialog {
 			await this.model.getArmTemplate(skuRecommendationReportFilePath);
 			const error = this.model._armTemplateResult.generateTemplateError;
 
+
 			if (error) {
+				console.log("inside ----------- open dialog error");
 				logError(TelemetryViews.ProvisioningScriptWizard, 'ProvisioningScriptGenerationError', error);
 			}
 			else {
+				console.log("inside ----------- open dialog arm template text");
 				this._armTemplateText = this.model._armTemplateResult.templates![0];
 			}
 
@@ -252,7 +258,13 @@ export class GenerateProvisioningScriptDialog {
 		let fileName;
 		this.model._skuRecommendationReportFilePaths.forEach(function (filePath) {
 			if (filePath.includes(targetType)) {
+				console.log("logging file name and path.------------------------------");
 				fileName = filePath.substring(0, filePath.lastIndexOf(".")) + ".json";
+				console.log("------------------------------------------");
+				console.log(fileName);
+				console.log("------------------------------------------");
+				console.log(filePath);
+
 			}
 		});
 

@@ -497,14 +497,20 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async getArmTemplate(skuRecommendationReportFilePath: string): Promise<ArmTemplate> {
 		try {
-			const response = (await this.migrationService.getArmTemplate(skuRecommendationReportFilePath))!
+			const response = await this.migrationService.getArmTemplate(skuRecommendationReportFilePath);
+			console.log("------------------------------logging response 2----------------------");
+			console.log(response?.[0]);
 			if (response) {
 				this._armTemplateResult = {
 					templates: response
 				};
 			}
+			else {
+				console.log("--------------- response 2 empty");
+			}
 		}
 		catch (error) {
+			console.log("-------------------------- catching error 2");
 			logError(TelemetryViews.ProvisioningScriptWizard, 'GenerateProvisioningScriptFailed', error);
 			this._armTemplateResult = {
 				generateTemplateError: error
