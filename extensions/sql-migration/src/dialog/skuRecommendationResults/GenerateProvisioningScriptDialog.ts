@@ -256,15 +256,15 @@ export class GenerateProvisioningScriptDialog {
 
 	private getSkuRecommendationReportFilePath(targetType: string): string {
 		let fileName;
-		this.model._skuRecommendationReportFilePaths.forEach(function (filePath) {
-			if (filePath.includes(targetType)) {
+		let paths = this.model._skuRecommendationReportFilePaths;
+		paths.forEach(function (filePath) {
+			if (filePath.includes(targetType) && filePath.includes("Baseline") && filePath.includes(".json")) {
 				console.log("logging file name and path.------------------------------");
-				fileName = filePath.substring(0, filePath.lastIndexOf(".")) + ".json";
+				fileName = filePath.split("\\").pop();
 				console.log("------------------------------------------");
 				console.log(fileName);
 				console.log("------------------------------------------");
 				console.log(filePath);
-
 			}
 		});
 
