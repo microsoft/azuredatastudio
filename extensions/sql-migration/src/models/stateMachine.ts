@@ -516,6 +516,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				generateTemplateError: error
 			};
 		}
+		console.log("returning arm template result");
 		return this._armTemplateResult;
 	}
 

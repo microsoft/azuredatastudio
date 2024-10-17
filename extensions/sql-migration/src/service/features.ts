@@ -90,15 +90,15 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 
 	async getArmTemplate(skuRecommendationReportFilePath: string): Promise<string[] | undefined> {
 		try {
-			const response = this._client.sendRequest(contracts.GetSqlMigrationGenerateArmTemplateRequest.type, skuRecommendationReportFilePath);
 			console.log("returing response 1");
-			return response;
+			return this._client.sendRequest(contracts.GetSqlMigrationGenerateArmTemplateRequest.type, skuRecommendationReportFilePath);
 		}
 		catch (e) {
 			console.log("catching error 1");
 			this._client.logFailedRequest(contracts.GetSqlMigrationGenerateArmTemplateRequest.type, e);
 		}
 
+		console.log("undefined returned ---------------------------------------------");
 		return undefined;
 	}
 
