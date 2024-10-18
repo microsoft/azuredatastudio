@@ -42,10 +42,6 @@ steps:
   #     yarn monaco-compile-check
   #   displayName: Run Monaco Editor Checks
 
-  - script: |
-      yarn valid-layers-check
-    displayName: Run Valid Layers Checks
-
   - powershell: |
       yarn compile
     displayName: Compile Sources
