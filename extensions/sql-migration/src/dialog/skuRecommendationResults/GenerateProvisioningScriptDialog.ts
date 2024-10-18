@@ -237,7 +237,7 @@ export class GenerateProvisioningScriptDialog {
 			sendButtonClickEvent(this.model, TelemetryViews.ProvisioningScriptWizard, TelemetryAction.OpenTargetProvisioningWizard, "", constants.UPLOAD_TEMPLATE_TO_AZURE);
 
 			const skuRecommendationReportFilePath = this.getSkuRecommendationReportFilePath(this._targetType);
-			await this.model.getArmTemplate(skuRecommendationReportFilePath);
+			await this.model.getArmTemplate(this._targetType);
 			const error = this.model._armTemplateResult.generateTemplateError;
 
 
