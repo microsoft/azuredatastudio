@@ -65,5 +65,8 @@
     "yauzl": "^2.9.2",
     "yazl": "^2.4.3",
     "zone.js": "^0.11.4"
-  }
+  },
+	"devDependencies": {
+		"node-sass": "^7.0.0"
+	}
 }
