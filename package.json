@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.50.0",
-  "distro": "16a3ef8e492983f69a01e15b9302d5fd7b4fb66f",
+  "distro": "fed5ce3bdc19f38daedd1e687cff4a21eb1d8c85",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -277,6 +277,8 @@
   },
   "resolutions": {
     "elliptic": "^6.5.3",
-    "nwmatcher": "^1.4.4"
+    "nwmatcher": "^1.4.4",
+    "gridstack/node-sass": "^7.0.0",
+    "node-sass": "^7.0.0"
   }
 }
