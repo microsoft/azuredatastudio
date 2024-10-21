@@ -109,4 +109,6 @@ export class TestChildProcessPromise<T> implements cp.ChildProcessPromise {
 	listenerCount(type: string | symbol): number {
 		throw new Error('Method not implemented.');
 	}
+	[Symbol.dispose](): void {
+	}
 }
