@@ -233,8 +233,7 @@ export class GenerateProvisioningScriptDialog {
 			// emit Telemetry for opening of Wizard.
 			sendButtonClickEvent(this.model, TelemetryViews.ProvisioningScriptWizard, TelemetryAction.OpenTargetProvisioningWizard, "", constants.UPLOAD_TEMPLATE_TO_AZURE);
 
-			const skuRecommendationReportFilePath = this.getSkuRecommendationReportFilePath(this._targetType);
-			await this.model.getArmTemplate(skuRecommendationReportFilePath);
+			await this.model.getArmTemplate(this._targetType);
 			const error = this.model._armTemplateResult.generateTemplateError;
 
 			if (error) {
@@ -246,17 +245,6 @@ export class GenerateProvisioningScriptDialog {
 
 			await this.displayArmTemplate();
 		}
-	}
-
-	private getSkuRecommendationReportFilePath(targetType: string): string {
-		let fileName;
-		this.model._skuRecommendationReportFilePaths.forEach(function (filePath) {
-			if (filePath.includes(targetType)) {
-				fileName = filePath.substring(0, filePath.lastIndexOf(".")) + ".json";
-			}
-		});
-
-		return fileName!;
 	}
 
 	protected async execute() {
