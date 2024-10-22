@@ -719,6 +719,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		const succeeded = this.migrationStateModel.isLoginMigrationTargetValidated;
 		this._successfullyValidatedLogins.clear();
 		if (succeeded) {
+			this._logLoginMigrationPreValidationSuccessful();
 			this.selectedLogins().forEach(login => this._successfullyValidatedLogins.add(login.loginName));
 			if (this.migrationStateModel._loginMigrationModel.selectedWindowsLogins) {
 				this._successfullyValidatedEntraDomain = this.migrationStateModel._aadDomainName;
@@ -728,6 +729,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				text: constants.LOGIN_MIGRATION_VALIDATION_MESSAGE_SUCCESS,
 			};
 		} else {
+			this._logLoginMigrationPreValidationFailed();
 			const results = this.migrationStateModel._validateLoginMigration;
 			const hasResults = results.length > 0;
 			if (initializing && !hasResults) {
@@ -799,5 +801,33 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	private isTargetInstanceSet() {
 		const stateMachine: MigrationStateModel = this.migrationStateModel;
 		return stateMachine._targetServerInstance && stateMachine._targetUserName && stateMachine._targetPassword;
+	}
+
+	private _logLoginMigrationPreValidationSuccessful(): void {
+		sendSqlMigrationActionEvent(
+			TelemetryViews.LoginMigrationSelectorPage,
+			TelemetryAction.LoginMigrationPreValidationSuccessful,
+			{
+				...getTelemetryProps(this.migrationStateModel),
+				'loginsAuthType': this.migrationStateModel._loginMigrationModel.loginsAuthType,
+			},
+			{
+				'numberLogins': this.migrationStateModel._loginMigrationModel.loginsForMigration.length,
+			}
+		);
+	}
+
+	private _logLoginMigrationPreValidationFailed(): void {
+		sendSqlMigrationActionEvent(
+			TelemetryViews.LoginMigrationSelectorPage,
+			TelemetryAction.LoginMigrationPreValidationFailed,
+			{
+				...getTelemetryProps(this.migrationStateModel),
+				'loginsAuthType': this.migrationStateModel._loginMigrationModel.loginsAuthType,
+			},
+			{
+				'numberLogins': this.migrationStateModel._loginMigrationModel.loginsForMigration.length,
+			}
+		);
 	}
 }
