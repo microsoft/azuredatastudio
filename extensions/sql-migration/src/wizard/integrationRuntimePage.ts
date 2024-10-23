@@ -309,7 +309,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		const subscriptionLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.SUBSCRIPTION,
-				CSSStyles: { ...styles.LABEL_CSS }
+				requiredIndicator: true,
+				CSSStyles: { ...styles.LABEL_CSS },
 			}).component();
 
 		this._subscriptionDropdown = this._view.modelBuilder.dropDown()
@@ -320,7 +321,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				required: true,
 				fireOnTextChange: true,
 				placeholder: constants.SELECT_A_SERVICE,
-				CSSStyles: { 'margin': '0' }
+				CSSStyles: { 'margin': '-1em 0 0 0' }
 			}).component();
 
 		this._disposables.push(
