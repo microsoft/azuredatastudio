@@ -263,7 +263,7 @@ export const IMPORT_PERFORMANCE_DATA_DIALOG_OPEN_FOLDER = localize('sql.migratio
 export const UPLOAD_TEMPLATE_TO_AZURE = localize('sql.migration.target.provisioning.upload.to.azure', "Deploy to Azure");
 export const SAVE_TO_DEVICE = localize('sql.migration.target.provisioning.generate.template', "Save to device");
 export const COPY_TO_CLIPBOARD = localize('sql.migration.target.provisioning.copy.to.clipboard', "Copy to clipboard");
-export const ARM_TEMPLATE_GENERATE_FAILED = localize('sql.migration.target.provisioning.copy.to.clipboard', "Failed to generate ARM template");
+export const ARM_TEMPLATE_GENERATE_FAILED = localize('sql.migration.target.provisioning.arm.template.generation.failed', "Failed to generate ARM template");
 
 export const CLOSE_DIALOG = localize('sql.migration.target.provisioning.close', "Close");
 export const TARGET_PROVISIONING_DESCRIPTION = localize('sql.migration.target.provisioning.description', "Below is the ARM script for the recommended target SKU. You can use the following two methods to deploy target SKU to Azure.\n 1.Click on the \"Deploy to Azure\" command to deploy the target resource. This option requires an Azure blob container account.\n 2.Click on \"Save to device\" to save the ARM script and then manually deploy the target resource.");
