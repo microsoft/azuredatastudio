@@ -200,7 +200,7 @@ export class GenerateProvisioningScriptDialog {
 	}
 
 	private async displayArmTemplate(): Promise<void> {
-		if (this.model._armTemplateResult.templates?.[0]) {
+		if (this.model._armTemplateResult?.templates?.[0]) {
 			this._armTemplateTextBox.value = this.model._armTemplateResult.templates[0];
 		}
 		else {
@@ -208,7 +208,7 @@ export class GenerateProvisioningScriptDialog {
 			await vscode.window.showErrorMessage(constants.ARM_TEMPLATE_GENERATE_FAILED);
 		}
 
-		if (this.model._armTemplateResult.templates?.length! > 1 && this._targetType === utils.MigrationTargetType.SQLDB) {
+		if (this.model._armTemplateResult?.templates?.length! > 1 && this._targetType === utils.MigrationTargetType.SQLDB) {
 			await vscode.window.showInformationMessage(constants.DISPLAY_ARM_TEMPLATE_LIMIT);
 		}
 	}
