@@ -156,7 +156,7 @@ export class GenerateProvisioningScriptDialog {
 			}).component();
 
 		copyToClipboardButton.onDidClick(async () => {
-			if (this.model._armTemplateResult.templates?.[0]) {
+			if (this.model._armTemplateResult?.templates?.[0]) {
 				void vscode.env.clipboard.writeText(this.model._armTemplateResult.templates[0]);
 				void vscode.window.showInformationMessage(constants.COPY_TEMPLATE_SUCCESS);
 				// emit Telemetry for the success.
