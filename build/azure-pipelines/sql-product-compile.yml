@@ -82,10 +82,13 @@ steps:
 # Run these separately to avoid OOM errors on pipeline machines
 - script: |
     set -e
+    export NODE_OPTIONS="--max-old-space-size=8192"
     yarn npm-run-all -lp core-ci
     yarn npm-run-all -lp extensions-ci
     yarn npm-run-all -lp hygiene eslint
   displayName: Compile & Hygiene
+  env:
+    NODE_OPTIONS: --max-old-space-size=8192
 
 - script: |
     set -e
