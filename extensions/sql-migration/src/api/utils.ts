@@ -782,8 +782,14 @@ export async function createPowershellscriptContentContainer(view: azdata.ModelV
 	}).component();
 
 	const scriptpath = path.join(__dirname, '../scripts/SHIR-auto-configuration.ps1');
+	const scriptpath2 = path.join(__dirname, '../../scripts/SHIR-auto-configuration.ps1');
 
-	const scriptContent = await fs.readFile(scriptpath);
+	let scriptContent;
+	try {
+		scriptContent = await fs.readFile(scriptpath);
+	} catch (err) {
+		scriptContent = await fs.readFile(scriptpath2);
+	}
 
 	// inject auth keys in the script
 	const authKeys = await retrieveAuthKeys(migrationStateModel);
@@ -792,7 +798,13 @@ export async function createPowershellscriptContentContainer(view: azdata.ModelV
 
 	// write it back to different file
 	const modifiedScriptPath = path.join(__dirname, '../scripts/SHIR-auto-configuration-with-auth-keys.ps1');
-	await fs.writeFile(modifiedScriptPath, modifiedScriptContent);
+	const modifiedScriptPath2 = path.join(__dirname, '../../scripts/SHIR-auto-configuration.ps1');
+
+	try {
+		await fs.writeFile(modifiedScriptPath, modifiedScriptContent);
+	} catch (err) {
+		await fs.writeFile(modifiedScriptPath2, modifiedScriptContent);
+	}
 
 	saveScriptButton.onDidClick(async () => {
 		const options: vscode.SaveDialogOptions = {
