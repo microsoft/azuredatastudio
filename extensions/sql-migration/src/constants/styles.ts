@@ -141,7 +141,7 @@ export const SEPARATOR = {
 }
 
 export const VIEW_DETAILS_GENERATE_TEMPLATE_LINK = {
-	'font-size': '13px',
+	'font-size': '11px',
 	'font-weight': '400',
 	'line-height': '18px',
 	'text-decoration': 'none',
