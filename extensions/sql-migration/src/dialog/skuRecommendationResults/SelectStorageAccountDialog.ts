@@ -10,9 +10,9 @@ import * as styles from '../../constants/styles';
 import * as constants from '../../constants/strings';
 import * as utils from '../../api/utils';
 import { StorageAccount } from '../../api/azure';
-import { logError, TelemetryViews } from '../../telemetry';
+import { logError, TelemetryViews, sendButtonClickEvent, TelemetryAction, sendSqlMigrationActionEvent } from '../../telemetry';
 import { MigrationStateModel } from '../../models/stateMachine';
-import { StorageSharedKeyCredential, BlockBlobClient, BlobSASPermissions, generateBlobSASQueryParameters } from '@azure/storage-blob';
+import { StorageSharedKeyCredential, BlockBlobClient, AccountSASServices, AccountSASResourceTypes, AccountSASPermissions, generateAccountSASQueryParameters } from '@azure/storage-blob';
 import { getStorageAccountAccessKeys } from '../../api/azure';
 import { MigrationTargetType } from '../../api/utils';
 
@@ -96,6 +96,9 @@ export class SelectStorageAccountDialog {
 				await this.uploadTemplate();
 			}));
 		azdata.window.openDialog(this._dialog);
+
+		// emit Telemetry for opening of Dialog.
+		sendButtonClickEvent(this.migrationStateModel, TelemetryViews.ProvisioningScriptWizard, TelemetryAction.OpenDeployArmTemplateDialog, "", constants.UPLOAD_TEMPLATE_TO_AZURE);
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
@@ -591,12 +594,15 @@ export class SelectStorageAccountDialog {
 		const templates = this.migrationStateModel._armTemplateResult.templates!;
 		const sharedKeyCredential = new StorageSharedKeyCredential(this._storageAccount.name, storageKeys.keyName1);
 
-		const sasToken = generateBlobSASQueryParameters(
-			{
-				containerName,
-				permissions: BlobSASPermissions.parse("racwd"),
-				expiresOn: new Date(new Date().valueOf() + 86400),
-			},
+		const sasOptions = {
+			services: AccountSASServices.parse("b").toString(),          // blobs
+			resourceTypes: AccountSASResourceTypes.parse("sco").toString(), // service, container, object
+			permissions: AccountSASPermissions.parse("rwdlacu"),          // permissions
+			expiresOn: new Date(new Date().valueOf() + (1440 * 60 * 1000)),   // 24 hrs
+		};
+
+		const sasToken = generateAccountSASQueryParameters(
+			sasOptions,
 			sharedKeyCredential
 		).toString();
 
@@ -644,6 +650,13 @@ export class SelectStorageAccountDialog {
 		}
 
 		void vscode.window.showInformationMessage(constants.UPLOAD_TEMPLATE_SUCCESS);
+
+		// emit Telemetry for the success.
+		sendSqlMigrationActionEvent(
+			TelemetryViews.UploadArmTemplateDialog,
+			TelemetryAction.OpenCustomDeploymentPortalSuccess,
+			{}, {}
+		);
 
 	}
 

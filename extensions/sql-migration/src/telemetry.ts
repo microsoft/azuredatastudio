@@ -92,7 +92,12 @@ export enum TelemetryAction {
 	TdeConfigurationAlreadyMigrated = 'TdeConfigurationAlreadyMigrated',
 	TdeConfigurationCancelled = 'TdeConfigurationCancelled',
 	ImportAssessmentSuccess = 'ImportAssessmentSuccess',
-	ImportAssessmentFailed = 'ImportAssessmentFailed'
+	ImportAssessmentFailed = 'ImportAssessmentFailed',
+	SaveArmTemplateSuccess = 'SaveArmTemplateSuccess',
+	CopyArmTemplateSuccess = 'CopyArmTemplateSuccess',
+	OpenCustomDeploymentPortalSuccess = 'OpenCustomDeploymentPortalSuccess',
+	OpenTargetProvisioningWizard = 'OpenTargetProvisioningWizard',
+	OpenDeployArmTemplateDialog = 'OpenDeployArmTemplateDialog'
 }
 
 export function logError(telemetryView: TelemetryViews, err: string, error: any): void {
