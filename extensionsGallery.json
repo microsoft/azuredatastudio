@@ -4979,14 +4979,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.199.0",
-							"lastUpdated": "6/5/2024",
+							"version": "1.242.0",
+							"lastUpdated": "10/25/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.199.0/GitHub.copilot-1.199.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.242.0/GitHub.copilot-1.242.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4994,15 +4994,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.199.0/README.md"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.242.0/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.199.0/CHANGELOG.md"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.242.0/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.199.0/package.json"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.242.0/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -5012,7 +5012,7 @@
 							"properties": [
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.75.0"
+									"value": ">=1.82.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
