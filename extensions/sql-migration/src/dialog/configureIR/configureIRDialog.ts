@@ -189,8 +189,14 @@ export class ConfigureIRDialog {
 
 		// get the SHIR script
 		const scriptPath = path.join(__dirname, '../scripts/SHIR-auto-configuration.ps1');
+		const scriptPath2 = path.join(__dirname, '../../../scripts/SHIR-auto-configuration.ps1');
 
-		const scriptContent = await fs.readFile(scriptPath);
+		let scriptContent;
+		try {
+			scriptContent = await fs.readFile(scriptPath);
+		} catch (err) {
+			scriptContent = await fs.readFile(scriptPath2);
+		}
 
 		// inject auth keys in the script
 		const authKeys = await retrieveAuthKeys(this._migrationStateModel);
@@ -199,7 +205,14 @@ export class ConfigureIRDialog {
 
 		// write it back to different file
 		this.modifiedScriptPath = path.join(__dirname, '../scripts/SHIR-auto-configuration-with-auth-keys.ps1');
-		await fs.writeFile(this.modifiedScriptPath, modifiedScriptContent);
+		const modifiedScriptPath2 = path.join(__dirname, '../../../scripts/SHIR-auto-configuration.ps1');
+
+		try {
+			await fs.writeFile(this.modifiedScriptPath, modifiedScriptContent);
+		} catch (err) {
+			await fs.writeFile(modifiedScriptPath2, modifiedScriptContent);
+			this.modifiedScriptPath = modifiedScriptPath2;
+		}
 
 		const powershellScriptExpander = view.modelBuilder.button().withProps(
 			{
