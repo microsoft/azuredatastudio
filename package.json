@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.50.0",
-  "distro": "e5dd154bea415a56b55d661b443b5d0cb013f2fe",
+  "distro": "a202d4fa961efa1fb0567b954c85070a7b577e60",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -176,7 +176,7 @@
     "@vscode/gulp-electron": "^1.36.0",
     "@vscode/l10n-dev": "0.0.35",
     "@vscode/telemetry-extractor": "^1.9.9",
-    "@vscode/test-web": "^0.0.42",
+    "@vscode/test-web": "^0.0.62",
     "@vscode/vscode-perf": "^0.0.14",
     "ansi-colors": "^3.2.3",
     "asar": "^3.0.3",
