@@ -48,7 +48,7 @@ describe('Create Project From Database Quickpick', () => {
 		//verify that prompt for connection was called
 		should(promptForConnectionSpy.calledOnce).be.true('promptForConnection should have been called');
 
-		//verify callback was not called, since promptForConnection was set to cancel (resolves to undefined)
+		//verify create project callback was not called, since promptForConnection was set to cancel (resolves to undefined)
 		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
@@ -65,12 +65,12 @@ describe('Create Project From Database Quickpick', () => {
 		// user chooses to cancel when prompted for database
 		sinon.stub(vscode.window, 'showQuickPick').resolves(undefined);
 
-		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo, createProjectFromDatabaseCallbackSpy);
 
 		//verify connection prompt wasn't presented, since connectionInfo was passed during the call
 		should(promptForConnectionSpy.notCalled).be.true('promptForConnection should not be called when connectionInfo is provided');
 
-		//verify callback was not called, since database wasn't selected (resolved to undefined)
+		//verify create project callback was not called, since database wasn't selected (resolved to undefined)
 		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
@@ -87,9 +87,9 @@ describe('Create Project From Database Quickpick', () => {
 		// user chooses to cancel when prompted to enter project name
 		inputBoxStub.onSecondCall().resolves(undefined);
 
-		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo, createProjectFromDatabaseCallbackSpy);
 
-		//verify callback was not called, since project name wasn't selected (resolved to undefined)
+		//verify create project callback was not called, since project name wasn't selected (resolved to undefined)
 		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
@@ -106,9 +106,9 @@ describe('Create Project From Database Quickpick', () => {
 		//user chooses to exit
 		quickPickStub.onSecondCall().resolves(undefined);
 
-		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo, createProjectFromDatabaseCallbackSpy);
 
-		//verify callback was not called, since project location wasn't selected (resolved to undefined)
+		//verify create project callback was not called, since project location wasn't selected (resolved to undefined)
 		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
@@ -137,9 +137,9 @@ describe('Create Project From Database Quickpick', () => {
 		//user chooses to exit
 		quickPickStub.onCall(4).resolves(undefined);
 
-		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo, createProjectFromDatabaseCallbackSpy);
 
-		//verify callback was not called, since project location wasn't selected (resolved to undefined)
+		//verify create project callback was not called, since project location wasn't selected (resolved to undefined)
 		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
@@ -164,9 +164,9 @@ describe('Create Project From Database Quickpick', () => {
 		//user chooses to exit when prompted for folder structure
 		quickPickStub.onCall(3).resolves(undefined);
 
-		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo, createProjectFromDatabaseCallbackSpy);
 
-		//verify callback was not called, since folder structure wasn't selected (resolved to undefined)
+		//verify create project callback was not called, since folder structure wasn't selected (resolved to undefined)
 		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
@@ -193,11 +193,11 @@ describe('Create Project From Database Quickpick', () => {
 		//user chooses to exit when prompted for folder structure
 		quickPickStub.onCall(3).resolves(undefined);
 
-		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo, createProjectFromDatabaseCallbackSpy);
 
 		await deleteGeneratedTestFolder();
 
-		//verify callback was not called, since folder structure wasn't selected (resolved to undefined)
+		//verify create project callback was not called, since folder structure wasn't selected (resolved to undefined)
 		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
@@ -218,9 +218,9 @@ describe('Create Project From Database Quickpick', () => {
 		//user chooses to exit when prompted for include permissions
 		quickPickStub.onCall(3).resolves(undefined);
 
-		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo, createProjectFromDatabaseCallbackSpy);
 
-		//verify callback was not called, since include permissions wasn't selected (resolved to undefined)
+		//verify create project callback was not called, since include permissions wasn't selected (resolved to undefined)
 		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
@@ -243,9 +243,9 @@ describe('Create Project From Database Quickpick', () => {
 		//user chooses to exit when prompted for sdk style project
 		sinon.stub(quickpickHelper, 'getSDKStyleProjectInfo').resolves(undefined);
 
-		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo, createProjectFromDatabaseCallbackSpy);
 
-		//verify callback was not called, since sdk style project wasn't selected (resolved to undefined)
+		//verify create project callback was not called, since sdk style project wasn't selected (resolved to undefined)
 		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
@@ -268,7 +268,7 @@ describe('Create Project From Database Quickpick', () => {
 		//user chooses sdk style project to be true
 		sinon.stub(quickpickHelper, 'getSDKStyleProjectInfo').resolves(true);
 
-		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo, createProjectFromDatabaseCallbackSpy);
 
 		const expectedImportDataModel: ImportDataModel = {
 			connectionUri: 'testConnectionURI',
@@ -281,7 +281,7 @@ describe('Create Project From Database Quickpick', () => {
 			includePermissions: false
 		};
 
-		//verify callback was called with the correct model
+		//verify create project callback was called with the correct model
 		should(createProjectFromDatabaseCallbackSpy.calledOnce).be.true('createProjectFromDatabaseCallback should have been called');
 		should(createProjectFromDatabaseCallbackSpy.calledWithMatch(expectedImportDataModel)).be.true('createProjectFromDatabaseCallback should have been called with the correct model');
 	});
