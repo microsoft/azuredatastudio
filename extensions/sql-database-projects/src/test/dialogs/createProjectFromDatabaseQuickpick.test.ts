@@ -40,18 +40,24 @@ describe('Create Project From Database Quickpick', () => {
 		//promptForConnection spy to verify test
 		const promptForConnectionSpy = sinon.stub(testUtils.vscodeMssqlIExtension.object, 'promptForConnection').withArgs(sinon.match.any).resolves(undefined);
 
-		const model = await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick();
+		//createProjectFromDatabaseQuickpick spy to verify test
+		const createProjectFromDatabaseCallbackSpy = sinon.stub().resolves();
+
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(undefined, createProjectFromDatabaseCallbackSpy);
 
 		//verify that prompt for connection was called
 		should(promptForConnectionSpy.calledOnce).be.true('promptForConnection should have been called');
 
-		//verify quickpick exited with undefined, since promptForConnection was set to cancel (resolves to undefined)
-		should.equal(model, undefined);
+		//verify callback was not called, since promptForConnection was set to cancel (resolves to undefined)
+		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
 	it('Should not prompt for connection when connectionInfo is provided and exit when db is not selected', async function (): Promise<void> {
 		//promptForConnection spy to verify test
 		const promptForConnectionSpy = sinon.stub(testUtils.vscodeMssqlIExtension.object, 'promptForConnection').withArgs(sinon.match.any).resolves(undefined);
+
+		//createProjectFromDatabaseQuickpick spy to verify test
+		const createProjectFromDatabaseCallbackSpy = sinon.stub().resolves();
 
 		//user chooses connection
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
@@ -59,16 +65,19 @@ describe('Create Project From Database Quickpick', () => {
 		// user chooses to cancel when prompted for database
 		sinon.stub(vscode.window, 'showQuickPick').resolves(undefined);
 
-		const model = await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
 
 		//verify connection prompt wasn't presented, since connectionInfo was passed during the call
 		should(promptForConnectionSpy.notCalled).be.true('promptForConnection should not be called when connectionInfo is provided');
 
-		//verify quickpick exited with undefined, since database wasn't selected (resolved to undefined)
-		should.equal(model, undefined);
+		//verify callback was not called, since database wasn't selected (resolved to undefined)
+		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
 	it('Should exit when project name is not selected', async function (): Promise<void> {
+		//createProjectFromDatabaseQuickpick spy to verify test
+		const createProjectFromDatabaseCallbackSpy = sinon.stub().resolves();
+
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
@@ -78,13 +87,16 @@ describe('Create Project From Database Quickpick', () => {
 		// user chooses to cancel when prompted to enter project name
 		inputBoxStub.onSecondCall().resolves(undefined);
 
-		const model = await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
 
-		//verify showInputBox exited with undefined, since project name wasn't selected (resolved to undefined)
-		should.equal(model, undefined);
+		//verify callback was not called, since project name wasn't selected (resolved to undefined)
+		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
 	it('Should exit when project location is not selected', async function (): Promise<void> {
+		//createProjectFromDatabaseQuickpick spy to verify test
+		const createProjectFromDatabaseCallbackSpy = sinon.stub().resolves();
+
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
@@ -94,13 +106,16 @@ describe('Create Project From Database Quickpick', () => {
 		//user chooses to exit
 		quickPickStub.onSecondCall().resolves(undefined);
 
-		const model = await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
 
-		//verify showQuickPick exited with undefined, since project location wasn't selected (resolved to undefined)
-		should.equal(model, undefined);
+		//verify callback was not called, since project location wasn't selected (resolved to undefined)
+		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
 	it('Should exit when project location is not selected (test repeatedness for project location)', async function (): Promise<void> {
+		//createProjectFromDatabaseQuickpick spy to verify test
+		const createProjectFromDatabaseCallbackSpy = sinon.stub().resolves();
+
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
@@ -122,13 +137,16 @@ describe('Create Project From Database Quickpick', () => {
 		//user chooses to exit
 		quickPickStub.onCall(4).resolves(undefined);
 
-		const model = await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
 
-		//verify showQuickPick exited with undefined, since project location wasn't selected (resolved to undefined)
-		should.equal(model, undefined);
+		//verify callback was not called, since project location wasn't selected (resolved to undefined)
+		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
 	it('Should exit when folder structure is not selected and folder is selected through browsing (test repeatedness for project location)', async function (): Promise<void> {
+		//createProjectFromDatabaseQuickpick spy to verify test
+		const createProjectFromDatabaseCallbackSpy = sinon.stub().resolves();
+
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
@@ -146,13 +164,16 @@ describe('Create Project From Database Quickpick', () => {
 		//user chooses to exit when prompted for folder structure
 		quickPickStub.onCall(3).resolves(undefined);
 
-		const model = await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
 
-		//verify showQuickPick exited with undefined, since folder structure wasn't selected (resolved to undefined)
-		should.equal(model, undefined);
+		//verify callback was not called, since folder structure wasn't selected (resolved to undefined)
+		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
 	it('Should exit when folder structure is not selected and existing folder/file location is selected', async function (): Promise<void> {
+		//createProjectFromDatabaseQuickpick spy to verify test
+		const createProjectFromDatabaseCallbackSpy = sinon.stub().resolves();
+
 		//create folder and project file
 		const projectFileName = 'TestProject';
 		const testProjectFilePath = await generateTestFolderPath(this.test);
@@ -172,15 +193,18 @@ describe('Create Project From Database Quickpick', () => {
 		//user chooses to exit when prompted for folder structure
 		quickPickStub.onCall(3).resolves(undefined);
 
-		const model = await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
 
 		await deleteGeneratedTestFolder();
 
-		//verify showQuickPick exited with undefined, since folder structure wasn't selected (resolved to undefined)
-		should.equal(model, undefined);
+		//verify callback was not called, since folder structure wasn't selected (resolved to undefined)
+		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
 	it('Should exit when include permissions is not selected', async function (): Promise<void> {
+		//createProjectFromDatabaseQuickpick spy to verify test
+		const createProjectFromDatabaseCallbackSpy = sinon.stub().resolves();
+
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
@@ -194,13 +218,16 @@ describe('Create Project From Database Quickpick', () => {
 		//user chooses to exit when prompted for include permissions
 		quickPickStub.onCall(3).resolves(undefined);
 
-		const model = await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
 
-		//verify showQuickPick exited with undefined, since include permissions wasn't selected (resolved to undefined)
-		should.equal(model, undefined);
+		//verify callback was not called, since include permissions wasn't selected (resolved to undefined)
+		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
 	it('Should exit when sdk style project is not selected', async function (): Promise<void> {
+		//createProjectFromDatabaseQuickpick spy to verify test
+		const createProjectFromDatabaseCallbackSpy = sinon.stub().resolves();
+
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
@@ -216,13 +243,16 @@ describe('Create Project From Database Quickpick', () => {
 		//user chooses to exit when prompted for sdk style project
 		sinon.stub(quickpickHelper, 'getSDKStyleProjectInfo').resolves(undefined);
 
-		const model = await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
 
-		//verify showQuickPick exited with undefined, since sdk style project wasn't selected (resolved to undefined)
-		should.equal(model, undefined);
+		//verify callback was not called, since sdk style project wasn't selected (resolved to undefined)
+		should(createProjectFromDatabaseCallbackSpy.notCalled).be.true('createProjectFromDatabaseCallback should not have been called');
 	});
 
-	it('Should create correct import data model when all the information is provided', async function (): Promise<void> {
+	it('Should create project when all the information is provided', async function (): Promise<void> {
+		//createProjectFromDatabaseQuickpick spy to verify test
+		const createProjectFromDatabaseCallbackSpy = sinon.stub().resolves();
+
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
@@ -238,7 +268,7 @@ describe('Create Project From Database Quickpick', () => {
 		//user chooses sdk style project to be true
 		sinon.stub(quickpickHelper, 'getSDKStyleProjectInfo').resolves(true);
 
-		const model = await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
+		await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
 
 		const expectedImportDataModel: ImportDataModel = {
 			connectionUri: 'testConnectionURI',
@@ -251,7 +281,7 @@ describe('Create Project From Database Quickpick', () => {
 			includePermissions: false
 		};
 
-		//verify the model is correctly generated
-		should(model!).deepEqual(expectedImportDataModel);
+		//verify callback was called with the correct model
+		should(createProjectFromDatabaseCallbackSpy.calledOnceWithExactly(expectedImportDataModel, mockConnectionInfo, mockConnectionInfo.server)).be.true('createProjectFromDatabaseCallback should have been called with the correct model');
 	});
 });
