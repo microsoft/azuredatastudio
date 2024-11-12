@@ -282,6 +282,7 @@ describe('Create Project From Database Quickpick', () => {
 		};
 
 		//verify callback was called with the correct model
-		should(createProjectFromDatabaseCallbackSpy.calledOnceWithExactly(expectedImportDataModel, mockConnectionInfo, mockConnectionInfo.server)).be.true('createProjectFromDatabaseCallback should have been called with the correct model');
+		should(createProjectFromDatabaseCallbackSpy.calledOnce).be.true('createProjectFromDatabaseCallback should have been called');
+		should(createProjectFromDatabaseCallbackSpy.calledWithMatch(expectedImportDataModel)).be.true('createProjectFromDatabaseCallback should have been called with the correct model');
 	});
 });

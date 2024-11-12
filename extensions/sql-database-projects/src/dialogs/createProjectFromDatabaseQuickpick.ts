@@ -17,6 +17,7 @@ import { getSDKStyleProjectInfo } from './quickpickHelper';
 /**
  * Create flow for a New Project using only VS Code-native APIs such as QuickPick
  * @param connectionInfo Optional connection info to use instead of prompting the user for a connection
+ * @param createProjectFromDatabaseCallback Optional callback function to create the project from the user inputs
  */
 export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?: IConnectionInfo, createProjectFromDatabaseCallback?: (model: ImportDataModel, connectionInfo?: string | IConnectionInfo, serverName?: string) => Promise<void>): Promise<void> {
 	const vscodeMssqlApi = await getVscodeMssqlApi();
