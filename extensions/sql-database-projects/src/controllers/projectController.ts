@@ -1581,7 +1581,7 @@ export class ProjectsController {
 				const databaseName = (await utils.getVscodeMssqlApi()).getDatabaseNameFromTreeNode(treeNodeContext);
 				(profile as mssqlVscode.IConnectionInfo).database = databaseName;
 			}
-			await createNewProjectFromDatabaseWithQuickpick(profile as mssqlVscode.IConnectionInfo, this.createProjectFromDatabaseCallback);
+			await createNewProjectFromDatabaseWithQuickpick(profile as mssqlVscode.IConnectionInfo, (model: ImportDataModel, connectionInfo?: string | mssqlVscode.IConnectionInfo, serverName?: string) => this.createProjectFromDatabaseCallback(model, connectionInfo, serverName));
 			return undefined;
 		}
 
