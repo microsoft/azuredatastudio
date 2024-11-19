@@ -12,7 +12,7 @@ assignees: ''
 
 1. What is the extension ID/name?
 
-    > (find `extensionName` in the [extension gallery JSON file](https://github.com/anildogra/azuredatastudio/blob/release/extensions/extensionsGallery.json))
+    > find `extensionName` in the [extension gallery JSON file](https://github.com/anildogra/azuredatastudio/blob/release/extensions/extensionsGallery.json)
 
 2. Describe your management request.
 
