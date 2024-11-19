@@ -557,7 +557,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						headerCssClass: headerCssStyles,
 						name: loc.DURATION,
 						value: 'duration',
-						width: 55,
+						width: 65,
 						type: azdata.ColumnType.text,
 						toolTip: loc.DURATION_TOOL_TIP,
 					},
