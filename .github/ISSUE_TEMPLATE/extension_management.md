@@ -7,12 +7,11 @@ assignees: ''
 
 ---
 
-> [!Important]
-> This form is for extension publishers _only_.  If you are an extension _user_, your feedback and bugs need to be reported directly to the extension publisher. The 'Help > Report Issue' dialog can assist with this.
+<!-- This form is for extension publishers _only_.  If you are an extension _user_, your feedback and bugs need to be reported directly to the extension publisher. The 'Help > Report Issue' dialog can assist with this. -->
 
 1. What is the extension ID/name?
 
-    > find `extensionName` in the [extension gallery JSON file](https://github.com/anildogra/azuredatastudio/blob/release/extensions/extensionsGallery.json)
+    <!-- find `extensionName` in the [extension gallery JSON file](https://github.com/microsoft/azuredatastudio/blob/release/extensions/extensionsGallery.json) -->
 
 2. Describe your management request.
 
