@@ -1299,6 +1299,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this.migrationStateModel._sourceDatabaseNames = this.migrationStateModel._databasesForMigration;
 
 				const createTableHeaderComponents = (headerNames: { name: string; requiredIndicator: boolean }[]) =>
+					// TODO: Temporarily created headers as rows to mark them as required, until a long-term solution is implemented
+					// This is a workaround since support for adding indicators in headers is not available yet.
 					headerNames.map(header =>
 						this._view.modelBuilder.divContainer().withItems([
 							this._view.modelBuilder.divContainer().withProps({
