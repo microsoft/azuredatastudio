@@ -358,7 +358,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const headerCssStyles: azdata.CssStyles = {
 			...styles.LABEL_CSS,
 			'border': 'none',
-			'text-align': 'left',
 			'box-shadow': 'inset 0px -1px 0px #F3F2F1',
 		};
 		const rowCssStyle: azdata.CssStyles = {
@@ -384,15 +383,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				columns: [
 					{
-						displayName: constants.SOURCE_DATABASE,
-						valueType: azdata.DeclarativeDataType.string,
+						displayName: '',
+						valueType: azdata.DeclarativeDataType.component,
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
 						isReadOnly: true,
 						width: '250px'
 					},
 					{
-						displayName: constants.TARGET_DATABASE_NAME,
+						displayName: '',
 						valueType: azdata.DeclarativeDataType.component,
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
@@ -400,7 +399,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
-						displayName: constants.NETWORK_SHARE_PATH,
+						displayName: '',
 						valueType: azdata.DeclarativeDataType.component,
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
@@ -414,15 +413,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				columns: [
 					{
-						displayName: constants.SOURCE_DATABASE,
-						valueType: azdata.DeclarativeDataType.string,
+						displayName: '',
+						valueType: azdata.DeclarativeDataType.component,
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
 						isReadOnly: true,
 						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL,
 					},
 					{
-						displayName: constants.TARGET_DATABASE_NAME,
+						displayName: '',
 						valueType: azdata.DeclarativeDataType.component,
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
@@ -430,7 +429,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
-						displayName: constants.RESOURCE_GROUP,
+						displayName: '',
 						valueType: azdata.DeclarativeDataType.component,
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
@@ -438,7 +437,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
-						displayName: constants.STORAGE_ACCOUNT,
+						displayName: '',
 						valueType: azdata.DeclarativeDataType.component,
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
@@ -446,7 +445,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
-						displayName: constants.BLOB_CONTAINER,
+						displayName: '',
 						valueType: azdata.DeclarativeDataType.component,
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
@@ -454,7 +453,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						width: WIZARD_TABLE_COLUMN_WIDTH_SMALL
 					},
 					{
-						displayName: constants.BLOB_CONTAINER_LAST_BACKUP_FILE,
+						displayName: '',
 						valueType: azdata.DeclarativeDataType.component,
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
@@ -463,7 +462,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						hidden: true
 					},
 					{
-						displayName: constants.BLOB_CONTAINER_FOLDER,
+						displayName: '',
 						valueType: azdata.DeclarativeDataType.component,
 						rowCssStyles: rowCssStyle,
 						headerCssStyles: headerCssStyles,
@@ -1299,16 +1298,65 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				});
 				this.migrationStateModel._sourceDatabaseNames = this.migrationStateModel._databasesForMigration;
 
+				const createTableHeaderComponents = (headerNames: { name: string; requiredIndicator: boolean }[]) =>
+					// TODO: Temporarily created headers as rows to mark them as required, until a long-term solution is implemented
+					// This is a workaround since support for adding indicators in headers is not available yet.
+					headerNames.map(header =>
+						this._view.modelBuilder.divContainer().withItems([
+							this._view.modelBuilder.divContainer().withProps({
+								CSSStyles: { marginTop: '-1em' }
+							}).component(),
+							this._view.modelBuilder.text().withProps({
+								value: header.name,
+								requiredIndicator: header.requiredIndicator,
+								CSSStyles: {
+									...styles.LABEL_CSS,
+									margin: '0'
+								}
+							}).component(),
+							this._view.modelBuilder.divContainer().withProps({
+								CSSStyles: { marginBottom: '-1em' }
+							}).component()
+						]).component()
+					);
+
+				let networkShareTargetTableHeaderNames = [
+					{ name: constants.SOURCE_DATABASE, requiredIndicator: false },
+					{ name: constants.TARGET_DATABASE_NAME, requiredIndicator: true },
+					{ name: constants.NETWORK_SHARE_PATH, requiredIndicator: true },
+				]
+
+				let networkShareTargetTableHeaderComponents = createTableHeaderComponents(
+					networkShareTargetTableHeaderNames
+				);
+
 				const networkShareTargetData = this.migrationStateModel._databasesForMigration
 					.map((db, index) => [
-						{ value: db },
+						{ value: this._view.modelBuilder.text().withProps({ value: db, CSSStyles: { 'margin': '0' } }).component() },
 						{ value: this._networkShareTargetDatabaseNames[index] },
 						{ value: this._networkShareLocations[index] }]);
-				await this._networkShareTargetDatabaseNamesTable.setDataValues(networkShareTargetData);
+				await this._networkShareTargetDatabaseNamesTable.setDataValues([
+					networkShareTargetTableHeaderComponents.map(component => ({ value: component })),
+					...networkShareTargetData,
+				]);
+
+				let blobContainerTargetTableHeaderNames = [
+					{ name: constants.SOURCE_DATABASE, requiredIndicator: false },
+					{ name: constants.TARGET_DATABASE_NAME, requiredIndicator: true },
+					{ name: constants.RESOURCE_GROUP, requiredIndicator: true },
+					{ name: constants.STORAGE_ACCOUNT, requiredIndicator: true },
+					{ name: constants.BLOB_CONTAINER, requiredIndicator: true },
+					{ name: constants.BLOB_CONTAINER_LAST_BACKUP_FILE, requiredIndicator: true },
+					{ name: constants.BLOB_CONTAINER_FOLDER, requiredIndicator: true }
+				]
+
+				let blobContainerTargetTableHeaderComponents = createTableHeaderComponents(
+					blobContainerTargetTableHeaderNames
+				);
 
 				const blobContainerTargetData = this.migrationStateModel._databasesForMigration
 					.map((db, index) => [
-						{ value: db },
+						{ value: this._view.modelBuilder.text().withProps({ value: db, CSSStyles: { 'margin': '0' } }).component() },
 						{ value: this._blobContainerTargetDatabaseNames[index] },
 						{ value: this._blobContainerResourceGroupDropdowns[index] },
 						{ value: this._blobContainerStorageAccountDropdowns[index] },
@@ -1316,7 +1364,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						{ value: this._blobContainerLastBackupFileDropdowns[index] },
 						{ value: this._blobContainerFolderDropdowns[index] }]);
 				await this._blobContainerTargetDatabaseNamesTable.setDataValues([]);
-				await this._blobContainerTargetDatabaseNamesTable.setDataValues(blobContainerTargetData);
+				await this._blobContainerTargetDatabaseNamesTable.setDataValues([
+					blobContainerTargetTableHeaderComponents.map(component => ({ value: component })),
+					...blobContainerTargetData,
+				]);
 				await this.getSubscriptionValues();
 				// clear change tracking flags
 				this.migrationStateModel.refreshDatabaseBackupPage = false;
