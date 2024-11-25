@@ -243,9 +243,9 @@ export class AssessmentDetailsHeader {
 		// this value is populated to handle the case when user selects a target type and want to resume later.
 		this._targetSelectionDropdown.value = this.getTargetTypeBasedOnModel(migrationStateModel._targetType);
 
-		await this._viewDetailsLink.updateCssStyles({ 'display': 'none' });
-		await this._generateTemplateLink.updateCssStyles({ 'display': 'none' });
-		await this._separator.updateCssStyles({ 'display': 'none' });
+		await this._viewDetailsLink?.updateCssStyles({ 'display': 'none' });
+		await this._generateTemplateLink?.updateCssStyles({ 'display': 'none' });
+		await this._separator?.updateCssStyles({ 'display': 'none' });
 
 
 
@@ -276,9 +276,9 @@ export class AssessmentDetailsHeader {
 			this._valueContainers[0].value = configurationValue;
 
 			if (configurationValue !== "--") {
-				await this._viewDetailsLink.updateCssStyles({ 'display': 'block' });
-				await this._generateTemplateLink.updateCssStyles({ 'display': 'block' });
-				await this._separator.updateCssStyles({ 'display': 'block' });
+				await this._viewDetailsLink?.updateCssStyles({ 'display': 'block' });
+				await this._generateTemplateLink?.updateCssStyles({ 'display': 'block' });
+				await this._separator?.updateCssStyles({ 'display': 'block' });
 			}
 
 			await this._azureRecommendationLoadingText.updateCssStyles({ 'display': 'none' });
