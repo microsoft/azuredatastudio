@@ -671,28 +671,6 @@ declare module 'azdata' {
 		name: string;
 	}
 
-	export interface ConnectionOption {
-		name: string;
-
-		displayName: string;
-
-		description: string;
-
-		groupName: string;
-
-		valueType: ServiceOptionType;
-
-		specialValueType: ConnectionOptionSpecialType;
-
-		defaultValue: string;
-
-		categoryValues: CategoryValue[];
-
-		isIdentity: boolean;
-
-		isRequired: boolean;
-	}
-
 	export interface ConnectionProviderOptions {
 		options: ConnectionOption[];
 	}
@@ -706,6 +684,8 @@ declare module 'azdata' {
 
 		groupName: string;
 
+		groupDisplayName: string;
+
 		valueType: ServiceOptionType;
 
 		defaultValue: string;
@@ -717,6 +697,12 @@ declare module 'azdata' {
 		isRequired: boolean;
 
 		isArray: boolean;
+	}
+
+	export interface ConnectionOption extends ServiceOption {
+		specialValueType: ConnectionOptionSpecialType;
+
+		isIdentity: boolean;
 	}
 
 	export interface AdminServicesOptions {
