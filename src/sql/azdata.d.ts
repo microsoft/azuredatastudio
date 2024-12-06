@@ -673,6 +673,9 @@ declare module 'azdata' {
 
 	export interface ConnectionProviderOptions {
 		options: ConnectionOption[];
+
+		/** Mapping from connection option group IDs to translated display names */
+		groupDisplayNames: { [groupId: string]: string };
 	}
 
 	export interface ServiceOption {
@@ -683,8 +686,6 @@ declare module 'azdata' {
 		description: string;
 
 		groupName: string;
-
-		groupDisplayName: string;
 
 		valueType: ServiceOptionType;
 
