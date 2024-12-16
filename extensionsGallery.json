@@ -3377,14 +3377,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.4.3",
-							"lastUpdated": "07/25/2024",
+							"version": "1.4.5",
+							"lastUpdated": "12/16/2024",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-1.4.3.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-1.4.5.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
