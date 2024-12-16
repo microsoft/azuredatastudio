@@ -29,7 +29,7 @@ The extension will prompt to install the [.NET SDK](https://aka.ms/sqlprojects-d
 
 📕 Dive in further with this complete tutorial for [creating and deploying a SQL project](https://learn.microsoft.com/sql/tools/sql-database-projects/tutorials/create-deploy-sql-project?pivots=sq1-visual-studio-code).
 
-![AdventureWorks SQL project](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-database-projects/images/vscode-sqlproject.png)
+![AdventureWorks SQL project](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-database-projects/images/readme-sqlproj.png)
 
 ## Features
 
