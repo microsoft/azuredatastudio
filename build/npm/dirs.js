@@ -57,8 +57,6 @@ const dirs = [
 	'extensions/vscode-test-resolver',
 	'extensions/xml-language-features',
 	// {{SQL CARBON EDIT}} - End
-	'remote',
-	'remote/web',
 	'test/automation',
 	'test/integration/browser',
 	'test/monaco',
@@ -67,8 +65,6 @@ const dirs = [
 
 if (fs.existsSync(`${__dirname}/../../.build/distro/npm`)) {
 	dirs.push('.build/distro/npm');
-	dirs.push('.build/distro/npm/remote');
-	dirs.push('.build/distro/npm/remote/web');
 }
 
 exports.dirs = dirs;
