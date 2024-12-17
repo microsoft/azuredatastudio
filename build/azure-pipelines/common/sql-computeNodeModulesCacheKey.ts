@@ -39,7 +39,6 @@ const shasum = crypto.createHash('sha1');
  */
 shasum.update(fs.readFileSync(path.join(ROOT, 'build/.cachesalt')));
 shasum.update(fs.readFileSync(path.join(ROOT, '.yarnrc')));
-shasum.update(fs.readFileSync(path.join(ROOT, 'remote/.yarnrc')));
 
 // Adding all yarn.lock files into sha sum.
 const result: string[] = [];
