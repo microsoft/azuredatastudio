@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { app, BrowserWindow, KeyboardEvent, Menu, MenuItem, MenuItemConstructorOptions, WebContents } from 'electron';
+import { app, BrowserWindow, BaseWindow, KeyboardEvent, Menu, MenuItem, MenuItemConstructorOptions, WebContents } from 'electron';
 import { WorkbenchActionExecutedClassification, WorkbenchActionExecutedEvent } from 'vs/base/common/actions';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { CancellationToken } from 'vs/base/common/cancellation';
@@ -61,7 +61,7 @@ export class Menubar {
 
 	private keybindings: { [commandId: string]: IMenubarKeybinding };
 
-	private readonly fallbackMenuHandlers: { [id: string]: (menuItem: MenuItem, browserWindow: BrowserWindow | undefined, event: KeyboardEvent) => void } = Object.create(null);
+	private readonly fallbackMenuHandlers: { [id: string]: (menuItem: MenuItem, browserWindow: BaseWindow | undefined, event: KeyboardEvent) => void } = Object.create(null);
 
 	constructor(
 		@IUpdateService private readonly updateService: IUpdateService,
@@ -646,7 +646,7 @@ export class Menubar {
 	private createMenuItem(label: string, click: () => void, enabled?: boolean, checked?: boolean): MenuItem;
 	private createMenuItem(arg1: string, arg2: any, arg3?: boolean, arg4?: boolean): MenuItem {
 		const label = this.mnemonicLabel(arg1);
-		const click: () => void = (typeof arg2 === 'function') ? arg2 : (menuItem: MenuItem & IMenuItemWithKeybinding, win: BrowserWindow, event: KeyboardEvent) => {
+		const click: () => void = (typeof arg2 === 'function') ? arg2 : (menuItem: MenuItem & IMenuItemWithKeybinding, win: BaseWindow, event: KeyboardEvent) => {
 			const userSettingsLabel = menuItem ? menuItem.userSettingsLabel : null;
 			let commandId = arg2;
 			if (Array.isArray(arg2)) {
@@ -713,8 +713,8 @@ export class Menubar {
 		return new MenuItem(this.withKeybinding(commandId, options));
 	}
 
-	private makeContextAwareClickHandler(click: (menuItem: MenuItem, win: BrowserWindow, event: KeyboardEvent) => void, contextSpecificHandlers: IMenuItemClickHandler): (menuItem: MenuItem, win: BrowserWindow | undefined, event: KeyboardEvent) => void {
-		return (menuItem: MenuItem, win: BrowserWindow | undefined, event: KeyboardEvent) => {
+	private makeContextAwareClickHandler(click: (menuItem: MenuItem, win: BaseWindow, event: KeyboardEvent) => void, contextSpecificHandlers: IMenuItemClickHandler): (menuItem: MenuItem, win: BaseWindow | undefined, event: KeyboardEvent) => void {
+		return (menuItem: MenuItem, win: BaseWindow | undefined, event: KeyboardEvent) => {
 
 			// No Active Window
 			const activeWindow = BrowserWindow.getFocusedWindow();

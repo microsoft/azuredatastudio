@@ -24,7 +24,7 @@ export interface ICodeWindow extends IDisposable {
 	readonly whenClosedOrLoaded: Promise<void>;
 
 	readonly id: number;
-	readonly win: BrowserWindow | null; /* `null` after being disposed */
+	readonly win: BaseWindow | null; /* `null` after being disposed */
 	readonly config: INativeWindowConfiguration | undefined;
 
 	readonly openedWorkspace?: IWorkspaceIdentifier | ISingleFolderWorkspaceIdentifier;
