@@ -24,10 +24,10 @@ export const requiredJupyterPackages: RequiredPackagesInfo = {
 		version: '7.2.2',
 		installExactVersion: true
 	},
-	// Require ipykernel 5.5.5 for https://github.com/microsoft/azuredatastudio/issues/24405
+	// Require ipykernel 6.5.0 for https://github.com/microsoft/azuredatastudio/issues/26075
 	{
 		name: 'ipykernel',
-		version: '5.5.5',
+		version: '6.5.0',
 		installExactVersion: true
 	}],
 	kernels: [{
