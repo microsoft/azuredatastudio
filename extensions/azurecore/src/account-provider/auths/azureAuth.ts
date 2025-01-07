@@ -6,6 +6,9 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
+import * as tunnel from "tunnel";
+import * as http from "http";
+import * as https from "https";
 
 import {
 	AzureAccount,
@@ -26,11 +29,17 @@ import { errorToPromptFailedResult } from './networkUtils';
 import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
 import { isErrorResponseBodyWithError } from '../../azureResource/utils';
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
+import { getProxyAgent, getProxyAgentOptions } from '../../proxy';
 const localize = nls.loadMessageBundle();
 
 export type GetTenantsResponseData = {
 	value: TenantResponse[];
 	error?: string;
+}
+
+interface ProxyAgent {
+	isHttps: boolean;
+	agent: http.Agent | https.Agent;
 }
 
 export abstract class AzureAuth implements vscode.Disposable {
@@ -442,18 +451,67 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	//#region network functions
 
-	private async makeGetRequest<T>(url: string, token: string): Promise<AxiosResponse<T>> {
+	private async makeGetRequest<T>(reqUrl: string, token: string): Promise<AxiosResponse<T>> {
 		const config: AxiosRequestConfig = {
 			headers: {
 				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${token}`
+				'Authorization': `Bearer ${token}`,
 			},
-			validateStatus: () => true // Never throw
+			validateStatus: () => true, // Never throw
+			proxy: false
 		};
 
-		const response: AxiosResponse = await axios.get<T>(url, config);
-		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data?.value as TenantResponse[] ?? response.data as GetTenantsResponseData }], [], url,);
+		const httpConfig = vscode.workspace.getConfiguration("http");
+		if (httpConfig["proxy"]) {
+			const agent = this.createAxiosProxyAgent(reqUrl, httpConfig["proxy"], httpConfig["proxyStrictSSL"]);
+			if (httpConfig["proxy"].includes("https")) {
+				config.httpsAgent = agent;
+			}
+			else {
+				config.httpAgent = agent;
+			}
+		}
+
+		const response: AxiosResponse = await axios.get<T>(reqUrl, config);
+		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data?.value as TenantResponse[] ?? response.data as GetTenantsResponseData }], [], reqUrl,);
 		return response;
+	}
+
+	private createAxiosProxyAgent(reqUrl: string, proxy: string, proxyStrictSSL: boolean): ProxyAgent {
+		const agentOptions = getProxyAgentOptions(url.parse(reqUrl), proxy, proxyStrictSSL);
+		if (!agentOptions) {
+			throw new Error("Unable to read proxy agent options");
+		}
+
+		const tunnelOptions: tunnel.HttpsOverHttpsOptions = {
+			proxy: {
+				proxyAuth: typeof agentOptions.auth === 'string' ? agentOptions.auth : "",
+				host: agentOptions.host ?? '',
+				port: parseInt(agentOptions.port?.toString() ?? '0'),
+				headers: {}
+			}
+		};
+
+		const isReqHttps = reqUrl.includes("https");
+		const isProxyHttps = proxy.includes("https")
+		const proxyAgent = {
+			isHttps: isReqHttps,
+			agent: this.createTunnel(isReqHttps, isProxyHttps, tunnelOptions),
+		} as ProxyAgent;
+
+		return proxyAgent;
+	}
+
+	private createTunnel(isRequestHttps: boolean, isProxyHttps: boolean, tunnelOptions: tunnel.HttpsOverHttpsOptions): http.Agent | https.Agent {
+		if (isRequestHttps && isProxyHttps) {
+			return tunnel.httpsOverHttps(tunnelOptions);
+		} else if (isRequestHttps && !isProxyHttps) {
+			return tunnel.httpsOverHttp(tunnelOptions);
+		} else if (!isRequestHttps && isProxyHttps) {
+			return tunnel.httpOverHttps(tunnelOptions);
+		} else {
+			return tunnel.httpOverHttp(tunnelOptions);
+		}
 	}
 
 	//#endregion
