@@ -480,7 +480,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	private createProxyAgent(requestUrl: string, proxy: string, proxyStrictSSL: boolean): ProxyAgent {
 		const agentOptions = getProxyAgentOptions(url.parse(requestUrl), proxy, proxyStrictSSL);
-		if (!agentOptions) {
+		if (!agentOptions || !agentOptions.host || !agentOptions.port) {
 			throw new Error("Unable to read proxy agent options to create proxy agent.");
 		}
 
