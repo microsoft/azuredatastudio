@@ -463,7 +463,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		const httpConfig = vscode.workspace.getConfiguration("http");
 		if (httpConfig["proxy"]) {
-			const agent = this.createAxiosProxyAgent(requestUrl, httpConfig["proxy"], httpConfig["proxyStrictSSL"]);
+			const agent = this.createProxyAgent(requestUrl, httpConfig["proxy"], httpConfig["proxyStrictSSL"]);
 
 			if (httpConfig["proxy"].includes("https")) {
 				config.httpsAgent = agent;
@@ -478,16 +478,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return response;
 	}
 
-	private createAxiosProxyAgent(requestUrl: string, proxy: string, proxyStrictSSL: boolean): ProxyAgent {
+	private createProxyAgent(requestUrl: string, proxy: string, proxyStrictSSL: boolean): ProxyAgent {
 		const agentOptions = getProxyAgentOptions(url.parse(requestUrl), proxy, proxyStrictSSL);
 		if (!agentOptions) {
-			throw new Error("Unable to read proxy agent options");
-		}
-		if (!agentOptions.host) {
-			throw new Error("Unable to read proxy host");
-		}
-		if (!agentOptions.port) {
-			throw new Error("Unable to read proxy port");
+			throw new Error("Unable to read proxy agent options to create proxy agent.");
 		}
 
 		Logger.piiSanitized("Creating proxy agent with the following options: ", [{ name: 'agentOptions', objOrArray: agentOptions }], [], requestUrl);
@@ -515,27 +509,27 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const isProxyHttps = proxy.includes("https");
 		const proxyAgent = {
 			isHttps: isRequestHttps,
-			agent: this.createTunnel(isRequestHttps, isProxyHttps, tunnelOptions),
+			agent: this.createTunnelingAgent(isRequestHttps, isProxyHttps, tunnelOptions),
 		} as ProxyAgent;
 
 		return proxyAgent;
 	}
 
-	private createTunnel(isRequestHttps: boolean, isProxyHttps: boolean, tunnelOptions: tunnel.HttpsOverHttpsOptions): http.Agent | https.Agent {
+	private createTunnelingAgent(isRequestHttps: boolean, isProxyHttps: boolean, tunnelOptions: tunnel.HttpsOverHttpsOptions): http.Agent | https.Agent {
 		if (isRequestHttps && isProxyHttps) {
-			Logger.verbose("Creating https over https tunnel agent");
+			Logger.verbose("Creating https over https proxy tunneling agent");
 			return tunnel.httpsOverHttps(tunnelOptions);
 		}
 		else if (isRequestHttps && !isProxyHttps) {
-			Logger.verbose("Creating https over http tunnel agent");
+			Logger.verbose("Creating https over http proxy tunneling agent");
 			return tunnel.httpsOverHttp(tunnelOptions);
 		}
 		else if (!isRequestHttps && isProxyHttps) {
-			Logger.verbose("Creating http over https tunnel agent");
+			Logger.verbose("Creating http over https proxy tunneling agent");
 			return tunnel.httpOverHttps(tunnelOptions);
 		}
 		else {
-			Logger.verbose("Creating http over http tunnel agent");
+			Logger.verbose("Creating http over http proxy tunneling agent");
 			return tunnel.httpOverHttp(tunnelOptions);
 		}
 	}
