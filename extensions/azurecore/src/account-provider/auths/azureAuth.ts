@@ -462,10 +462,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 		};
 
 		const httpConfig = vscode.workspace.getConfiguration("http");
-		if (httpConfig["proxy"]) {
-			const agent = this.createProxyAgent(requestUrl, httpConfig["proxy"], httpConfig["proxyStrictSSL"]);
+		const proxy = this.loadEnvironmentProxyValue() || httpConfig["proxy"] as string;
+		if (proxy) {
+			const agent = this.createProxyAgent(requestUrl, proxy, httpConfig["proxyStrictSSL"]);
 
-			if (httpConfig["proxy"].includes("https")) {
+			if (proxy.includes("https")) {
 				config.httpsAgent = agent;
 			}
 			else {
@@ -476,6 +477,24 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const response: AxiosResponse = await axios.get<T>(requestUrl, config);
 		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data?.value as TenantResponse[] ?? response.data as GetTenantsResponseData }], [], requestUrl,);
 		return response;
+	}
+
+	private loadEnvironmentProxyValue(): string | undefined {
+		const HTTPS_PROXY = "HTTPS_PROXY";
+		const HTTP_PROXY = "HTTP_PROXY";
+
+		if (!process) {
+			return undefined;
+		}
+
+		if (process.env[HTTPS_PROXY] || process.env[HTTPS_PROXY.toLowerCase()]) {
+			return process.env[HTTPS_PROXY] || process.env[HTTPS_PROXY.toLowerCase()];
+		}
+		else if (process.env[HTTP_PROXY] || process.env[HTTP_PROXY.toLowerCase()]) {
+			return process.env[HTTP_PROXY] || process.env[HTTP_PROXY.toLowerCase()];
+		}
+
+		return undefined;
 	}
 
 	private createProxyAgent(requestUrl: string, proxy: string, proxyStrictSSL: boolean): ProxyAgent {
