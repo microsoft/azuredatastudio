@@ -29,7 +29,7 @@ import { errorToPromptFailedResult } from './networkUtils';
 import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
 import { isErrorResponseBodyWithError } from '../../azureResource/utils';
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
-import { getProxyAgent, getProxyAgentOptions } from '../../proxy';
+import { getProxyAgentOptions } from '../../proxy';
 const localize = nls.loadMessageBundle();
 
 export type GetTenantsResponseData = {
