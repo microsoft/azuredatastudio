@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-echo "Install Xvfb"
-apt-get update
-apt-get install -y xvfb
-
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	realpath() { [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"; }
 	ROOT=$(dirname $(dirname $(realpath "$0")))
