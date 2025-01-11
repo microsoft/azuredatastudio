@@ -35,9 +35,6 @@ jobs:
           sudo update-rc.d xvfb defaults
           sudo service xvfb start
 
-      - name: Set PKG_CONFIG_PATH
-        run: export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig:$PKG_CONFIG_PATH
-
       - name: Compute node modules cache key
         id: nodeModulesCacheKey
         run: echo "value=$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)" >> $GITHUB_OUTPUT
