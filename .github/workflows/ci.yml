@@ -148,8 +148,6 @@ jobs:
       - name: Run Extension Unit Tests # {{SQL CARBON EDIT}} Rename to extension for clarity
         id: electron-extension-unit-tests
         run: |
-          export DISPLAY=:10
-          export $(dbus-launch)
           xvfb-run -a ./scripts/test-extensions-unit.sh
 
       # {{SQL CARBON EDIT}} Add coveralls. We merge first to get around issue where parallel builds weren't being combined correctly
