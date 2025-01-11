@@ -35,9 +35,9 @@ jobs:
           sudo update-rc.d xvfb defaults
           sudo service xvfb start
 
-      - name: Find libsecret-1.pc path
+      - name: Find libsecret-1 path starting from root
         run: |
-          find /usr -name libsecret-1.pc 2>/dev/null
+          find / -iname "*libsecret-*" 2>/dev/null
 
       - name: Set PKG_CONFIG_PATH
         run: export PKG_CONFIG_PATH=/usr/lib/pkgconfig:$PKG_CONFIG_PATH
