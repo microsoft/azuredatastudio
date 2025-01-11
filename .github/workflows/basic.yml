@@ -35,12 +35,8 @@ jobs:
           sudo update-rc.d xvfb defaults
           sudo service xvfb start
 
-      - name: Find libsecret-1 path starting from root
-        run: |
-          find / -iname "*libsecret-*" 2>/dev/null
-
       - name: Set PKG_CONFIG_PATH
-        run: export PKG_CONFIG_PATH=/usr/lib/pkgconfig:$PKG_CONFIG_PATH
+        run: export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig:$PKG_CONFIG_PATH
 
       - name: Compute node modules cache key
         id: nodeModulesCacheKey
