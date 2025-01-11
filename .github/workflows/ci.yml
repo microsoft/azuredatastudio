@@ -270,7 +270,7 @@ jobs:
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
         run: |
           sudo apt-get update
-          sudo apt-get install -y libkrb5-dev lib-secret-1-dev
+          sudo apt-get install -y libkrb5-dev libsecret-1-dev
       - name: Execute yarn
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
         env:
