@@ -125,7 +125,7 @@ jobs:
           path: ${{ steps.yarnCacheDirPath.outputs.dir }}
           key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
           restore-keys: ${{ runner.os }}-yarnCacheDir-
-      - name: Install libkrb5-dev and xvfv
+      - name: Install libkrb5-dev and xvfb
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
         run: sudo apt install -y libkrb5-dev xvfb
       - name: Execute yarn
