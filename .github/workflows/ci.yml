@@ -125,9 +125,9 @@ jobs:
           path: ${{ steps.yarnCacheDirPath.outputs.dir }}
           key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
           restore-keys: ${{ runner.os }}-yarnCacheDir-
-      - name: Install libkrb5-dev and xvfb
+      - name: Install libkrb5-dev
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-        run: sudo apt install -y libkrb5-dev xvfb
+        run: sudo apt install -y libkrb5-dev
       - name: Execute yarn
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
         env:
@@ -147,7 +147,10 @@ jobs:
 
       - name: Run Extension Unit Tests # {{SQL CARBON EDIT}} Rename to extension for clarity
         id: electron-extension-unit-tests
-        run: DISPLAY=:10 ./scripts/test-extensions-unit.sh
+        run: |
+          export DISPLAY=:10
+          export $(dbus-launch)
+          xvfb-run -a ./scripts/test-extensions-unit.sh
 
       # {{SQL CARBON EDIT}} Add coveralls. We merge first to get around issue where parallel builds weren't being combined correctly
       - name: Combine code coverage files
