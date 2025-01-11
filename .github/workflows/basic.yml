@@ -37,8 +37,7 @@ jobs:
 
       - name: Find libsecret-1.pc path
         run: |
-          echo find /usr/local -name libsecret-1.pc 2>/dev/null
-
+          find /usr -name libsecret-1.pc 2>/dev/null
 
       - name: Set PKG_CONFIG_PATH
         run: export PKG_CONFIG_PATH=/usr/lib/pkgconfig:$PKG_CONFIG_PATH
