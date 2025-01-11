@@ -88,42 +88,42 @@ ALL_PLATFORMS_API_TESTS_EXTRA_ARGS="--disable-telemetry --crash-reporter-directo
 echo "***************************************************"
 echo "*** starting admin tool extension windows tests ***"
 echo "***************************************************"
-xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/admin-tool-ext-win --extensionTestsPath=$ROOT/extensions/admin-tool-ext-win/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/admin-tool-ext-win --extensionTestsPath=$ROOT/extensions/admin-tool-ext-win/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo "****************************"
 echo "*** starting agent tests ***"
 echo "****************************"
-xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/agent --extensionTestsPath=$ROOT/extensions/agent/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/agent --extensionTestsPath=$ROOT/extensions/agent/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo "**************************"
 echo "*** starting arc tests ***"
 echo "**************************"
-xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/arc --extensionTestsPath=$ROOT/extensions/arc/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/arc --extensionTestsPath=$ROOT/extensions/arc/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo "*****************************"
 echo "*** starting azcli tests ***"
 echo "*****************************"
-xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/azcli --extensionTestsPath=$ROOT/extensions/azcli/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/azcli --extensionTestsPath=$ROOT/extensions/azcli/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo "********************************"
 echo "*** starting azurecore tests ***"
 echo "********************************"
-xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/azurecore --extensionTestsPath=$ROOT/extensions/azurecore/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/azurecore --extensionTestsPath=$ROOT/extensions/azurecore/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo "**************************"
 echo "*** starting cms tests ***"
 echo "**************************"
-xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/cms --extensionTestsPath=$ROOT/extensions/cms/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/cms --extensionTestsPath=$ROOT/extensions/cms/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo "*****************************"
 echo "*** starting dacpac tests ***"
 echo "*****************************"
-xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/dacpac --extensionTestsPath=$ROOT/extensions/dacpac/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/dacpac --extensionTestsPath=$ROOT/extensions/dacpac/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo "*****************************************"
 echo "*** starting datavirtualization tests ***"
 echo "*****************************************"
-xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/datavirtualization --extensionTestsPath=$ROOT/extensions/datavirtualization/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/datavirtualization --extensionTestsPath=$ROOT/extensions/datavirtualization/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 # {{SQL CARBON TODO}} - disable tests for this extension
 # echo ********************************************
@@ -134,12 +134,12 @@ xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevel
 echo "*****************************"
 echo "*** starting import tests ***"
 echo "*****************************"
-xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/import --extensionTestsPath=$ROOT/extensions/import/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/import --extensionTestsPath=$ROOT/extensions/import/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo "************************************************"
 echo "*** starting machine-learning tests ***"
 echo "************************************************"
-xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/machine-learning --extensionTestsPath=$ROOT/extensions/machine-learning/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/machine-learning --extensionTestsPath=$ROOT/extensions/machine-learning/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 # echo ******************************************
 # echo *** starting mssql tests ***
@@ -149,32 +149,32 @@ xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevel
 echo "*******************************"
 echo "*** starting notebook tests ***"
 echo "*******************************"
-xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/notebook --extensionTestsPath=$ROOT/extensions/notebook/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/notebook --extensionTestsPath=$ROOT/extensions/notebook/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo "******************************************"
 echo "*** starting query-history tests ***"
 echo "******************************************"
-xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/query-history --extensionTestsPath=$ROOT/extensions/query-history/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/query-history --extensionTestsPath=$ROOT/extensions/query-history/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo "******************************************"
 echo "*** starting resource deployment tests ***"
 echo "******************************************"
-xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/resource-deployment --extensionTestsPath=$ROOT/extensions/resource-deployment/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/resource-deployment --extensionTestsPath=$ROOT/extensions/resource-deployment/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo "*************************************"
 echo "*** starting schema compare tests ***"
 echo "*************************************"
-xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/schema-compare --extensionTestsPath=$ROOT/extensions/schema-compare/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/schema-compare --extensionTestsPath=$ROOT/extensions/schema-compare/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo "********************************************"
 echo "*** starting sql-bindings tests ***"
 echo "********************************************"
-xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/sql-bindings --extensionTestsPath=$ROOT/extensions/sql-bindings/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/sql-bindings --extensionTestsPath=$ROOT/extensions/sql-bindings/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo "********************************************"
 echo "*** starting sql-database-projects tests ***"
 echo "********************************************"
-xvfb-run -a "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/sql-database-projects --extensionTestsPath=$ROOT/extensions/sql-database-projects/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/sql-database-projects --extensionTestsPath=$ROOT/extensions/sql-database-projects/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 if [[ "$NO_CLEANUP" == "" ]]; then
 	rm -r $VSCODEUSERDATADIR
