@@ -112,9 +112,9 @@ jobs:
           path: ${{ steps.yarnCacheDirPath.outputs.dir }}
           key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
           restore-keys: ${{ runner.os }}-yarnCacheDir-
-      - name: Install libkrb5-dev
+      - name: Install Dependencies
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-        run: sudo apt install -y libkrb5-dev
+        run: sudo apt install -y libkrb5-dev libsecret-1-dev libx11-dev libxkbfile-dev
       - name: Execute yarn
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
         env:
