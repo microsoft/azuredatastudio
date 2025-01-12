@@ -19,7 +19,7 @@ cd $ROOT
 if [ -z "$INTEGRATION_TEST_ELECTRON_PATH" ]
 then
 	# Run out of sources: no need to compile as code.sh takes care of it
-	INTEGRATION_TEST_ELECTRON_PATH="./scripts/code.sh"
+	INTEGRATION_TEST_ELECTRON_PATH="xvfb-run ./scripts/code.sh"
 
 	echo "Running integration tests out of sources."
 else
@@ -32,7 +32,7 @@ fi
 if [ -z "$INTEGRATION_TEST_ELECTRON_PATH" ]
 then
 	# Run out of sources: no need to compile as code.sh takes care of it
-	INTEGRATION_TEST_ELECTRON_PATH="./scripts/code.sh"
+	INTEGRATION_TEST_ELECTRON_PATH="xvfb-run ./scripts/code.sh"
 
 	echo "Storing crash reports into '$VSCODECRASHDIR'."
 	echo "Running integration tests out of sources."
