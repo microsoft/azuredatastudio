@@ -25,12 +25,12 @@ export const requiredJupyterPackages: RequiredPackagesInfo = {
 	},
 	{
 		name: 'ipykernel',
-		version: '6.29.0',  // Latest stable
+		version: '6.29.0',
 		installExactVersion: true
 	},
 	{
 		name: 'jupyter_server',
-		version: '2.14.0',  // or whatever latest stable is
+		version: '2.14.0',
 		installExactVersion: true
 	}],
 	kernels: [{
