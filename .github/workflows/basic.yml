@@ -25,11 +25,6 @@ jobs:
         with:
           python-version: "3.11.x"
 
-      - name: Install libc6
-        run: |
-          sudo apt update
-          sudo apt install -y libc6
-
       # TODO: rename azure-pipelines/linux/xvfb.init to github-actions
       - name: Setup Build Environment
         run: |
