@@ -55,15 +55,33 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		try {
 			if (!this._jupyterServer) {
 				this._jupyterServer = await this.doStartServer(kernelSpec);
+
+				// Ensure the server is ready before firing the event
+				await this.verifyServerReady(this._jupyterServer.uri.toString());
+
 				this.options.extensionContext.subscriptions.push(this);
 				let partialSettings = LocalJupyterServerManager.getLocalConnectionSettings(this._jupyterServer.uri);
 				this._serverSettings = partialSettings;
 				this._onServerStarted.fire();
 			}
 		} catch (error) {
-			// this is caught and notified up the stack, no longer showing a message here
-			throw error;
+			throw error; // Rethrow for higher-level handling
 		}
+	}
+
+	private async verifyServerReady(uri: string): Promise<void> {
+		const maxRetries = 10; // Adjust as necessary
+		const retryDelay = 500; // 500ms between retries
+		for (let i = 0; i < maxRetries; i++) {
+			try {
+				// Perform a simple GET request to verify server readiness
+				await fetch(`${uri}/api/status`, { method: 'GET' });
+				return; // Server is ready
+			} catch {
+				await new Promise(resolve => setTimeout(resolve, retryDelay)); // Wait before retrying
+			}
+		}
+		throw new Error(`Server at ${uri} did not become ready in time.`);
 	}
 
 	public dispose(): void {
