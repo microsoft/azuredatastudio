@@ -52,21 +52,18 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 	}
 
 	public async startServer(kernelSpec: nb.IKernelSpec): Promise<void> {
-		try {
-			if (!this._jupyterServer) {
-				this._jupyterServer = await this.doStartServer(kernelSpec);
+		if (!this._jupyterServer) {
+			this._jupyterServer = await this.doStartServer(kernelSpec);
 
-				// Ensure the server is ready before firing the event
-				await this.verifyServerReady(this._jupyterServer.uri.toString());
+			// Ensure the server is ready before firing the event
+			await this.verifyServerReady(this._jupyterServer.uri.toString());
 
-				this.options.extensionContext.subscriptions.push(this);
-				let partialSettings = LocalJupyterServerManager.getLocalConnectionSettings(this._jupyterServer.uri);
-				this._serverSettings = partialSettings;
-				this._onServerStarted.fire();
-			}
-		} catch (error) {
-			throw error; // Rethrow for higher-level handling
+			this.options.extensionContext.subscriptions.push(this);
+			let partialSettings = LocalJupyterServerManager.getLocalConnectionSettings(this._jupyterServer.uri);
+			this._serverSettings = partialSettings;
+			this._onServerStarted.fire();
 		}
+
 	}
 
 	private async verifyServerReady(uri: string): Promise<void> {
@@ -81,7 +78,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 				await new Promise(resolve => setTimeout(resolve, retryDelay)); // Wait before retrying
 			}
 		}
-		throw new Error(`Server at ${uri} did not become ready in time.`);
+		throw new Error(`Jupyter server at ${uri} did not become ready in time.`);
 	}
 
 	public dispose(): void {
