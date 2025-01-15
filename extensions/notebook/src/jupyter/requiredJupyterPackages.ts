@@ -18,16 +18,19 @@ export const requiredJupyterPackages: RequiredPackagesInfo = {
 		name: 'jupyter',
 		version: '1.0.0'
 	},
-	// Require notebook 7.2.2 for https://github.com/microsoft/azuredatastudio/issues/25327
 	{
 		name: 'notebook',
 		version: '7.2.2',
 		installExactVersion: true
 	},
-	// Require ipykernel 5.5.5 for https://github.com/microsoft/azuredatastudio/issues/24405
 	{
 		name: 'ipykernel',
-		version: '5.5.5',
+		version: '6.29.0',
+		installExactVersion: true
+	},
+	{
+		name: 'jupyter_server',
+		version: '2.14.0',
 		installExactVersion: true
 	}],
 	kernels: [{
