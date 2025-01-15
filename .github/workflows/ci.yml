@@ -147,7 +147,7 @@ jobs:
 
       - name: Run Extension Unit Tests # {{SQL CARBON EDIT}} Rename to extension for clarity
         id: electron-extension-unit-tests
-        run: ./scripts/test-extensions-unit.sh
+        run: DISPLAY=:10 ./scripts/test-extensions-unit.sh
 
       # {{SQL CARBON EDIT}} Add coveralls. We merge first to get around issue where parallel builds weren't being combined correctly
       - name: Combine code coverage files
