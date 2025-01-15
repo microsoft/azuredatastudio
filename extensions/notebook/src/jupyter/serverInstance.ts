@@ -224,7 +224,7 @@ export class PerFolderServerInstance implements IServerInstance {
 		}
 	}
 
-	private async areConfigFilesSave(): Promise<boolean> {
+	private async areConfigFilesSafe(): Promise<boolean> {
 		// If not on Windows, we don't need to check for potentially unsafe Jupyter configuration files
 		if (process.platform !== 'win32') {
 			return true;
@@ -249,9 +249,9 @@ export class PerFolderServerInstance implements IServerInstance {
 			const unsafeConfigFiles = configFilesToCheck.filter(fs.existsSync);
 
 			if (unsafeConfigFiles.length > 0) {
-				const message = `Found potentially unsafe Jupyter configuration files that could allow code execution: ${unsafeConfigFiles.join(', ')}`;
-				const blockLoading = 'Do Not Load';
-				const ignoreAndLoad = 'Load Anyway';
+				const message = localize('unsafeConfigMessage', "Found potentially unsafe Jupyter configuration files that could allow code execution: {0}", unsafeConfigFiles.join(', '));
+				const blockLoading = localize('unsafeDoNotLoad', 'Do Not Load');
+				const ignoreAndLoad = localize('unsafeLoadAyway', 'Load Anyway');
 
 				const choice = await vscode.window.showWarningMessage(message, { modal: true }, blockLoading, ignoreAndLoad);
 				if (choice !== ignoreAndLoad) {
@@ -273,7 +273,7 @@ export class PerFolderServerInstance implements IServerInstance {
 	 */
 	protected async startInternal(): Promise<void> {
 		// don't start server is there are potentially unsafe Jupyter configuration files in the Program Data directory
-		let configFilesSafe = await this.areConfigFilesSave();
+		let configFilesSafe = await this.areConfigFilesSafe();
 		if (!configFilesSafe) {
 			throw new Error('Potentially unsafe Jupyter configuration files found in Program Data directory');
 		}
