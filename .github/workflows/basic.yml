@@ -25,11 +25,16 @@ jobs:
         with:
           python-version: "3.11.x"
 
+      - name: Install openssl-dev
+        run: |
+          wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
+          sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
+
       # TODO: rename azure-pipelines/linux/xvfb.init to github-actions
       - name: Setup Build Environment
         run: |
           sudo apt-get update
-          sudo apt-get install -y libxkbfile-dev pkg-config libkrb5-dev libsecret-1-dev libxss1 libssl-dev dbus xvfb libgtk-3-0 libgbm1 libssl3
+          sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libkrb5-dev libxssl dbus xvfb libgtk-3-0 libgbm1
           sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
           sudo chmod +x /etc/init.d/xvfb
           sudo update-rc.d xvfb defaults
