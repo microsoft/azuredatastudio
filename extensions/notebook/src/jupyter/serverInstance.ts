@@ -224,11 +224,60 @@ export class PerFolderServerInstance implements IServerInstance {
 		}
 	}
 
+	private async areConfigFilesSafe(): Promise<boolean> {
+		// If not on Windows, we don't need to check for potentially unsafe Jupyter configuration files
+		if (process.platform !== 'win32') {
+			return true;
+		}
+
+		// Check for potentially unsafe Jupyter configuration files in the ProgramData directory
+		let programData = process.env.PROGRAMDATA;
+
+		// default to C:\ProgramData if PROGRAMDATA is not set
+		if (!programData) {
+			programData = path.join('C:', 'ProgramData');
+		}
+
+		// These config files in ProgramData can be modified by non-admin users on Windows,
+		// potentially allowing arbitrary code execution
+		const configFilesToCheck = [
+			path.join(programData, 'jupyter', 'jupyter_config.py'),
+			path.join(programData, 'ipython', 'ipython_config.py')
+		];
+
+		try {
+			const unsafeConfigFiles = configFilesToCheck.filter(fs.existsSync);
+
+			if (unsafeConfigFiles.length > 0) {
+				const message = localize('unsafeConfigMessage', "Found potentially unsafe Jupyter configuration files that could allow code execution: {0}", unsafeConfigFiles.join(', '));
+				const blockLoading = localize('unsafeDoNotLoad', 'Do Not Load');
+				const ignoreAndLoad = localize('unsafeLoadAyway', 'Load Anyway');
+
+				const choice = await vscode.window.showWarningMessage(message, { modal: true }, blockLoading, ignoreAndLoad);
+				if (choice !== ignoreAndLoad) {
+					return false;
+				}
+			}
+
+			// unsafe config either doesn't exist or user chose to ignore them
+			return true;
+		} catch (error) {
+			// If we can't check the files, err on the side of caution
+			return false;
+		}
+	}
+
 	/**
 	 * Starts a Jupyter instance using the provided a start command. Server is determined to have
 	 * started when the log message with URL to connect to is emitted.
 	 */
 	protected async startInternal(): Promise<void> {
+		// don't start server is there are potentially unsafe Jupyter configuration files in the Program Data directory
+		let configFilesSafe = await this.areConfigFilesSafe();
+		if (!configFilesSafe) {
+			throw new Error('Potentially unsafe Jupyter configuration files found in Program Data directory');
+		}
+
 		let startCommand: string;
 		let notebookConfig: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(constants.notebookConfigKey);
 		let allowRoot: boolean = notebookConfig.get(constants.allowRoot);
