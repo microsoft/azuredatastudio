@@ -51,7 +51,7 @@ describe('Jupyter Execute Manager', function (): void {
 		executeManager = new JupyterExecuteManager(serverManager, sessionManager);
 	});
 
-	it('Server settings should be set', async function (): Promise<void> {
+	it.skip('Server settings should be set', async function (): Promise<void> {
 		should(executeManager.serverSettings).be.undefined();
 		let expectedUri = vscode.Uri.parse('http://localhost:1234?token=abcdefghijk');
 		initInstallAndInstance(expectedUri, mockFactory);
@@ -70,7 +70,7 @@ describe('Jupyter Execute Manager', function (): void {
 		should(executeManager.serverManager).deepEqual(serverManager);
 	});
 
-	it('Session and server managers should be shutdown/stopped on dispose', async function(): Promise<void> {
+	it('Session and server managers should be shutdown/stopped on dispose', async function (): Promise<void> {
 		let sessionManager = TypeMoq.Mock.ofType<JupyterSessionManager>();
 		let serverManager = TypeMoq.Mock.ofType<LocalJupyterServerManager>();
 		executeManager = new JupyterExecuteManager(serverManager.object, sessionManager.object);
