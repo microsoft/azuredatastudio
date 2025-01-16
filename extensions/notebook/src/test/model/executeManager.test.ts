@@ -51,6 +51,7 @@ describe('Jupyter Execute Manager', function (): void {
 		executeManager = new JupyterExecuteManager(serverManager, sessionManager);
 	});
 
+	// This test is being skipped because it fails with Jupyter server at http://localhost:1234/?token%3Dabcdefghijk did not become ready in time.
 	it.skip('Server settings should be set', async function (): Promise<void> {
 		should(executeManager.serverSettings).be.undefined();
 		let expectedUri = vscode.Uri.parse('http://localhost:1234?token=abcdefghijk');
