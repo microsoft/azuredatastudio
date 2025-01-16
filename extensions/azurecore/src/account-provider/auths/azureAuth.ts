@@ -462,11 +462,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 		};
 
 		const httpConfig = vscode.workspace.getConfiguration("http");
-		const proxy = this.loadEnvironmentProxyValue() || httpConfig["proxy"] as string;
+		const proxy = httpConfig["proxy"] as string || this.loadEnvironmentProxyValue();
 		if (proxy) {
 			const agent = this.createProxyAgent(requestUrl, proxy, httpConfig["proxyStrictSSL"]);
 
-			if (proxy.includes("https")) {
+			if (proxy.startsWith("https")) {
 				config.httpsAgent = agent;
 			}
 			else {
@@ -524,8 +524,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 			};
 		}
 
-		const isRequestHttps = requestUrl.includes("https");
-		const isProxyHttps = proxy.includes("https");
+		const isRequestHttps = requestUrl.startsWith("https");
+		const isProxyHttps = proxy.startsWith("https");
 		const proxyAgent = {
 			isHttps: isRequestHttps,
 			agent: this.createTunnelingAgent(isRequestHttps, isProxyHttps, tunnelOptions),
