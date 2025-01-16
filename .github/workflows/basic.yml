@@ -25,6 +25,11 @@ jobs:
         with:
           python-version: "3.11.x"
 
+      - name: Install openssl-dev
+        run: |
+          wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
+          sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
+
       # TODO: rename azure-pipelines/linux/xvfb.init to github-actions
       - name: Setup Build Environment
         run: |
@@ -34,7 +39,6 @@ jobs:
           sudo chmod +x /etc/init.d/xvfb
           sudo update-rc.d xvfb defaults
           sudo service xvfb start
-
 
       - name: Compute node modules cache key
         id: nodeModulesCacheKey
@@ -113,9 +117,9 @@ jobs:
           path: ${{ steps.yarnCacheDirPath.outputs.dir }}
           key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
           restore-keys: ${{ runner.os }}-yarnCacheDir-
-      - name: Install libkrb5-dev
+      - name: Install Dependencies
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-        run: sudo apt install -y libkrb5-dev
+        run: sudo apt install -y libkrb5-dev libsecret-1-dev libx11-dev libxkbfile-dev
       - name: Execute yarn
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
         env:

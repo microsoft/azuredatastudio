@@ -1,2 +1,2 @@
-import notebook.notebookapp
-notebook.notebookapp.main()
+from jupyter_server.serverapp import ServerApp
+ServerApp.launch_instance()
