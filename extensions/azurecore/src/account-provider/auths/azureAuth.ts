@@ -6,6 +6,9 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
+import * as tunnel from "tunnel";
+import * as http from "http";
+import * as https from "https";
 
 import {
 	AzureAccount,
@@ -26,11 +29,17 @@ import { errorToPromptFailedResult } from './networkUtils';
 import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
 import { isErrorResponseBodyWithError } from '../../azureResource/utils';
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
+import { getProxyAgentOptions } from '../../proxy';
 const localize = nls.loadMessageBundle();
 
 export type GetTenantsResponseData = {
 	value: TenantResponse[];
 	error?: string;
+}
+
+interface ProxyAgent {
+	isHttps: boolean;
+	agent: http.Agent | https.Agent;
 }
 
 export abstract class AzureAuth implements vscode.Disposable {
@@ -442,18 +451,106 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	//#region network functions
 
-	private async makeGetRequest<T>(url: string, token: string): Promise<AxiosResponse<T>> {
+	private async makeGetRequest<T>(requestUrl: string, token: string): Promise<AxiosResponse<T>> {
 		const config: AxiosRequestConfig = {
 			headers: {
 				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${token}`
+				'Authorization': `Bearer ${token}`,
 			},
-			validateStatus: () => true // Never throw
+			validateStatus: () => true, // Never throw
+			proxy: false
 		};
 
-		const response: AxiosResponse = await axios.get<T>(url, config);
-		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data?.value as TenantResponse[] ?? response.data as GetTenantsResponseData }], [], url,);
+		const httpConfig = vscode.workspace.getConfiguration("http");
+		const proxy = httpConfig["proxy"] as string || this.loadEnvironmentProxyValue();
+		if (proxy) {
+			const agent = this.createProxyAgent(requestUrl, proxy, httpConfig["proxyStrictSSL"]);
+
+			if (proxy.startsWith("https")) {
+				config.httpsAgent = agent;
+			}
+			else {
+				config.httpAgent = agent;
+			}
+		}
+
+		const response: AxiosResponse = await axios.get<T>(requestUrl, config);
+		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data?.value as TenantResponse[] ?? response.data as GetTenantsResponseData }], [], requestUrl,);
 		return response;
+	}
+
+	private loadEnvironmentProxyValue(): string | undefined {
+		const HTTPS_PROXY = "HTTPS_PROXY";
+		const HTTP_PROXY = "HTTP_PROXY";
+
+		if (!process) {
+			return undefined;
+		}
+
+		if (process.env[HTTPS_PROXY] || process.env[HTTPS_PROXY.toLowerCase()]) {
+			return process.env[HTTPS_PROXY] || process.env[HTTPS_PROXY.toLowerCase()];
+		}
+		else if (process.env[HTTP_PROXY] || process.env[HTTP_PROXY.toLowerCase()]) {
+			return process.env[HTTP_PROXY] || process.env[HTTP_PROXY.toLowerCase()];
+		}
+
+		return undefined;
+	}
+
+	private createProxyAgent(requestUrl: string, proxy: string, proxyStrictSSL: boolean): ProxyAgent {
+		const agentOptions = getProxyAgentOptions(url.parse(requestUrl), proxy, proxyStrictSSL);
+		if (!agentOptions || !agentOptions.host || !agentOptions.port) {
+			throw new Error("Unable to read proxy agent options to create proxy agent.");
+		}
+
+		Logger.piiSanitized("Creating proxy agent with the following options: ", [{ name: 'agentOptions', objOrArray: agentOptions }], [], requestUrl);
+
+		let tunnelOptions: tunnel.HttpsOverHttpsOptions = {};
+		if (typeof agentOptions.auth === 'string' && agentOptions.auth) {
+			tunnelOptions = {
+				proxy: {
+					proxyAuth: agentOptions.auth,
+					host: agentOptions.host,
+					port: Number(agentOptions.port)
+				}
+			};
+		}
+		else {
+			tunnelOptions = {
+				proxy: {
+					host: agentOptions.host,
+					port: Number(agentOptions.port)
+				}
+			};
+		}
+
+		const isRequestHttps = requestUrl.startsWith("https");
+		const isProxyHttps = proxy.startsWith("https");
+		const proxyAgent = {
+			isHttps: isRequestHttps,
+			agent: this.createTunnelingAgent(isRequestHttps, isProxyHttps, tunnelOptions),
+		} as ProxyAgent;
+
+		return proxyAgent;
+	}
+
+	private createTunnelingAgent(isRequestHttps: boolean, isProxyHttps: boolean, tunnelOptions: tunnel.HttpsOverHttpsOptions): http.Agent | https.Agent {
+		if (isRequestHttps && isProxyHttps) {
+			Logger.verbose("Creating https over https proxy tunneling agent");
+			return tunnel.httpsOverHttps(tunnelOptions);
+		}
+		else if (isRequestHttps && !isProxyHttps) {
+			Logger.verbose("Creating https over http proxy tunneling agent");
+			return tunnel.httpsOverHttp(tunnelOptions);
+		}
+		else if (!isRequestHttps && isProxyHttps) {
+			Logger.verbose("Creating http over https proxy tunneling agent");
+			return tunnel.httpOverHttps(tunnelOptions);
+		}
+		else {
+			Logger.verbose("Creating http over http proxy tunneling agent");
+			return tunnel.httpOverHttp(tunnelOptions);
+		}
 	}
 
 	//#endregion
