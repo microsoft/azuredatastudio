@@ -28,7 +28,7 @@ import { AccountInfo, AuthError, AuthenticationResult, InteractionRequiredAuthEr
 import { errorToPromptFailedResult } from './networkUtils';
 import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
 import { isErrorResponseBodyWithError } from '../../azureResource/utils';
-import axios, { AxiosResponse, AxiosRequestConfig, AxiosInstance } from 'axios';
+import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 import { getProxyAgentOptions } from '../../proxy';
 const localize = nls.loadMessageBundle();
 
