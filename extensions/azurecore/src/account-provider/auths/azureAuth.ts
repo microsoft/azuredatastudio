@@ -496,6 +496,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return response;
 		}
 
+		Logger.verbose("No proxy endpoint found in the HTTP_PROXY, HTTPS_PROXY environment variables or workspace configuration.");
 		const response: AxiosResponse = await axios.get<T>(requestUrl, config);
 		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data?.value as TenantResponse[] ?? response.data as GetTenantsResponseData }], [], requestUrl,);
 		return response;
