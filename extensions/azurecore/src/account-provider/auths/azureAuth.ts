@@ -457,10 +457,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				'Content-Type': 'application/json',
 				'Authorization': `Bearer ${token}`,
 			},
-			validateStatus: () => true, // Never throw
-			// Turning off automatic proxy detection to avoid issues with tunneling agent by setting proxy to false.
-			// https://github.com/axios/axios/blob/bad6d8b97b52c0c15311c92dd596fc0bff122651/lib/adapters/http.js#L85
-			proxy: false
+			validateStatus: () => true // Never throw
 		};
 
 		const httpConfig = vscode.workspace.getConfiguration("http");
@@ -473,6 +470,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		if (proxy) {
 			Logger.verbose("Proxy endpoint found in environment variables or workspace configuration.");
+
+			// Turning off automatic proxy detection to avoid issues with tunneling agent by setting proxy to false.
+			// https://github.com/axios/axios/blob/bad6d8b97b52c0c15311c92dd596fc0bff122651/lib/adapters/http.js#L85
+			config.proxy = false;
 
 			const agent = this.createProxyAgent(requestUrl, proxy, httpConfig["proxyStrictSSL"]);
 			if (agent.isHttps) {
