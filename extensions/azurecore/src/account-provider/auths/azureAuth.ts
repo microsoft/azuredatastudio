@@ -461,11 +461,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 		};
 
 		const httpConfig = vscode.workspace.getConfiguration("http");
-		let proxy = this.loadEnvironmentProxyValue();
+		let proxy: string | undefined = httpConfig['proxy'] as string;
 		if (!proxy) {
-			Logger.verbose("Checking workspace HTTP configuration for proxy endpoint.");
+			Logger.verbose("Workspace HTTP config didn't contain a proxy endpoint. Checking environment variables.");
 
-			proxy = httpConfig['proxy'] as string;
+			proxy = this.loadEnvironmentProxyValue();
 		}
 
 		if (proxy) {
@@ -503,23 +503,23 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	private loadEnvironmentProxyValue(): string | undefined {
-		const HTTPS_PROXY = "HTTPS_PROXY";
 		const HTTP_PROXY = "HTTP_PROXY";
+		const HTTPS_PROXY = "HTTPS_PROXY";
 
 		if (!process) {
 			Logger.verbose("No process object found, unable to read environment variables for proxy.");
 			return undefined;
 		}
 
-		if (process.env[HTTPS_PROXY] || process.env[HTTPS_PROXY.toLowerCase()]) {
-			Logger.verbose("Loading proxy value from HTTPS_PROXY environment variable.");
-
-			return process.env[HTTPS_PROXY] || process.env[HTTPS_PROXY.toLowerCase()];
-		}
-		else if (process.env[HTTP_PROXY] || process.env[HTTP_PROXY.toLowerCase()]) {
+		if (process.env[HTTP_PROXY] || process.env[HTTP_PROXY.toLowerCase()]) {
 			Logger.verbose("Loading proxy value from HTTP_PROXY environment variable.");
 
 			return process.env[HTTP_PROXY] || process.env[HTTP_PROXY.toLowerCase()];
+		}
+		else if (process.env[HTTPS_PROXY] || process.env[HTTPS_PROXY.toLowerCase()]) {
+			Logger.verbose("Loading proxy value from HTTPS_PROXY environment variable.");
+
+			return process.env[HTTPS_PROXY] || process.env[HTTPS_PROXY.toLowerCase()];
 		}
 
 		Logger.verbose("No proxy value found in either HTTPS_PROXY or HTTP_PROXY environment variables.");
