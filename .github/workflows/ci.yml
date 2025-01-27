@@ -158,7 +158,7 @@ jobs:
       - name: Combine code coverage files
         run: node test/combineCoverage
       - name: Upload Code Coverage
-        uses: coverallsapp/github-action@v2.3.4
+        uses: coverallsapp/github-action@v2.3.6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: "test/coverage/lcov.info"
