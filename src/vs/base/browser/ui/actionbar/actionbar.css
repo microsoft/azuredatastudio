@@ -27,6 +27,8 @@
 	justify-content: center;
 	cursor: pointer;
 	position: relative;  /* DO NOT REMOVE - this is the key to preventing the ghosting icon bug in Chrome 42 */
+	min-width: 24px;
+	min-height: 24px;
 }
 
 .monaco-action-bar .action-item.disabled {
