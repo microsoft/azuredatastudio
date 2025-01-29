@@ -1,5 +1,45 @@
 # Change Log
 
+## January 2025
+ 
+Azure Data Studio 1.51.0 is the latest general availability (GA) release.
+ 
+- Release number: 1.51.0
+- Release date: January 29, 2025
+
+### What's new in 1.51.0
+* Fixed dependency conflicts preventing Notebook kernels from starting.
+* Added a warning prompt before loading Jupyter configuration scripts from shared locations.
+* Fixed tunneling issues for HTTPS-over-HTTP proxies.
+* Addressed minor accessibility bugs.
+
+## November 2024
+ 
+Azure Data Studio 1.50.0 is the latest general availability (GA) release.
+ 
+- Release number: 1.50.0
+- Release date: November 20, 2024
+
+### What's new in 1.50.0
+* Upgraded to Electron v30.5.1 to incorporate upstream fixes
+* SQL Database Projects extension: updated to 1.4.4 to include the latest version of DacFx
+* Query editor: fixed compatibility issue with DESC keyword and snippets 
+
+## August 2024 (hotfix)
+
+Azure Data Studio 1.49.1 is the latest general availability (GA) release.
+
+- Release number: 1.49.1
+- Release date: August 15, 2024
+
+### Bug fixes in 1.49.1
+
+| New Item | Details |
+| --- | --- |
+| Extensibility | Fixed minimum version detection error causing extensions to incorrectly show no extension update available |
+| Installer | Fixed the certificate signing the Azure Data Studio Windows installers displaying as signed by Microsoft Azure instead of Microsoft |
+| Shell | Fixed an issue with the Windows executable of Azure Data Studio has product version property as undefined |
+
 ## July 2024
 
 Azure Data Studio 1.49.0 is the latest general availability (GA) release.
