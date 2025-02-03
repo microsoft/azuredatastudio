@@ -5307,6 +5307,67 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "112",
+					"extensionName": "tab-painter",
+					"displayName": "TabPainter",
+					"shortDescription": "Extension that paints the tabs in user defined colors based on the current connection.",
+					"publisher": {
+						"displayName": "Fabrice Oehler",
+						"publisherId": "oehlerdev",
+						"publisherName": "oehlerdev"
+					},
+					"versions": [
+						{
+							"version": "0.1.0",
+							"lastUpdated": "01/02/2025",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/FOehler/tab-painter/releases/latest"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/FOehler/tab-painter/main/TabPainterIcon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/FOehler/tab-painter/main/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/FOehler/tab-painter/main/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/FOehler/tab-painter/main/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/FOehler/tab-painter"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -5315,7 +5376,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 87
+							"count": 88
 						}
 					]
 				}
