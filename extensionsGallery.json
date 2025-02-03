@@ -1402,67 +1402,6 @@
 					"flags": ""
 				},
 				{
-					"extensionId": "36",
-					"extensionName": "palenight-theme-dataazurestudio-version",
-					"displayName": "Palenight Theme",
-					"shortDescription": "Palenight Theme - Azure Data Studio Version Theme (based on vscode version)",
-					"publisher": {
-						"displayName": "JoseRocha",
-						"publisherId": "JoseRocha",
-						"publisherName": "JoseRocha"
-					},
-					"versions": [
-						{
-							"version": "0.0.2",
-							"lastUpdated": "04/06/2019",
-							"assetUri": "",
-							"fallbackAssetUri": "fallbackAssetUri",
-							"files": [
-								{
-									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/joserocha/azdatastudio-material-palenight-theme/releases/tag/0.0.2"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Links.Source",
-									"source": "https://github.com/joserocha/azdatastudio-material-palenight-theme/"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/icon.png"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/README.md"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/package.json"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/License.txt"
-								}
-							],
-							"properties": [
-								{
-									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
-									"value": ""
-								},
-								{
-									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": "*"
-								},
-								{
-									"key": "Microsoft.AzDataEngine",
-									"value": "*"
-								}
-							]
-						}
-					],
-					"statistics": [],
-					"flags": "preview"
-				},
-				{
 					"extensionId": "37",
 					"extensionName": "schema-compare",
 					"displayName": "SQL Server Schema Compare",
@@ -5437,7 +5376,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 88
+							"count": 87
 						}
 					]
 				}
