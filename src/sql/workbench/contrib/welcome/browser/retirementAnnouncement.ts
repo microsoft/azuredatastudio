@@ -28,7 +28,7 @@ export class RetirementAnnouncement {
 			retirementNotice,
 			[
 				{
-					label: localize('okay', "Okay"),
+					label: localize('okay', "OK"),
 					run: () => { /* no-op, just an ack */ }
 				},
 				{
