@@ -1,5 +1,10 @@
 # Azure Data Studio
 
+> [!IMPORTANT]
+> Azure Data Studio will be retired on **February 28, 2026**.  [Read more](https://aka.ms/ads-retirement)
+
+----
+
 [![Join the chat at https://gitter.im/Microsoft/sqlopsstudio](https://badges.gitter.im/Microsoft/sqlopsstudio.svg)](https://gitter.im/Microsoft/sqlopsstudio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://dev.azure.com/ms/azuredatastudio/_apis/build/status/AzureDataStudio-Localization-CI?branchName=main)](https://dev.azure.com/ms/azuredatastudio/_build/latest?definitionId=453&branchName=main)
 [![Twitter Follow](https://img.shields.io/twitter/follow/azuredatastudio?style=social)](https://twitter.com/azuredatastudio)

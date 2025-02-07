@@ -828,6 +828,17 @@
 	background-repeat: no-repeat
 }
 
+.ads-homepage .retirement-banner {
+	width: 100%;
+	padding: 20px;
+	background-color: #ffcc00;
+	color: #000;
+	text-align: center;
+	font-size: 16px;
+	font-weight: bold;
+	border-radius: 4px;
+}
+
 .ads-homepage .middle-section {
 	display: flex;
 	flex-direction: column;
