@@ -31,6 +31,17 @@ export default () => `
 								</div>
 							</div>
 						</div>
+						<div class="row" id="retirement-announcement-container">
+							<div class="retirement-banner">
+								<p>
+									${escape(localize('welcomePage.adsRetirementAnnouncement', "Azure Data Studio will be retired on February 28, 2026."))}
+									<a class="link" href="https://aka.ms/ads-retirement">
+										${escape(localize('welcomePage.adsRetirementAnnouncementLink', "Read more"))}
+										<span class="icon-link themed-icon-alt"></span>
+									</a>
+								</p>
+							</div>
+						</div>
 						<div class="row header-bottom-nav-tiles ads-grid">
 							<div class="col">
 								<a role="button" class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:${AddServerAction.ID}">
