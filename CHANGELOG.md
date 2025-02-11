@@ -1,5 +1,22 @@
 # Change Log
 
+## January 2025 Hotfix
+ 
+Azure Data Studio 1.51.1 is the latest general availability (GA) release.
+ 
+- Release number: 1.51.1
+- Release date: February 11, 2025
+
+### Bug fixes in 1.51.1
+
+| Category | Details |
+| --- | --- |
+| Core | Added banner with information about ADS retirement |
+| Core | Added notification about ADS retirement |
+| Documentation | Updated README with ADS retirement information |
+
+For details about ADS retirement, visit [aka.ms/ads-retirement](https://aka.ms/ads-retirement).
+
 ## January 2025
  
 Azure Data Studio 1.51.0 is the latest general availability (GA) release.
