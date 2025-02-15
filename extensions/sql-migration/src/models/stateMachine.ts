@@ -8,12 +8,12 @@ import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as contracts from '../service/contracts';
 import * as features from '../service/features';
-import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView } from '../api/azure';
+import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView, ArcSqlServer } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
-import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBackupFileNameWithoutFolder, MigrationTargetType } from '../api/utils';
+import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBackupFileNameWithoutFolder, MigrationTargetType, SourceInfrastructureType } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendation/skuRecommendationPage';
 import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getTrustServerCertificateValue, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel } from './loginMigrationModel';
@@ -150,6 +150,13 @@ export interface SavedInfo {
 	closedPage: number;
 	databaseAssessment: string[];
 	databaseList: string[];
+	sourceInfrastructureType: SourceInfrastructureType | null;
+	isSqlServerEnabledByArc: boolean | null;
+	arcResourceAzureAccount: azdata.Account | null;
+	arcResourceSubscription: azurecore.azureResource.AzureResourceSubscription | null;
+	arcResourceLocation: azurecore.azureResource.AzureLocation | null;
+	arcResourceResourceGroup: azurecore.azureResource.AzureResourceResourceGroup | null;
+	arcSqlServer: ArcSqlServer | null;
 	databaseInfoList: SourceDatabaseInfo[];
 	migrationTargetType: MigrationTargetType | null;
 	azureAccount: azdata.Account | null;
@@ -193,6 +200,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _authenticationType!: MigrationSourceAuthenticationType;
 	public _sqlServerUsername!: string;
 	public _sqlServerPassword!: string;
+
+	public _sourceInfrastructureType!: SourceInfrastructureType;
+	public _isSqlServerEnabledByArc: boolean = false;
+	public _arcResourceAzureAccount!: azdata.Account;
+	public _arcResourceSubscription!: azurecore.azureResource.AzureResourceSubscription;
+	public _arcResourceLocation!: azurecore.azureResource.AzureLocation;
+	public _arcResourceResourceGroup!: azurecore.azureResource.AzureResourceResourceGroup;
+	public _sourceArcSqlServers!: ArcSqlServer[];
+	public _arcSqlServer!: ArcSqlServer;
 
 	public _subscriptions!: azurecore.azureResource.AzureResourceSubscription[];
 	public _targetSubscription!: azurecore.azureResource.AzureResourceSubscription;
@@ -1306,6 +1322,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		const saveInfo: SavedInfo = {
 			closedPage: currentPage,
 			databaseAssessment: [],
+			sourceInfrastructureType: null,
+			isSqlServerEnabledByArc: null,
+			arcResourceAzureAccount: null,
+			arcResourceSubscription: null,
+			arcResourceLocation: null,
+			arcResourceResourceGroup: null,
+			arcSqlServer: null,
 			databaseList: [],
 			databaseInfoList: [],
 			migrationTargetType: null,
@@ -1371,6 +1394,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				}
 
 			case Page.DatabaseSelector:
+				saveInfo.sourceInfrastructureType = this._sourceInfrastructureType;
+				saveInfo.isSqlServerEnabledByArc = this._isSqlServerEnabledByArc;
+				saveInfo.arcResourceAzureAccount = deepClone(this._arcResourceAzureAccount);
+				saveInfo.arcResourceSubscription = this._arcResourceSubscription;
+				saveInfo.arcResourceLocation = this._arcResourceLocation;
+				saveInfo.arcResourceResourceGroup = this._arcResourceResourceGroup;
+				saveInfo.arcSqlServer = this._arcSqlServer;
 				saveInfo.databaseAssessment = this._databasesForAssessment;
 				saveInfo.xEventsFilesFolderPath = this._xEventsFilesFolderPath;
 				await this.extensionContext.globalState.update(`${this.mementoString}.${serverName}`, saveInfo);
@@ -1380,6 +1410,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		try {
 			this._targetType = this.savedInfo.migrationTargetType || undefined!;
 
+			this._sourceInfrastructureType = this.savedInfo.sourceInfrastructureType || undefined!;
+			this._isSqlServerEnabledByArc = this.savedInfo.isSqlServerEnabledByArc ?? false;
+			this._arcResourceAzureAccount = this.savedInfo.arcResourceAzureAccount || undefined!;
+			this._arcResourceSubscription = this.savedInfo.arcResourceSubscription || undefined!;
+			this._arcResourceLocation = this.savedInfo.arcResourceLocation || undefined!;
+			this._arcResourceResourceGroup = this.savedInfo.arcResourceResourceGroup || undefined!;
+			this._arcSqlServer = this.savedInfo.arcSqlServer || undefined!;
 			this._databasesForAssessment = this.savedInfo.databaseAssessment;
 			this._databasesForMigration = this.savedInfo.databaseList;
 			this._didUpdateDatabasesForMigration = true;

@@ -80,6 +80,32 @@ export class SummaryPage extends MigrationWizardPage {
 			.addItems([
 				await createHeadingTextComponent(
 					this._view,
+					constants.SQL_SERVER_SOURCE_INFO),
+				createInformationRow(
+					this._view,
+					constants.SOURCE_INFRASTRUCTURE_TYPE,
+					constants.SourceInfrastructureTypeLookup[this.migrationStateModel._sourceInfrastructureType]),
+				createInformationRow(
+					this._view,
+					constants.SUBSCRIPTION,
+					this.migrationStateModel._arcResourceSubscription.name),
+				createInformationRow(
+					this._view,
+					constants.LOCATION,
+					this.migrationStateModel._arcResourceLocation.displayName),
+
+				createInformationRow(
+					this._view,
+					constants.RESOURCE_GROUP,
+					this.migrationStateModel._arcResourceResourceGroup.name),
+
+				createInformationRow(
+					this._view,
+					constants.SUMMARY_ARC_SQL_SERVER,
+					this.migrationStateModel._arcSqlServer.name),
+
+				await createHeadingTextComponent(
+					this._view,
 					constants.SOURCE_DATABASES),
 				targetDatabaseRow,
 

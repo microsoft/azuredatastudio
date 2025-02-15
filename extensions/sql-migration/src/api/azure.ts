@@ -13,6 +13,7 @@ import { MigrationSourceAuthenticationType, MigrationStateModel, NetworkShare } 
 import { NetworkInterface } from './dataModels/azure/networkInterfaceModel';
 import { EOL } from 'os';
 
+const SQL_ARC_API_VERSION = '2024-09-01-preview';
 const ARM_MGMT_API_VERSION = '2021-04-01';
 const SQL_VM_API_VERSION = '2021-11-01-preview';
 const SQL_MI_API_VERSION = '2021-11-01-preview';
@@ -213,6 +214,13 @@ export type SqlVMServer = {
 	networkInterfaces: Map<string, NetworkInterface>,
 };
 
+export type ArcSqlServer = {
+	location: string,
+	id: string,
+	name: string,
+	type: string,
+};
+
 export type VirtualMachineInstanceView = {
 	computerName: string,
 	osName: string,
@@ -261,6 +269,21 @@ export function getSessionIdHeader(sessionId: string): Record<string, string> {
 export async function getAvailableSqlDatabaseServers(account: azdata.Account, subscription: Subscription): Promise<AzureSqlDatabaseServer[]> {
 	const api = await getAzureCoreAPI();
 	const path = encodeURI(`/subscriptions/${subscription.id}/providers/Microsoft.Sql/servers?api-version=${SQL_SQLDB_API_VERSION}`);
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	const response = await api.makeAzureRestRequest<any>(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host, getDefaultHeader());
+	if (response.errors.length > 0) {
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+	}
+	sortResourceArrayByName(response.response!.data.value);
+	return response.response!.data.value;
+}
+
+export async function getSqlArcServersFromResourceGroup(account: azdata.Account, subscription: Subscription, resourceGroupName: string): Promise<ArcSqlServer[]> {
+	const api = await getAzureCoreAPI();
+	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.AzureArcData/sqlServerInstances?api-version=${SQL_ARC_API_VERSION}`);
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const response = await api.makeAzureRestRequest<any>(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host, getDefaultHeader());
 	if (response.errors.length > 0) {
