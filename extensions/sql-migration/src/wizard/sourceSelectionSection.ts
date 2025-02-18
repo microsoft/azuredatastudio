@@ -33,14 +33,16 @@ export class SourceSelectionSection {
 	constructor(private wizard: azdata.window.Wizard, public migrationStateModel: MigrationStateModel) { }
 
 	public _updateNextButton() {
-		const nextPage = this.wizard.pages[this.wizard.currentPage + 1];
-		const isSourceInfrastructureTypeValid = this.migrationStateModel._sourceInfrastructureType !== undefined;
+		if (!this.migrationStateModel._isSqlServerEnabledByArc) {
+			const nextPage = this.wizard.pages[this.wizard.currentPage + 1];
+			const isSourceInfrastructureTypeValid = this.migrationStateModel._sourceInfrastructureType !== undefined;
 
-		if (nextPage) {
-			nextPage.enabled = isSourceInfrastructureTypeValid;
+			if (nextPage) {
+				nextPage.enabled = isSourceInfrastructureTypeValid;
+			}
+
+			this.wizard.nextButton.enabled = isSourceInfrastructureTypeValid;
 		}
-
-		this.wizard.nextButton.enabled = isSourceInfrastructureTypeValid;
 	}
 
 	public async populateAzureAccountsDropdown(): Promise<void> {
@@ -97,7 +99,7 @@ export class SourceSelectionSection {
 		try {
 			this._azureLocationDropdown.loading = true;
 
-			this.migrationStateModel._locations = await utils.getResourceLocations(
+			this.migrationStateModel._locations = await utils.getArcLocations(
 				this.migrationStateModel._arcResourceAzureAccount,
 				this.migrationStateModel._arcResourceSubscription);
 
@@ -256,7 +258,7 @@ export class SourceSelectionSection {
 					await this._azureLocationLabel.updateProperties({ description: constants.ARC_RESOURCE_LOCATION_INFO });
 					await this._azureResourceGroupLabel.updateProperties({ description: constants.ARC_RESOURCE_RESOURCE_GROUP_INFO });
 					await this._azureArcSqlServerLabel.updateProperties({ description: constants.ARC_RESOURCE_INFO });
-
+					this._updateNextButton();
 				}
 			})
 		);
@@ -271,6 +273,7 @@ export class SourceSelectionSection {
 					await this._azureSubscriptionLabel.updateProperties({ description: constants.NON_ARC_RESOURCE_SUBSCRIPTION_INFO });
 					await this._azureLocationLabel.updateProperties({ description: constants.NON_ARC_RESOURCE_LOCATION_INFO });
 					await this._azureResourceGroupLabel.updateProperties({ description: constants.NON_ARC_RESOURCE_RESOURCE_GROUP_INFO });
+					this._updateNextButton();
 				}
 			})
 		);

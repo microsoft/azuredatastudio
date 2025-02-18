@@ -620,18 +620,29 @@ export async function getResourceLocations(
 	resources?: { location: string }[]): Promise<azureResource.AzureLocation[]> {
 
 	try {
-		if (account && subscription) {
+		if (account && subscription && resources) {
 			const locations = await azure.getLocations(account, subscription);
-			if (resources) {
-				return locations
-					.filter((loc, i) => resources.some(resource => resource.location.toLowerCase() === loc.name.toLowerCase()))
-					.sort((a, b) => a.displayName.localeCompare(b.displayName));
-			} else {
-				return locations.sort((a, b) => a.displayName.localeCompare(b.displayName));
-			}
+			return locations
+				.filter((loc, i) => resources.some(resource => resource.location.toLowerCase() === loc.name.toLowerCase()))
+				.sort((a, b) => a.displayName.localeCompare(b.displayName));
 		}
 	} catch (e) {
 		logError(TelemetryViews.Utils, 'utils.getResourceLocations', e);
+	}
+	return [];
+}
+
+export async function getArcLocations(
+	account?: Account,
+	subscription?: azureResource.AzureResourceSubscription): Promise<azureResource.AzureLocation[]> {
+
+	try {
+		if (account && subscription) {
+			const locations = await azure.getLocations(account, subscription);
+			return locations.sort((a, b) => a.displayName.localeCompare(b.displayName));
+		}
+	} catch (e) {
+		logError(TelemetryViews.Utils, 'utils.getArcLocations', e);
 	}
 	return [];
 }

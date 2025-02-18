@@ -63,6 +63,30 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 	return filteredLocations;
 }
 
+export async function getArcLocations(account: azdata.Account, subscription: Subscription): Promise<azurecore.azureResource.AzureLocation[]> {
+	const api = await getAzureCoreAPI();
+	const response = await api.getLocations(account, subscription, true);
+
+	const path = `/subscriptions/${subscription.id}/providers/Microsoft.AzureArcData?api-version=${ARM_MGMT_API_VERSION}`;
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	const dataMigrationResourceProvider = (await api.makeAzureRestRequest<any>(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host, getDefaultHeader()))?.response?.data;
+	const sqlServerInstanceResource = dataMigrationResourceProvider?.resourceTypes?.find((r: any) => r.resourceType === 'SqlServerInstances');
+	const sqlServerInstanceLocations = sqlServerInstanceResource?.locations ?? [];
+	if (response.errors?.length > 0) {
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+	}
+
+	const filteredLocations = response?.locations?.filter(
+		loc => sqlServerInstanceLocations.includes(loc.displayName));
+
+	sortResourceArrayByName(filteredLocations);
+
+	return filteredLocations;
+}
+
 export type AzureProduct = azurecore.azureResource.AzureGraphResource;
 
 export async function getResourceGroups(account: azdata.Account, subscription: Subscription): Promise<azurecore.azureResource.AzureResourceResourceGroup[]> {
