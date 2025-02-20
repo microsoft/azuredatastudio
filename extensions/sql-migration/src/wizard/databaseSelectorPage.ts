@@ -129,7 +129,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				const fullInstanceName = await this.migrationStateModel.getFullInstanceName();
 				const getArcSqlServerResponse = await this.migrationStateModel.getArcSqlServerInstance(fullInstanceName);
 				if (getArcSqlServerResponse?.status === 200) {
-					if (getArcSqlServerResponse.arcSqlServer.location !== this.migrationStateModel._arcResourceLocation) {
+					if (getArcSqlServerResponse.arcSqlServer.location !== this.migrationStateModel._arcResourceLocation.name) {
 						this.wizard.message = {
 							text: constants.SQL_SERVER_INSTANCE_EXISTS_IN_LOCATION(getArcSqlServerResponse.arcSqlServer.location),
 							level: azdata.window.MessageLevel.Error
