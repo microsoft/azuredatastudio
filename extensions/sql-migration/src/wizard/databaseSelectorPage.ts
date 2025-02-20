@@ -68,7 +68,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		]);
 
 		this._sourceSelection._updateNextButton();
-		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+		this.wizard.registerNavigationValidator(async (pageChangeInfo) => {
 			this.wizard.message = {
 				text: '',
 				level: azdata.window.MessageLevel.Error
@@ -116,6 +116,36 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				};
 				return false;
 			}
+
+			if (!this.migrationStateModel._isSqlServerEnabledByArc) {
+				const registerArcProviderResponse = await this.migrationStateModel.registerArcResourceProvider();
+				if (registerArcProviderResponse?.status === 401) {
+					this.wizard.message = {
+						text: constants.REGISTER_ARC_RESOURCE_PROVIDER_UNAUTHORIZED_ERROR,
+						level: azdata.window.MessageLevel.Warning
+					}
+					return true;
+				}
+				const fullInstanceName = await this.migrationStateModel.getFullInstanceName();
+				const getArcSqlServerResponse = await this.migrationStateModel.getArcSqlServerInstance(fullInstanceName);
+				if (getArcSqlServerResponse?.status === 200) {
+					if (getArcSqlServerResponse.arcSqlServer.location !== this.migrationStateModel._arcResourceLocation) {
+						this.wizard.message = {
+							text: constants.SQL_SERVER_INSTANCE_EXISTS_IN_LOCATION(getArcSqlServerResponse.arcSqlServer.location),
+							level: azdata.window.MessageLevel.Error
+						};
+					} else {
+						this.wizard.message = {
+							text: constants.SQL_SERVER_INSTANCE_EXISTS,
+							level: azdata.window.MessageLevel.Error
+						};
+					}
+					return false;
+				} else {
+					await this.migrationStateModel.createArcSqlServerInstance(fullInstanceName);
+				}
+			}
+
 			return true;
 		});
 

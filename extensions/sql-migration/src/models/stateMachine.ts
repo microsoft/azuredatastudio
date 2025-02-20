@@ -8,12 +8,12 @@ import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as contracts from '../service/contracts';
 import * as features from '../service/features';
-import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView, ArcSqlServer } from '../api/azure';
+import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView, ArcSqlServer, ArcSqlServerInstanceRequest, createMigrationArcSqlServerInstance, getMigrationArcSqlServerInstance, registerArcResourceProvider } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
-import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBackupFileNameWithoutFolder, MigrationTargetType, SourceInfrastructureType } from '../api/utils';
+import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBackupFileNameWithoutFolder, MigrationTargetType, SourceInfrastructureType, getSqlServerName, getSqlServerEdition } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendation/skuRecommendationPage';
 import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getTrustServerCertificateValue, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel } from './loginMigrationModel';
@@ -530,32 +530,37 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._armTemplateResult;
 	}
 
+	public async getFullInstanceName() {
+		let fullInstanceName: string;
+
+		// execute a query against the source to get the correct instance name
+		const connectionProfile = await getSourceConnectionProfile();
+		const connectionUri = await getSourceConnectionUri();
+		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
+		const queryString = 'SELECT SERVERPROPERTY(\'ServerName\');';
+		const queryResult = await queryProvider.runQueryAndReturn(connectionUri, queryString);
+
+		if (queryResult.rowCount > 0) {
+			fullInstanceName = queryResult.rows[0][0].displayValue;
+		} else {
+			// get the instance name from connection info in case querying for the instance name doesn't work for whatever reason
+			const serverInfo = await getSourceConnectionServerInfo();
+			const machineName = (<any>serverInfo)['machineName'];				// contains the correct machine name but not necessarily the correct instance name
+			const instanceName = connectionProfile.serverName;					// contains the correct instance name but not necessarily the correct machine name
+
+			if (instanceName.includes('\\')) {
+				fullInstanceName = machineName + '\\' + instanceName.substring(instanceName.indexOf('\\') + 1);
+			} else {
+				fullInstanceName = machineName;
+			}
+		}
+		return fullInstanceName;
+	}
+
 
 	public async getSkuRecommendations(): Promise<SkuRecommendation> {
 		try {
-			let fullInstanceName: string;
-
-			// execute a query against the source to get the correct instance name
-			const connectionProfile = await getSourceConnectionProfile();
-			const connectionUri = await getSourceConnectionUri();
-			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
-			const queryString = 'SELECT SERVERPROPERTY(\'ServerName\');';
-			const queryResult = await queryProvider.runQueryAndReturn(connectionUri, queryString);
-
-			if (queryResult.rowCount > 0) {
-				fullInstanceName = queryResult.rows[0][0].displayValue;
-			} else {
-				// get the instance name from connection info in case querying for the instance name doesn't work for whatever reason
-				const serverInfo = await getSourceConnectionServerInfo();
-				const machineName = (<any>serverInfo)['machineName'];				// contains the correct machine name but not necessarily the correct instance name
-				const instanceName = connectionProfile.serverName;					// contains the correct instance name but not necessarily the correct machine name
-
-				if (instanceName.includes('\\')) {
-					fullInstanceName = machineName + '\\' + instanceName.substring(instanceName.indexOf('\\') + 1);
-				} else {
-					fullInstanceName = machineName;
-				}
-			}
+			const fullInstanceName = await this.getFullInstanceName();
 
 			const response = (await this.migrationService.getSkuRecommendations(
 				this._skuRecommendationPerformanceLocation,
@@ -1117,6 +1122,57 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		}
 
 		return opResult;
+	}
+
+	public async registerArcResourceProvider() {
+		try {
+			return await registerArcResourceProvider(
+				this._arcResourceAzureAccount,
+				this._arcResourceSubscription,
+			);
+		} catch (error) {
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorRegisteringArcResourceProvider', error);
+		}
+		return;
+	}
+
+	public async createArcSqlServerInstance(fullInstanceName: string) {
+		try {
+			const serverInfo = await getSourceConnectionServerInfo();
+
+			const requestBody: ArcSqlServerInstanceRequest = {
+				location: this._arcResourceLocation.name,
+				properties: {
+					version: getSqlServerName(serverInfo.serverMajorVersion ?? 0),
+					edition: getSqlServerEdition(serverInfo.serverEdition),
+				}
+			}
+
+			const response = await createMigrationArcSqlServerInstance(
+				this._arcResourceAzureAccount,
+				this._arcResourceSubscription,
+				this._arcResourceResourceGroup,
+				fullInstanceName,
+				requestBody
+			);
+			this._arcSqlServer = response.arcSqlServer;
+		} catch (error) {
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorCreatingArcSqlServerInstance', error);
+		}
+	}
+
+	public async getArcSqlServerInstance(fullInstanceName: string): Promise<any> {
+		try {
+			return await getMigrationArcSqlServerInstance(
+				this._arcResourceAzureAccount,
+				this._arcResourceSubscription,
+				this._arcResourceResourceGroup,
+				fullInstanceName,
+			);
+		} catch (error) {
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorGettingArcSqlServerInstance', error);
+		}
+		return;
 	}
 
 	public async startMigration() {
