@@ -217,6 +217,7 @@ export class SourceSelectionSection {
 			}).component();
 		const buttonGroup = 'isSqlServerEnabledByArc';
 		const sourceInfrastructureTypeContainer = this.createSourceInfrastructureTypeContainer();
+		const arcResourceCreationInfoContainer = this.createArcResourceCreationInfoContainer();
 
 		const isSqlServerEnabledByArcButton = this._view.modelBuilder.radioButton()
 			.withProps({
@@ -258,6 +259,7 @@ export class SourceSelectionSection {
 					this.migrationStateModel._isSqlServerEnabledByArc = checked;
 					selectSqlResourceHeading.value = constants.SQL_SERVER_ENABLED_BY_AZURE_ARC_DETAILS;
 					sourceInfrastructureTypeContainer.display = 'none';
+					arcResourceCreationInfoContainer.display = 'none';
 					await this._azureAccountsLabel.updateProperties({ description: constants.ARC_RESOURCE_ACCOUNT_INFO });
 					await this._azureSubscriptionLabel.updateProperties({ description: constants.ARC_RESOURCE_SUBSCRIPTION_INFO });
 					await this._azureLocationLabel.updateProperties({ description: constants.ARC_RESOURCE_LOCATION_INFO });
@@ -274,6 +276,7 @@ export class SourceSelectionSection {
 					this.migrationStateModel._isSqlServerEnabledByArc = !checked;
 					selectSqlResourceHeading.value = constants.SQL_SERVER_INSTANCE_DETAILS;
 					sourceInfrastructureTypeContainer.display = 'flex';
+					arcResourceCreationInfoContainer.display = 'flex';
 					await this._azureAccountsLabel.updateProperties({ description: '' });
 					await this._azureSubscriptionLabel.updateProperties({ description: constants.NON_ARC_RESOURCE_SUBSCRIPTION_INFO });
 					await this._azureLocationLabel.updateProperties({ description: constants.NON_ARC_RESOURCE_LOCATION_INFO });
@@ -331,6 +334,23 @@ export class SourceSelectionSection {
 			],
 			{ flex: '0 0 auto' }
 		).withLayout({ flexFlow: 'row' }).component();
+	}
+
+	private createArcResourceCreationInfoContainer(): azdata.FlexContainer {
+		const arcResourceCreationInfo = this._view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.ARC_RESOURCE_CREATION_INFO,
+				style: 'information',
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS }
+			}).component();
+		return this._view.modelBuilder.flexContainer().withItems(
+			[
+				arcResourceCreationInfo,
+			],
+			{ flex: '0 0 auto' }
+		).withLayout({ flexFlow: 'row' }).component();
+
 	}
 
 	private createAzureAccountsDropdown(): azdata.FlexContainer {
@@ -537,9 +557,13 @@ export class SourceSelectionSection {
 			this._azureArcSqlServerDropdown.onValueChanged(async (value) => {
 				if (value && value !== 'undefined' && value !== constants.SQL_SERVER_INSTANCE_NOT_FOUND) {
 					const selectedArcResource = this.migrationStateModel._sourceArcSqlServers?.find(rg => rg.name === value);
-					this.migrationStateModel._arcSqlServer = (selectedArcResource)
-						? utils.deepClone(selectedArcResource)!
-						: undefined!;
+					if (selectedArcResource) {
+						const arcSqlServer = utils.deepClone(selectedArcResource)!;
+						const getArcSqlServerResponse = await this.migrationStateModel.getArcSqlServerInstance(arcSqlServer.name);
+						this.migrationStateModel._arcSqlServer = getArcSqlServerResponse.status === 200 ? getArcSqlServerResponse.arcSqlServer : undefined!;
+					} else {
+						this.migrationStateModel._arcSqlServer = undefined!;
+					}
 				} else {
 					this.migrationStateModel._arcSqlServer = undefined!;
 				}

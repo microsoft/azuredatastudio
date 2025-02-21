@@ -209,6 +209,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _arcResourceResourceGroup!: azurecore.azureResource.AzureResourceResourceGroup;
 	public _sourceArcSqlServers!: ArcSqlServer[];
 	public _arcSqlServer!: ArcSqlServer;
+	public _arcRpRegistrationStatus!: number;
 
 	public _subscriptions!: azurecore.azureResource.AzureResourceSubscription[];
 	public _targetSubscription!: azurecore.azureResource.AzureResourceSubscription;
@@ -1126,14 +1127,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async registerArcResourceProvider() {
 		try {
-			return await registerArcResourceProvider(
+			const response = await registerArcResourceProvider(
 				this._arcResourceAzureAccount,
 				this._arcResourceSubscription,
 			);
+			this._arcRpRegistrationStatus = response.status;
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorRegisteringArcResourceProvider', error);
 		}
-		return;
 	}
 
 	public async createArcSqlServerInstance(fullInstanceName: string) {

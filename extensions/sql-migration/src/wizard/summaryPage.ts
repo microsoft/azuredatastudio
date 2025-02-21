@@ -76,6 +76,25 @@ export class SummaryPage extends MigrationWizardPage {
 				{ CSSStyles: { 'margin-right': '5px' } })
 			.component();
 
+		const arcServerHyperlink = this._view.modelBuilder.hyperlink()
+			.withProps({
+				url: '',
+				label: this.migrationStateModel._arcSqlServer?.name,
+				CSSStyles: { ...styles.BODY_CSS, 'margin': '0px', 'width': '300px', }
+			}).component();
+
+		const arcServerRow = this._view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'row', alignItems: 'center', })
+			.withItems([
+				createLabelTextComponent(
+					this._view,
+					constants.SQL_SERVER_INSTANCE,
+					{ ...styles.BODY_CSS, 'width': '300px' }
+				),
+				this.migrationStateModel._arcSqlServer ? arcServerHyperlink : this._view.modelBuilder.text().withProps({ value: '-' }).component(),
+			], { CSSStyles: { 'margin-right': '5px' } })
+			.component();
+
 		this._flexContainer
 			.addItems([
 				await createHeadingTextComponent(
@@ -99,10 +118,7 @@ export class SummaryPage extends MigrationWizardPage {
 					constants.RESOURCE_GROUP,
 					this.migrationStateModel._arcResourceResourceGroup.name),
 
-				createInformationRow(
-					this._view,
-					constants.SQL_SERVER_INSTANCE,
-					this.migrationStateModel._arcSqlServer.name),
+				arcServerRow,
 
 				await createHeadingTextComponent(
 					this._view,

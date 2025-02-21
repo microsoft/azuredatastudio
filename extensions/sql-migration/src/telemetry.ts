@@ -5,6 +5,7 @@
 
 import AdsTelemetryReporter, { TelemetryEventMeasures, TelemetryEventProperties } from '@microsoft/ads-extension-telemetry';
 import { MigrationStateModel } from './models/stateMachine';
+import * as constants from './constants/strings';
 const packageJson = require('../package.json');
 let packageInfo = {
 	name: packageJson.name,
@@ -122,6 +123,7 @@ export function getTelemetryProps(migrationStateModel: MigrationStateModel): Tel
 		'subscriptionId': migrationStateModel._targetSubscription?.id,
 		'resourceGroup': migrationStateModel._resourceGroup?.name,
 		'targetType': migrationStateModel._targetType,
+		'sourceInfrastructureType': constants.SourceInfrastructureTypeLookup[migrationStateModel._sourceInfrastructureType],
 		'tenantId': tenantId,
 	};
 }
