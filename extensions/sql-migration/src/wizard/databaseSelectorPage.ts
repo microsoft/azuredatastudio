@@ -119,23 +119,25 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 
 			if (!this.migrationStateModel._isSqlServerEnabledByArc) {
 				await this.migrationStateModel.registerArcResourceProvider();
-				const fullInstanceName = await this.migrationStateModel.getFullInstanceName();
-				const getArcSqlServerResponse = await this.migrationStateModel.getArcSqlServerInstance(fullInstanceName);
-				if (getArcSqlServerResponse?.status === 200) {
-					if (getArcSqlServerResponse.arcSqlServer.location !== this.migrationStateModel._arcResourceLocation.name) {
-						this.wizard.message = {
-							text: constants.SQL_SERVER_INSTANCE_EXISTS_IN_LOCATION(getArcSqlServerResponse.arcSqlServer.location),
-							level: azdata.window.MessageLevel.Error
-						};
+				if (this.migrationStateModel._arcRpRegistrationStatus === 200) {
+					const fullInstanceName = await this.migrationStateModel.getFullInstanceName();
+					const getArcSqlServerResponse = await this.migrationStateModel.getArcSqlServerInstance(fullInstanceName);
+					if (getArcSqlServerResponse?.status === 200) {
+						if (getArcSqlServerResponse.arcSqlServer.location !== this.migrationStateModel._arcResourceLocation.name) {
+							this.wizard.message = {
+								text: constants.SQL_SERVER_INSTANCE_EXISTS_IN_LOCATION(getArcSqlServerResponse.arcSqlServer.location),
+								level: azdata.window.MessageLevel.Error
+							};
+						} else {
+							this.wizard.message = {
+								text: constants.SQL_SERVER_INSTANCE_EXISTS,
+								level: azdata.window.MessageLevel.Error
+							};
+						}
+						return false;
 					} else {
-						this.wizard.message = {
-							text: constants.SQL_SERVER_INSTANCE_EXISTS,
-							level: azdata.window.MessageLevel.Error
-						};
+						await this.migrationStateModel.createArcSqlServerInstance(fullInstanceName);
 					}
-					return false;
-				} else {
-					await this.migrationStateModel.createArcSqlServerInstance(fullInstanceName);
 				}
 			}
 
