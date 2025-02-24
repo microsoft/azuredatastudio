@@ -232,9 +232,6 @@ export class SourceSelectionSection {
 
 		const isSqlServerEnabledByArcButtonContainer = view.modelBuilder.flexContainer().withItems([isSqlServerEnabledByArcQuestion, isSqlServerEnabledByArcButton, isSqlServerNotEnabledByArcButton], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row' }).component();
 
-		if (this.migrationStateModel._arcSqlServer !== undefined) {
-			arcResourceContainer.addItem(arcSqlServerDropdown);
-		}
 		arcResourceContainer.addItems([
 			selectSqlResourceHeading,
 			this.createAzureAccountsDropdown(),
@@ -242,6 +239,10 @@ export class SourceSelectionSection {
 			this.createLocationDropdown(),
 			this.createResourceGroupDropdown(),
 		]);
+
+		if (this.migrationStateModel._arcSqlServer !== undefined) {
+			arcResourceContainer.addItem(arcSqlServerDropdown);
+		}
 
 		const flex = view.modelBuilder.flexContainer().withItems([isSqlServerEnabledByArcButtonContainer, sourceInfrastructureTypeContainer, arcResourceContainer])
 			.withLayout({ flexFlow: 'column' })
