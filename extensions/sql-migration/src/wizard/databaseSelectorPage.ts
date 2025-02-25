@@ -105,8 +105,8 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}
 
 			if (this.migrationStateModel._isSqlServerEnabledByArc && (!this.migrationStateModel._arcSqlServer ||
-				(<azdata.CategoryValue>this._sourceSelection._azureArcSqlServerDropdown.value)?.displayName === constants.ARC_SQL_SERVER_NOT_FOUND)) {
-				errors.push(constants.INVALID_ARC_SERVER_ERROR);
+				(<azdata.CategoryValue>this._sourceSelection._azureArcSqlServerDropdown.value)?.displayName === constants.SQL_SERVER_INSTANCE_NOT_FOUND)) {
+				errors.push(constants.INVALID_SQL_SERVER_INSTANCE_ERROR);
 			}
 
 			if (errors.length > 0) {

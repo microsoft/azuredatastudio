@@ -171,7 +171,7 @@ export class SourceSelectionSection {
 				this.migrationStateModel._sourceArcSqlServers,
 				this.migrationStateModel._arcResourceLocation,
 				this.migrationStateModel._arcResourceResourceGroup?.name,
-				constants.ARC_SQL_SERVER_NOT_FOUND);
+				constants.SQL_SERVER_INSTANCE_NOT_FOUND);
 
 			utils.selectDefaultDropdownValue(
 				this._azureArcSqlServerDropdown,
@@ -194,7 +194,7 @@ export class SourceSelectionSection {
 			}).component();
 		const selectSqlResourceHeading = this._view.modelBuilder.text()
 			.withProps({
-				value: constants.ARC_SQL_SERVER_INSTANCE_DETAILS,
+				value: constants.SQL_SERVER_INSTANCE_DETAILS,
 				CSSStyles: {
 					...styles.LABEL_CSS,
 					'margin-top': '5px'
@@ -252,7 +252,7 @@ export class SourceSelectionSection {
 				if (checked) {
 					arcResourceContainer.addItem(arcSqlServerDropdown);
 					this.migrationStateModel._isSqlServerEnabledByArc = checked;
-					selectSqlResourceHeading.value = constants.SQL_SERVER_ENABLED_BY_ARC_DETAILS;
+					selectSqlResourceHeading.value = constants.SQL_SERVER_ENABLED_BY_AZURE_ARC_DETAILS;
 					sourceInfrastructureTypeContainer.display = 'none';
 					await this._azureAccountsLabel.updateProperties({ description: constants.ARC_RESOURCE_ACCOUNT_INFO });
 					await this._azureSubscriptionLabel.updateProperties({ description: constants.ARC_RESOURCE_SUBSCRIPTION_INFO });
@@ -268,7 +268,7 @@ export class SourceSelectionSection {
 				if (checked) {
 					arcResourceContainer.removeItem(arcSqlServerDropdown);
 					this.migrationStateModel._isSqlServerEnabledByArc = !checked;
-					selectSqlResourceHeading.value = constants.ARC_SQL_SERVER_INSTANCE_DETAILS;
+					selectSqlResourceHeading.value = constants.SQL_SERVER_INSTANCE_DETAILS;
 					sourceInfrastructureTypeContainer.display = 'flex';
 					await this._azureAccountsLabel.updateProperties({ description: '' });
 					await this._azureSubscriptionLabel.updateProperties({ description: constants.NON_ARC_RESOURCE_SUBSCRIPTION_INFO });
@@ -514,7 +514,7 @@ export class SourceSelectionSection {
 	private createArcSqlServerDropdown(): azdata.FlexContainer {
 		this._azureArcSqlServerLabel = this._view.modelBuilder.text()
 			.withProps({
-				value: constants.SQL_SERVER_ENABLED_ARC,
+				value: constants.SQL_SERVER_INSTANCE,
 				description: constants.ARC_RESOURCE_INFO,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				requiredIndicator: true,
@@ -522,16 +522,16 @@ export class SourceSelectionSection {
 			}).component();
 		this._azureArcSqlServerDropdown = this._view.modelBuilder.dropDown()
 			.withProps({
-				ariaLabel: constants.SQL_SERVER_ENABLED_ARC,
+				ariaLabel: constants.SQL_SERVER_INSTANCE,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				editable: true,
 				required: true,
-				placeholder: constants.SELECT_A_SOURCE_SQL_SERVER,
+				placeholder: constants.SELECT_A_SQL_SERVER_INSTANCE,
 				CSSStyles: { 'margin-top': '-1em' },
 			}).component();
 		this._disposables.push(
 			this._azureArcSqlServerDropdown.onValueChanged(async (value) => {
-				if (value && value !== 'undefined' && value !== constants.ARC_SQL_SERVER_NOT_FOUND) {
+				if (value && value !== 'undefined' && value !== constants.SQL_SERVER_INSTANCE_NOT_FOUND) {
 					const selectedArcResource = this.migrationStateModel._sourceArcSqlServers?.find(rg => rg.name === value);
 					this.migrationStateModel._arcSqlServer = (selectedArcResource)
 						? utils.deepClone(selectedArcResource)!
