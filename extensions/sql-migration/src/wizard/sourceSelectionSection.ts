@@ -33,8 +33,9 @@ export class SourceSelectionSection {
 	constructor(private wizard: azdata.window.Wizard, public migrationStateModel: MigrationStateModel) { }
 
 	public _updateNextButton() {
+		const nextPage = this.wizard.pages[this.wizard.currentPage + 1];
+
 		if (!this.migrationStateModel._isSqlServerEnabledByArc) {
-			const nextPage = this.wizard.pages[this.wizard.currentPage + 1];
 			const isSourceInfrastructureTypeValid = this.migrationStateModel._sourceInfrastructureType !== undefined;
 
 			if (nextPage) {
@@ -42,6 +43,9 @@ export class SourceSelectionSection {
 			}
 
 			this.wizard.nextButton.enabled = isSourceInfrastructureTypeValid;
+		} else {
+			nextPage.enabled = true;
+			this.wizard.nextButton.enabled = true;
 		}
 	}
 

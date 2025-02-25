@@ -99,6 +99,11 @@ export const SELECT_A_SQL_SERVER_INSTANCE = localize('sql.migration.select.a.sql
 export const INVALID_SQL_SERVER_INSTANCE_ERROR = localize('sql.migration.invalid.sql.server.instance.error', "To continue, select a valid SQL Server instance.");
 export const SQL_SERVER_INSTANCE_NOT_FOUND = localize('sql.migration.sql.server.instance.not.found', "No SQL Server instance found.");
 export const SQL_SERVER_INSTANCE_DETAILS = localize('sql.migration.sql.server.instance.details', "SQL Server instance details");
+export const SQL_SERVER_INSTANCE_EXISTS = localize('sql.migration.sql.server.instance.exists', "SQL Server instance already exists with same name. Verify the host and instance name or check if the SQL Server is enabled by Azure Arc, and make appropriate selection.");
+export const SQL_SERVER_INSTANCE_EXISTS_IN_LOCATION = (location: string): string => {
+	return localize('sql.migration.sql.server.instance.exists.in.location', "SQL Server instance already exists in location {0} under selected resource group. Check if the SQL Server is enabled by Azure Arc, and make appropriate selection.", location);
+}
+export const REGISTER_ARC_RESOURCE_PROVIDER_UNAUTHORIZED_ERROR = localize('sql.migration.register.arc.resource.provider.unauthorized.error', "Failed to create SQL Server instance. Insufficient permissions to register resource provider Microsoft.AzureArcData.");
 
 // Arc resource info tooltip
 export const ARC_RESOURCE_ACCOUNT_INFO = localize('sql.migration.arc.subscription', "Select the Azure account under which your SQL Server subscription, resource group, location and resource resides.");
