@@ -245,6 +245,11 @@ export type ArcSqlServer = {
 	id: string,
 	name: string,
 	type: string,
+	migration: {
+		assessment: {
+			assessmentUploadTime: string,
+		}
+	} | null,
 };
 
 export type VirtualMachineInstanceView = {
