@@ -249,7 +249,7 @@ export class SourceSelectionSection {
 			arcResourceContainer.addItem(arcSqlServerDropdown);
 		}
 
-		const flex = view.modelBuilder.flexContainer().withItems([isSqlServerEnabledByArcButtonContainer, sourceInfrastructureTypeContainer, arcResourceContainer])
+		const flex = view.modelBuilder.flexContainer().withItems([isSqlServerEnabledByArcButtonContainer, sourceInfrastructureTypeContainer, arcResourceCreationInfoContainer, arcResourceContainer])
 			.withLayout({ flexFlow: 'column' })
 			.component();
 		this._disposables.push(
@@ -350,7 +350,6 @@ export class SourceSelectionSection {
 			],
 			{ flex: '0 0 auto' }
 		).withLayout({ flexFlow: 'row' }).component();
-
 	}
 
 	private createAzureAccountsDropdown(): azdata.FlexContainer {
