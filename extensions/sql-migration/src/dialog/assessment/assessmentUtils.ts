@@ -14,6 +14,7 @@ export function parseAssessmentReport(assessmentReport: any): any {
 		databaseAssessment: [],
 		sourceInfrastructureType: null,
 		isSqlServerEnabledByArc: null,
+		trackMigration: null,
 		arcResourceAzureAccount: null,
 		arcResourceSubscription: null,
 		arcResourceLocation: null,

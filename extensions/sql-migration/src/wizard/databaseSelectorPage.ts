@@ -67,7 +67,6 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			constants.WIZARD_CANCEL_REASON_CHANGE_SOURCE_SQL_SERVER
 		]);
 
-		this._sourceSelection._updateNextButton();
 		this.wizard.registerNavigationValidator(async (pageChangeInfo) => {
 			this.wizard.message = {
 				text: '',
@@ -117,7 +116,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				return false;
 			}
 
-			if (!this.migrationStateModel._isSqlServerEnabledByArc) {
+			if (!this.migrationStateModel._isSqlServerEnabledByArc && !this.migrationStateModel._arcSqlServer && this.migrationStateModel._trackMigration) {
 				await this.migrationStateModel.registerArcResourceProvider();
 				if (this.migrationStateModel._arcRpRegistrationStatus === 200) {
 					const fullInstanceName = await this.migrationStateModel.getFullInstanceName();

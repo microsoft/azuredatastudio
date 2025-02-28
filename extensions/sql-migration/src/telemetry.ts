@@ -125,6 +125,7 @@ export function getTelemetryProps(migrationStateModel: MigrationStateModel): Tel
 		'targetType': migrationStateModel._targetType,
 		'sourceInfrastructureType': constants.SourceInfrastructureTypeLookup[migrationStateModel._sourceInfrastructureType],
 		'tenantId': tenantId,
+		'migrationTracked': String(migrationStateModel._trackMigration)
 	};
 }
 
