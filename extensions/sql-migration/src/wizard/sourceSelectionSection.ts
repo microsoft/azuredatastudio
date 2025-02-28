@@ -28,26 +28,8 @@ export class SourceSelectionSection {
 	public _azureResourceGroupDropdown!: azdata.DropDownComponent;
 	private _azureArcSqlServerLabel!: azdata.TextComponent;
 	public _azureArcSqlServerDropdown!: azdata.DropDownComponent;
-	public _isSourceInfrastructureTypeValid: boolean = false;
 
 	constructor(private wizard: azdata.window.Wizard, public migrationStateModel: MigrationStateModel) { }
-
-	public _updateNextButton() {
-		const nextPage = this.wizard.pages[this.wizard.currentPage + 1];
-
-		if (!this.migrationStateModel._isSqlServerEnabledByArc) {
-			const isSourceInfrastructureTypeValid = this.migrationStateModel._sourceInfrastructureType !== undefined;
-
-			if (nextPage) {
-				nextPage.enabled = isSourceInfrastructureTypeValid;
-			}
-
-			this.wizard.nextButton.enabled = isSourceInfrastructureTypeValid;
-		} else {
-			nextPage.enabled = true;
-			this.wizard.nextButton.enabled = true;
-		}
-	}
 
 	public async populateAzureAccountsDropdown(): Promise<void> {
 		try {
@@ -190,35 +172,14 @@ export class SourceSelectionSection {
 
 	public async createSourceSelectionContainer(view: azdata.ModelView): Promise<azdata.Component> {
 		this._view = view;
+		this._serviceContext = await MigrationLocalStorage.getMigrationServiceContext();
 
 		const isSqlServerEnabledByArcQuestion = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.IS_SQL_SERVER_ENABLED_BY_AZURE_ARC,
 				CSSStyles: { ...styles.BODY_CSS, 'margin-right': '20px' }
 			}).component();
-		const selectSqlResourceHeading = this._view.modelBuilder.text()
-			.withProps({
-				value: constants.SQL_SERVER_INSTANCE_DETAILS,
-				CSSStyles: {
-					...styles.LABEL_CSS,
-					'margin-top': '5px'
-				},
-			}).component();
-		const arcSqlServerDropdown = this.createArcSqlServerDropdown();
-		this._serviceContext = await MigrationLocalStorage.getMigrationServiceContext();
-
-		const arcResourceContainer = this._view.modelBuilder.flexContainer()
-			.withProps({
-				CSSStyles: {
-					'flex-direction': 'column',
-					'margin-bottom': '20px',
-					'margin-top': '10px'
-				}
-			}).component();
 		const buttonGroup = 'isSqlServerEnabledByArc';
-		const sourceInfrastructureTypeContainer = this.createSourceInfrastructureTypeContainer();
-		const arcResourceCreationInfoContainer = this.createArcResourceCreationInfoContainer();
-
 		const isSqlServerEnabledByArcButton = this._view.modelBuilder.radioButton()
 			.withProps({
 				name: buttonGroup,
@@ -235,53 +196,152 @@ export class SourceSelectionSection {
 				CSSStyles: { ...styles.BODY_CSS, 'margin-left': '30px' }
 			}).component();
 
-		const isSqlServerEnabledByArcButtonContainer = view.modelBuilder.flexContainer().withItems([isSqlServerEnabledByArcQuestion, isSqlServerEnabledByArcButton, isSqlServerNotEnabledByArcButton], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row' }).component();
+		const isSqlServerEnabledByArcButtonContainer = view.modelBuilder.flexContainer().withItems(
+			[isSqlServerEnabledByArcQuestion, isSqlServerEnabledByArcButton, isSqlServerNotEnabledByArcButton],
+			{ flex: '0 0 auto' }
+		).withLayout({ flexFlow: 'row' }).component();
+
+		const trackMigrationQuestion = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.TRACK_MIGRATION_PROCESS_IN_AZURE_PORTAL,
+				CSSStyles: { ...styles.BODY_CSS, 'margin-right': '20px' }
+			}).component();
+
+		const trackingButtonGroup = "trackMigration";
+		const trackMigrationButton = this._view.modelBuilder.radioButton()
+			.withProps({
+				name: trackingButtonGroup,
+				label: constants.YES,
+				checked: this.migrationStateModel._trackMigration,
+				CSSStyles: { ...styles.BODY_CSS },
+			}).component();
+
+		const noTrackMigrationButton = this._view.modelBuilder.radioButton()
+			.withProps({
+				name: trackingButtonGroup,
+				label: constants.NO,
+				checked: !this.migrationStateModel._trackMigration,
+				CSSStyles: { ...styles.BODY_CSS, 'margin-left': '30px' }
+			}).component();
+
+		const trackMigrationButtonContainer = view.modelBuilder.flexContainer().withItems(
+			[trackMigrationQuestion, trackMigrationButton, noTrackMigrationButton],
+			{ flex: '0 0 auto' }
+		).withLayout({ flexFlow: 'row' }).component();
+
+		const arcResourceContainer = this._view.modelBuilder.flexContainer()
+			.withProps({
+				CSSStyles: {
+					'flex-direction': 'column',
+					'margin-bottom': '20px',
+					'margin-top': '10px'
+				}
+			}).component();
+
+		const nonArcResourceContainer = this._view.modelBuilder.flexContainer()
+			.withProps({
+				CSSStyles: {
+					'flex-direction': 'column',
+					'margin-bottom': '20px',
+					'margin-top': '10px'
+				}
+			}).component();
+		const sourceInfrastructureTypeContainer = this.createSourceInfrastructureTypeContainer();
+		const arcResourceCreationInfoContainer = this.createArcResourceCreationInfoContainer();
+
+		const arcResourceHeading = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.SQL_SERVER_ENABLED_BY_AZURE_ARC_DETAILS,
+				CSSStyles: {
+					...styles.LABEL_CSS,
+					'margin-top': '5px'
+				},
+			}).component();
+
+		const nonArcResourceHeading = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.SQL_SERVER_INSTANCE_DETAILS,
+				CSSStyles: {
+					...styles.LABEL_CSS,
+					'margin-top': '5px'
+				},
+			}).component();
+
+		const accountDropdown = this.createAzureAccountsDropdown();
+		const subscriptionDropdown = this.createSubscriptionDropdown();
+		const resourceGroupDropdown = this.createResourceGroupDropdown();
+		const locationDropdown = this.createLocationDropdown();
+		const arcSqlServerDropdown = this.createArcSqlServerDropdown();
 
 		arcResourceContainer.addItems([
-			selectSqlResourceHeading,
-			this.createAzureAccountsDropdown(),
-			this.createSubscriptionDropdown(),
-			this.createLocationDropdown(),
-			this.createResourceGroupDropdown(),
+			arcResourceHeading,
+			accountDropdown,
+			subscriptionDropdown,
+			locationDropdown,
+			resourceGroupDropdown,
+			arcSqlServerDropdown
 		]);
 
-		if (this.migrationStateModel._arcSqlServer !== undefined) {
-			arcResourceContainer.addItem(arcSqlServerDropdown);
-		}
+		nonArcResourceContainer.addItems([
+			sourceInfrastructureTypeContainer,
+			arcResourceCreationInfoContainer,
+			nonArcResourceHeading,
+			accountDropdown,
+			subscriptionDropdown,
+			locationDropdown,
+			resourceGroupDropdown,
+		]);
 
-		const flex = view.modelBuilder.flexContainer().withItems([isSqlServerEnabledByArcButtonContainer, sourceInfrastructureTypeContainer, arcResourceCreationInfoContainer, arcResourceContainer])
-			.withLayout({ flexFlow: 'column' })
-			.component();
+		const flex = view.modelBuilder.flexContainer().withItems(
+			[isSqlServerEnabledByArcButtonContainer, trackMigrationButtonContainer]
+		).withLayout({ flexFlow: 'column' }).component();
+
 		this._disposables.push(
 			isSqlServerEnabledByArcButton.onDidChangeCheckedState(async (checked) => {
 				if (checked) {
-					arcResourceContainer.addItem(arcSqlServerDropdown);
-					this.migrationStateModel._isSqlServerEnabledByArc = checked;
-					selectSqlResourceHeading.value = constants.SQL_SERVER_ENABLED_BY_AZURE_ARC_DETAILS;
-					sourceInfrastructureTypeContainer.display = 'none';
-					arcResourceCreationInfoContainer.display = 'none';
-					await this._azureAccountsLabel.updateProperties({ description: constants.ARC_RESOURCE_ACCOUNT_INFO });
 					await this._azureSubscriptionLabel.updateProperties({ description: constants.ARC_RESOURCE_SUBSCRIPTION_INFO });
 					await this._azureLocationLabel.updateProperties({ description: constants.ARC_RESOURCE_LOCATION_INFO });
 					await this._azureResourceGroupLabel.updateProperties({ description: constants.ARC_RESOURCE_RESOURCE_GROUP_INFO });
 					await this._azureArcSqlServerLabel.updateProperties({ description: constants.ARC_RESOURCE_INFO });
-					this._updateNextButton();
+					flex.removeItem(nonArcResourceContainer);
+					flex.addItem(arcResourceContainer);
+					trackMigrationButtonContainer.display = 'none';
+					this.migrationStateModel._isSqlServerEnabledByArc = checked;
 				}
 			})
 		);
 		this._disposables.push(
 			isSqlServerNotEnabledByArcButton.onDidChangeCheckedState(async (checked) => {
 				if (checked) {
-					arcResourceContainer.removeItem(arcSqlServerDropdown);
+					flex.removeItem(arcResourceContainer);
+					trackMigrationButtonContainer.display = 'flex';
 					this.migrationStateModel._isSqlServerEnabledByArc = !checked;
-					selectSqlResourceHeading.value = constants.SQL_SERVER_INSTANCE_DETAILS;
-					sourceInfrastructureTypeContainer.display = 'flex';
-					arcResourceCreationInfoContainer.display = 'flex';
-					await this._azureAccountsLabel.updateProperties({ description: '' });
+					if (this.migrationStateModel._trackMigration) {
+						await this._azureSubscriptionLabel.updateProperties({ description: constants.NON_ARC_RESOURCE_SUBSCRIPTION_INFO });
+						await this._azureLocationLabel.updateProperties({ description: constants.NON_ARC_RESOURCE_LOCATION_INFO });
+						await this._azureResourceGroupLabel.updateProperties({ description: constants.NON_ARC_RESOURCE_RESOURCE_GROUP_INFO });
+						flex.addItem(nonArcResourceContainer);
+					}
+				}
+			})
+		);
+
+		this._disposables.push(
+			trackMigrationButton.onDidChangeCheckedState(async (checked) => {
+				if (checked) {
+					this.migrationStateModel._trackMigration = checked;
 					await this._azureSubscriptionLabel.updateProperties({ description: constants.NON_ARC_RESOURCE_SUBSCRIPTION_INFO });
 					await this._azureLocationLabel.updateProperties({ description: constants.NON_ARC_RESOURCE_LOCATION_INFO });
 					await this._azureResourceGroupLabel.updateProperties({ description: constants.NON_ARC_RESOURCE_RESOURCE_GROUP_INFO });
-					this._updateNextButton();
+					flex.addItem(nonArcResourceContainer);
+				}
+			})
+		);
+		this._disposables.push(
+			noTrackMigrationButton.onDidChangeCheckedState(async (checked) => {
+				if (checked) {
+					this.migrationStateModel._trackMigration = !checked;
+					flex.removeItem(nonArcResourceContainer);
 				}
 			})
 		);
@@ -308,6 +368,7 @@ export class SourceSelectionSection {
 			values: sourceInfrastructureTypes,
 			width: 250,
 			editable: true,
+			required: true,
 			CSSStyles: {
 				'margin-top': '5px',
 				'margin-left': '10px',
@@ -324,7 +385,6 @@ export class SourceSelectionSection {
 				if (sourceInfrastructureType !== undefined) {
 					this.migrationStateModel._sourceInfrastructureType = sourceInfrastructureType;
 				}
-				this._updateNextButton();
 			})
 		);
 		return this._view.modelBuilder.flexContainer().withItems(

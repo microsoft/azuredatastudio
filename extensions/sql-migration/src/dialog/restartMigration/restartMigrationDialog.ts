@@ -40,6 +40,7 @@ export class RestartMigrationDialog {
 
 			// DatabaseSelector
 			isSqlServerEnabledByArc: null,
+			trackMigration: null,
 			sourceInfrastructureType: null,
 			arcResourceAzureAccount: null,
 			arcResourceSubscription: null,
