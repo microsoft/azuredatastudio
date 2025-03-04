@@ -26,12 +26,15 @@ export abstract class ResourceTreeDataProviderBase<S extends GraphData, T extend
 	}
 
 	public async getChildren(parent: azureResource.IAzureResourceNode): Promise<azureResource.IAzureResourceNode[]> {
+		Logger.verbose("In ResourceTreeDataProviderBase: getChildren");
 		try {
 			let resources: azureResource.AzureResource[] = await this.getResources(parent);
+			Logger.piiSanitized(`Found ${resources.length} resources for account: ${JSON.stringify(parent.account)}, and subscription ${parent.subscription}}`, [], []);
 			return resources.map((resource) => this.convertDataToResource(resource, parent))
 				.sort((a, b) => (<any>a.treeItem.label).localeCompare(b.treeItem.label));
 		} catch (error) {
-			Logger.error(AzureResourceErrorMessageUtil.getErrorMessage(error));
+			Logger.error(`Failed to get child resources for parent: ${JSON.stringify(parent)}`);
+			Logger.error(`Logging error in ResourceTreeDataProviderBase - getChildren: ${AzureResourceErrorMessageUtil.getErrorMessage(error)}`);
 			throw error;
 		}
 	}
@@ -46,12 +49,20 @@ export abstract class ResourceTreeDataProviderBase<S extends GraphData, T extend
 	}
 
 	private async getResources(element: azureResource.IAzureResourceNode): Promise<azureResource.AzureResource[]> {
+		Logger.verbose("In ResourceTreeDataProviderBase: getResources");
+		Logger.verbose(`Getting account security token for account: ${element.account.displayInfo.displayName} and tenant: ${element.subscription.tenant}`);
 		const response = await azdata.accounts.getAccountSecurityToken(element.account, element.subscription.tenant!, azdata.AzureResource.ResourceManagement);
 		if (!response) {
+			Logger.error(`Did not receive account security token when getting resources for account ${element.account.displayInfo.displayName}`);
 			throw new Error(`Did not receive security token when getting resources for account ${element.account.displayInfo.displayName}`);
 		}
+		Logger.verbose(`Received account security token for account: ${element.account.displayInfo.displayName} and tenant: ${element.subscription.tenant}`);
+
 		const credential = new msRest.TokenCredentials(response.token, response.tokenType);
-		return await this._resourceService.getResources([element.subscription], credential, element.account) || <azureResource.AzureResource[]>[];
+		const resources = await this._resourceService.getResources([element.subscription], credential, element.account) || <azureResource.AzureResource[]>[];
+		Logger.verbose(`Found ${resources.length} resources for account: ${element.account.displayInfo.displayName}, and subscription ${element.subscription}`);
+		Logger.verbose("Returning the following found resources: " + JSON.stringify(resources));
+		return resources;
 	}
 
 	public abstract getTreeItemForResource(resource: azureResource.AzureResource, account: AzureAccount): azdata.TreeItem;

@@ -609,7 +609,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	public async clearCredentials(account: azdata.AccountKey): Promise<void> {
+		Logger.verbose("In AzureAuth: clearCredentials")
 		try {
+			Logger.verbose("About to delete the account cache to clear credentials");
 			return await this.deleteAccountCache(account);
 		} catch (ex) {
 			// We need not prompt user for error if token could not be removed from cache.
@@ -618,6 +620,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	private async deleteAccountCache(accountKey: azdata.AccountKey): Promise<void> {
+		Logger.verbose("In AzureAuth: deleteAccountCache");
+
 		const tokenCache = this.clientApplication.getTokenCache();
 		try {
 			let msalAccount: AccountInfo | null = await this.getAccountFromMsalCache(accountKey.accountId);
@@ -625,10 +629,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 				Logger.error(`MSAL: Unable to find account ${accountKey.accountId} for removal`);
 				throw Error(`Unable to find account ${accountKey.accountId}`);
 			}
+
+			Logger.verbose("Found msal account and removing it from token cache");
 			await tokenCache.removeAccount(msalAccount);
 		} catch (error) {
 			Logger.error(`[ClientAuthError] Failed to find account: ${error}`);
 		}
+
+		Logger.verbose("Calling clearAccountFromLocalCache");
 		await this.msalCacheProvider.clearAccountFromLocalCache(accountKey.accountId);
 	}
 

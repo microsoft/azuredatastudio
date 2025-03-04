@@ -59,11 +59,13 @@ function pushDisposable(disposable: vscode.Disposable): void {
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext): Promise<azurecore.IExtension> {
+	Logger.verbose("In activate");
 	extensionContext = context;
 	let appContext = new AppContext(extensionContext);
 
 	let storagePath = await findOrMakeStoragePath();
 	if (!storagePath) {
+		Logger.error("Could not find or create storage path");
 		throw new Error('Could not find or create storage path');
 	}
 
@@ -93,8 +95,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 		registerAzureServices(appContext);
 		const azureResourceTree = new AzureResourceTreeProvider(appContext);
 		const connectionDialogTree = new ConnectionDialogTreeProvider(appContext);
+		Logger.verbose("Registering azure resource explorer");
 		pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
+
+		Logger.verbose("Registering connectionDialog/azureResourceExplorer");
 		pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
+
 		pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e)));
 		registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree);
 		azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext));
@@ -105,6 +111,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			const type = item.type;
 			const name = item.name;
 			if (portalEndpoint && subscriptionId && resourceGroup && type && name) {
+				Logger.verbose("Opening the following url externally: " + `${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`);
 				await vscode.env.openExternal(vscode.Uri.parse(`${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`));
 			} else {
 				Logger.error(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
@@ -114,22 +121,27 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	}
 	return {
 		getSubscriptions(account?: azurecore.AzureAccount, ignoreErrors?: boolean, selectedOnly: boolean = false): Promise<azurecore.GetSubscriptionsResult> {
+			// Logger.verbose("In getSubscriptions");
 			return selectedOnly
 				? azureResourceUtils.getSelectedSubscriptions(appContext, account, ignoreErrors)
 				: azureResourceUtils.getSubscriptions(appContext, account, ignoreErrors);
 		},
 		getResourceGroups(account?: azurecore.AzureAccount, subscription?: azurecore.azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<azurecore.GetResourceGroupsResult> {
+			// Logger.verbose("In getResourceGroups");
 			return azureResourceUtils.getResourceGroups(appContext, account, subscription, ignoreErrors);
 		},
 		getLocations(account?: azurecore.AzureAccount,
 			subscription?: azurecore.azureResource.AzureResourceSubscription,
 			ignoreErrors?: boolean): Promise<azurecore.GetLocationsResult> {
+			// Logger.verbose("In getLocations");
 			return azureResourceUtils.getLocations(appContext, account, subscription, ignoreErrors);
 		},
 		provideResources(): azurecore.azureResource.IAzureResourceProvider[] {
+			// Logger.verbose("In provideResources");
 			return azureResourceUtils.getAllResourceProviders(extensionContext);
 		},
 		getUniversalProvider(): azurecore.azureResource.IAzureUniversalResourceProvider {
+			// Logger.verbose("In getUniversalProvider");
 			let providers = azureResourceUtils.getAllResourceProviders(extensionContext);
 			let treeDataProviders = new Map<string, azurecore.azureResource.IAzureResourceTreeDataProvider>();
 			providers.forEach(provider => {
@@ -140,45 +152,53 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 		getSqlManagedInstances(account: azurecore.AzureAccount,
 			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
 			ignoreErrors: boolean): Promise<azurecore.GetSqlManagedInstancesResult> {
+			// Logger.verbose("In getSqlManagedInstances");
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azurecore.azureResource.AzureResourceType.sqlManagedInstance}"`);
 		},
 		getManagedDatabases(account: azurecore.AzureAccount,
 			subscription: azurecore.azureResource.AzureResourceSubscription,
 			managedInstance: azurecore.azureResource.AzureSqlManagedInstance,
 			ignoreErrors: boolean): Promise<azurecore.GetManagedDatabasesResult> {
+			// Logger.verbose("In getManagedDatabases");
 			return azureResourceUtils.getManagedDatabases(account, subscription, managedInstance, ignoreErrors);
 		},
 		getSqlServers(account: azurecore.AzureAccount,
 			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
 			ignoreErrors: boolean): Promise<azurecore.GetSqlServersResult> {
+			// Logger.verbose("In getSqlServers");
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azurecore.azureResource.AzureResourceType.sqlServer}"`);
 		},
 		getSqlVMServers(account: azurecore.AzureAccount,
 			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
 			ignoreErrors: boolean): Promise<azurecore.GetSqlVMServersResult> {
+			// Logger.verbose("In getSqlVMServers");
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azurecore.azureResource.AzureResourceType.virtualMachines}" and properties.storageProfile.imageReference.publisher == "microsoftsqlserver"`);
 		},
 		getStorageAccounts(account: azurecore.AzureAccount,
 			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
 			ignoreErrors: boolean): Promise<azurecore.GetStorageAccountResult> {
+			// Logger.verbose("In getStorageAccounts");
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azurecore.azureResource.AzureResourceType.storageAccount}"`);
 		},
 		getBlobContainers(account: azurecore.AzureAccount,
 			subscription: azurecore.azureResource.AzureResourceSubscription,
 			storageAccount: azurecore.azureResource.AzureGraphResource,
 			ignoreErrors: boolean): Promise<azurecore.GetBlobContainersResult> {
+			// Logger.verbose("In getBlobContainers");
 			return azureResourceUtils.getBlobContainers(account, subscription, storageAccount, ignoreErrors);
 		},
 		getFileShares(account: azurecore.AzureAccount,
 			subscription: azurecore.azureResource.AzureResourceSubscription,
 			storageAccount: azurecore.azureResource.AzureGraphResource,
 			ignoreErrors: boolean): Promise<azurecore.GetFileSharesResult> {
+			// Logger.verbose("In getFileShares");
 			return azureResourceUtils.getFileShares(account, subscription, storageAccount, ignoreErrors);
 		},
 		getStorageAccountAccessKey(account: azurecore.AzureAccount,
 			subscription: azurecore.azureResource.AzureResourceSubscription,
 			storageAccount: azurecore.azureResource.AzureGraphResource,
 			ignoreErrors: boolean): Promise<azurecore.GetStorageAccountAccessKeyResult> {
+			// Logger.verbose("In getStorageAccountAccessKey");
 			return azureResourceUtils.getStorageAccountAccessKey(account, subscription, storageAccount, ignoreErrors);
 		},
 		getBlobs(account: azurecore.AzureAccount,
@@ -186,6 +206,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			storageAccount: azurecore.azureResource.AzureGraphResource,
 			containerName: string,
 			ignoreErrors: boolean): Promise<azurecore.GetBlobsResult> {
+			// Logger.verbose("In getBlobs");
 			return azureResourceUtils.getBlobs(account, subscription, storageAccount, containerName, ignoreErrors);
 		},
 		createResourceGroup(account: azurecore.AzureAccount,
@@ -193,6 +214,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			resourceGroupName: string,
 			location: string,
 			ignoreErrors: boolean): Promise<azurecore.CreateResourceGroupResult> {
+			// Logger.verbose("In createResourceGroup");
 			return azureResourceUtils.createResourceGroup(account, subscription, resourceGroupName, location, ignoreErrors);
 		},
 		makeAzureRestRequest<B>(account: azurecore.AzureAccount,
@@ -203,20 +225,24 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			ignoreErrors: boolean,
 			host: string = 'https://management.azure.com',
 			requestHeaders: Record<string, string> = {}): Promise<azurecore.AzureRestResponse<B>> {
+			// Logger.verbose("In makeAzureRestRequest");
 			return azureResourceUtils.makeHttpRequest(account, subscription, path, requestType, requestBody, ignoreErrors, host, requestHeaders);
 		},
 		getRegionDisplayName: utils.getRegionDisplayName,
 		getProviderMetadataForAccount(account: azurecore.AzureAccount) {
+			// Logger.verbose("In getProviderMetadataForAccount");
 			return azureResourceUtils.getProviderMetadataForAccount(account);
 		},
 		runGraphQuery<T extends azurecore.azureResource.AzureGraphResource>(account: azurecore.AzureAccount,
 			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
 			ignoreErrors: boolean,
 			query: string): Promise<azurecore.ResourceQueryResult<T>> {
+			// Logger.verbose("In runGraphQuery");
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, query);
 		},
 		onEncryptionKeysUpdated: eventEmitter!.event,
 		async getEncryptionKeys(): Promise<azurecore.CacheEncryptionKeys> {
+			// Logger.verbose("In getEncryptionKeys");
 			if (!providerService) {
 				throw new Error("Failed to initialize Azure account provider.");
 			}
@@ -227,6 +253,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 
 // Create the folder for storing the token caches
 async function findOrMakeStoragePath() {
+	Logger.verbose("In findOrMakeStoragePath");
 	let defaultLogLocation = getDefaultLogLocation();
 	let storagePath = path.join(defaultLogLocation, Constants.AzureTokenFolderName);
 
@@ -254,10 +281,12 @@ async function findOrMakeStoragePath() {
 }
 
 async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string): Promise<AzureAccountProviderService | undefined> {
+	Logger.verbose("In initAzureAccountProvider");
 	try {
 		const accountProviderService = new AzureAccountProviderService(extensionContext, storagePath);
 		extensionContext.subscriptions.push(accountProviderService);
 		await accountProviderService.activate();
+		Logger.verbose("Completed initializing azure account provider");
 		return accountProviderService;
 	} catch (err) {
 		Logger.error('Unexpected error starting account provider: ' + err.message);

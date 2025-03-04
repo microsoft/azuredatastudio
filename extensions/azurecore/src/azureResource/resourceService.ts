@@ -5,6 +5,7 @@
 
 import { extensions } from 'vscode';
 import * as azdata from 'azdata';
+import { Logger } from '../utils/Logger';
 
 import { AzureAccount, azureResource } from 'azurecore';
 import { UNIVERSAL_PROVIDER_ID } from '../constants';
@@ -60,23 +61,30 @@ export class AzureResourceService {
 	}
 
 	public async getChildren(resourceProviderId: string, element: azureResource.IAzureResourceNode, browseConnectionMode: boolean = false): Promise<azureResource.IAzureResourceNode[]> {
+		Logger.verbose("In AzureResourceService: getChildren")
 		await this.ensureResourceProvidersRegistered();
 
 		if (!(resourceProviderId in this._resourceProviders) && resourceProviderId !== UNIVERSAL_PROVIDER_ID) {
+			Logger.error("Azure resource provider doesn't exist. Id: " + resourceProviderId);
 			throw new Error(`Azure resource provider doesn't exist. Id: ${resourceProviderId}`);
 		}
 
 		const treeDataProvider = <azureResource.IAzureResourceTreeDataProvider>this._treeDataProviders[resourceProviderId];
+		Logger.verbose(`Found treeDataProvider for ${resourceProviderId}: ${treeDataProvider ? "true" : "false"}`);
 		treeDataProvider.browseConnectionMode = browseConnectionMode;
 		const children = <azureResource.IAzureResourceNode[]>await treeDataProvider.getChildren(element);
+		Logger.verbose("Returning the following found tree node children: " + JSON.stringify(children));
 		return children;
 	}
 
 	public async getAllChildren(account: AzureAccount, subscriptions: azureResource.AzureResourceSubscription[], browseConnectionMode: boolean = false): Promise<azureResource.IAzureResourceNode[]> {
+		Logger.verbose("In AzureResourceService: getAllChildren");
 		await this.ensureResourceProvidersRegistered();
 		const treeDataProvider = <azureResource.IAzureUniversalTreeDataProvider>this._universalProvider?.getTreeDataProvider();
+		Logger.verbose(`Got valid treeDataProvider: ${treeDataProvider ? "true" : "false"}`);
 		treeDataProvider.browseConnectionMode = browseConnectionMode;
 		const children = <azureResource.IAzureResourceNode[]>await treeDataProvider.getAllChildren(account, subscriptions);
+		Logger.verbose("Found the following tree node children: " + JSON.stringify(children));
 		return children;
 	}
 
