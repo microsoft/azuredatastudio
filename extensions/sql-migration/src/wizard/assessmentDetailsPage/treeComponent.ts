@@ -14,7 +14,7 @@ import { selectDatabasesFromList } from '../../constants/helper';
 import { getSourceConnectionProfile } from '../../api/sqlUtils';
 import { SqlMigrationAssessmentResultItem } from '../../service/contracts';
 
-const AZURE_SQL_MI_DB_COUNT_THRESHOLD = 100;
+const AZURE_SQL_MI_DB_COUNT_THRESHOLD = 500;
 
 const styleLeft: azdata.CssStyles = {
 	'border': 'none',
