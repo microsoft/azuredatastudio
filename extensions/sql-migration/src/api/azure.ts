@@ -1098,6 +1098,7 @@ export interface StartDatabaseMigrationRequest {
 export interface ArcSqlServerInstanceRequest {
 	location: string,
 	properties: {
+		hostType: string,
 		version: string,
 		edition: string,
 	}
