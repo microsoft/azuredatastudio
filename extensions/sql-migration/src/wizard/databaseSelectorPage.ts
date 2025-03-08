@@ -86,26 +86,32 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				errors.push(constants.SELECT_DATABASE_TO_CONTINUE);
 			}
 
-			if (!this.migrationStateModel._azureAccount) {
-				errors.push(constants.INVALID_ACCOUNT_ERROR);
-			}
+			if (this.migrationStateModel._isSqlServerEnabledByArc || this.migrationStateModel._trackMigration) {
+				if (!this.migrationStateModel._azureAccount) {
+					errors.push(constants.INVALID_ACCOUNT_ERROR);
+				}
 
-			if (!this.migrationStateModel._arcResourceSubscription ||
-				(<azdata.CategoryValue>this._sourceSelection._azureSubscriptionDropdown.value)?.displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
-				errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
-			}
-			if (!this.migrationStateModel._arcResourceLocation ||
-				(<azdata.CategoryValue>this._sourceSelection._azureLocationDropdown.value)?.displayName === constants.NO_LOCATION_FOUND) {
-				errors.push(constants.INVALID_LOCATION_ERROR);
-			}
-			if (!this.migrationStateModel._arcResourceResourceGroup ||
-				(<azdata.CategoryValue>this._sourceSelection._azureResourceGroupDropdown.value)?.displayName === constants.RESOURCE_GROUP_NOT_FOUND) {
-				errors.push(constants.INVALID_RESOURCE_GROUP_ERROR);
-			}
+				if (!this.migrationStateModel._arcResourceSubscription ||
+					(<azdata.CategoryValue>this._sourceSelection._azureSubscriptionDropdown.value)?.displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
+					errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
+				}
+				if (!this.migrationStateModel._arcResourceLocation ||
+					(<azdata.CategoryValue>this._sourceSelection._azureLocationDropdown.value)?.displayName === constants.NO_LOCATION_FOUND) {
+					errors.push(constants.INVALID_LOCATION_ERROR);
+				}
+				if (!this.migrationStateModel._arcResourceResourceGroup ||
+					(<azdata.CategoryValue>this._sourceSelection._azureResourceGroupDropdown.value)?.displayName === constants.RESOURCE_GROUP_NOT_FOUND) {
+					errors.push(constants.INVALID_RESOURCE_GROUP_ERROR);
+				}
 
-			if (this.migrationStateModel._isSqlServerEnabledByArc && (!this.migrationStateModel._arcSqlServer ||
-				(<azdata.CategoryValue>this._sourceSelection._azureArcSqlServerDropdown.value)?.displayName === constants.SQL_SERVER_INSTANCE_NOT_FOUND)) {
-				errors.push(constants.INVALID_SQL_SERVER_INSTANCE_ERROR);
+				if (!this.migrationStateModel._isSqlServerEnabledByArc && !this.migrationStateModel._sourceInfrastructureType) {
+					errors.push(constants.INVALID_SOURCE_INFRASTRUCTURE_TYPE_ERROR);
+				}
+
+				if (this.migrationStateModel._isSqlServerEnabledByArc && (!this.migrationStateModel._arcSqlServer ||
+					(<azdata.CategoryValue>this._sourceSelection._azureArcSqlServerDropdown.value)?.displayName === constants.SQL_SERVER_INSTANCE_NOT_FOUND)) {
+					errors.push(constants.INVALID_SQL_SERVER_INSTANCE_ERROR);
+				}
 			}
 
 			if (errors.length > 0) {

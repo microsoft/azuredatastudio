@@ -16,7 +16,7 @@ import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrat
 export class SourceSelectionSection {
 	private _view!: azdata.ModelView;
 	private _disposables: vscode.Disposable[] = [];
-	private _sourceInfrastructureTypeDropdown!: azdata.DropDownComponent;
+	public _sourceInfrastructureTypeDropdown!: azdata.DropDownComponent;
 	private _azureAccountsLabel!: azdata.TextComponent;
 	public _azureAccountsDropdown!: azdata.DropDownComponent;
 	private _serviceContext!: MigrationServiceContext;
@@ -368,7 +368,6 @@ export class SourceSelectionSection {
 			values: sourceInfrastructureTypes,
 			width: 250,
 			editable: true,
-			required: true,
 			CSSStyles: {
 				'margin-top': '5px',
 				'margin-left': '10px',
@@ -425,7 +424,6 @@ export class SourceSelectionSection {
 				ariaLabel: constants.ACCOUNTS_SELECTION_PAGE_TITLE,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				editable: true,
-				required: true,
 				placeholder: constants.SELECT_AN_ACCOUNT,
 				CSSStyles: { 'margin-top': '-1em' },
 			}).component();
@@ -482,7 +480,6 @@ export class SourceSelectionSection {
 				ariaLabel: constants.SUBSCRIPTION,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				editable: true,
-				required: true,
 				placeholder: constants.SELECT_A_SUBSCRIPTION,
 				CSSStyles: { 'margin-top': '-1em' },
 			}).component();
@@ -525,7 +522,6 @@ export class SourceSelectionSection {
 				ariaLabel: constants.LOCATION,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				editable: true,
-				required: true,
 				placeholder: constants.SELECT_A_LOCATION,
 				CSSStyles: { 'margin-top': '-1em' },
 			}).component();
@@ -566,7 +562,6 @@ export class SourceSelectionSection {
 				ariaLabel: constants.RESOURCE_GROUP,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				editable: true,
-				required: true,
 				placeholder: constants.SELECT_A_RESOURCE_GROUP,
 				CSSStyles: { 'margin-top': '-1em' },
 			}).component();
@@ -608,7 +603,6 @@ export class SourceSelectionSection {
 				ariaLabel: constants.SQL_SERVER_INSTANCE,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				editable: true,
-				required: true,
 				placeholder: constants.SELECT_A_SQL_SERVER_INSTANCE,
 				CSSStyles: { 'margin-top': '-1em' },
 			}).component();
