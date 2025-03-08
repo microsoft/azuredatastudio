@@ -8,7 +8,7 @@ import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as contracts from '../service/contracts';
 import * as features from '../service/features';
-import { GetOrCreateMigrationArcSqlServerInstanceResponse, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView, ArcSqlServer, ArcSqlServerInstanceRequest, createMigrationArcSqlServerInstance, getMigrationArcSqlServerInstance, registerArcResourceProvider } from '../api/azure';
+import { GetOrCreateMigrationArcSqlServerInstanceResponse, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView, ArcSqlServer, ArcSqlServerInstanceRequest, createOrUpdateMigrationArcSqlServerInstance, getMigrationArcSqlServerInstance, registerArcResourceProvider } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
@@ -1152,7 +1152,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return;
 	}
 
-	public async createArcSqlServerInstance(fullInstanceName: string) {
+	public async createOrUpdateArcSqlServerInstance(fullInstanceName: string) {
 		try {
 			const serverInfo = await getSourceConnectionServerInfo();
 
@@ -1165,7 +1165,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				}
 			}
 
-			const response = await createMigrationArcSqlServerInstance(
+			const response = await createOrUpdateMigrationArcSqlServerInstance(
 				this._arcResourceAzureAccount,
 				this._arcResourceSubscription,
 				this._arcResourceResourceGroup,
@@ -1174,7 +1174,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			);
 			this._arcSqlServer = response.arcSqlServer;
 		} catch (error) {
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorCreatingArcSqlServerInstance', error);
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorCreatingOrUpdatingArcSqlServerInstance', error);
 		}
 	}
 

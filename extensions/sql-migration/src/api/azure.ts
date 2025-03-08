@@ -245,6 +245,14 @@ export type ArcSqlServer = {
 	id: string,
 	name: string,
 	type: string,
+	properties: {
+		hostType: string,
+		migration: {
+			assessment: {
+				assessmentUploadTime: string,
+			}
+		}
+	} | null,
 };
 
 export type VirtualMachineInstanceView = {
@@ -607,7 +615,7 @@ export async function registerArcResourceProvider(
 	}
 }
 
-export async function createMigrationArcSqlServerInstance(
+export async function createOrUpdateMigrationArcSqlServerInstance(
 	account: azdata.Account,
 	subscription: Subscription,
 	resourceGroup: ResourceGroup,

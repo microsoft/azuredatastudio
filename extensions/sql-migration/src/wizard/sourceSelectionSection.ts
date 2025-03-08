@@ -418,6 +418,7 @@ export class SourceSelectionSection {
 				} else {
 					this.migrationStateModel._arcResourceSubscription = undefined!;
 				}
+				this.migrationStateModel._arcSqlServer = undefined!;
 				await utils.clearDropDown(this._azureLocationDropdown);
 				await this.populateLocationDropdown();
 				await utils.clearDropDown(this._azureResourceGroupDropdown);
@@ -460,6 +461,7 @@ export class SourceSelectionSection {
 				} else {
 					this.migrationStateModel._arcResourceLocation = undefined!;
 				}
+				this.migrationStateModel._arcSqlServer = undefined!;
 				await utils.clearDropDown(this._azureArcSqlServerDropdown);
 				await this.populateArcSqlServerDropdown();
 			})
@@ -501,6 +503,7 @@ export class SourceSelectionSection {
 				} else {
 					this.migrationStateModel._arcResourceResourceGroup = undefined!;
 				}
+				this.migrationStateModel._arcSqlServer = undefined!;
 				await utils.clearDropDown(this._azureArcSqlServerDropdown);
 				await this.populateArcSqlServerDropdown();
 			})
