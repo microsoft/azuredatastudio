@@ -117,15 +117,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				return false;
 			}
 
-			if (!this.migrationStateModel._isSqlServerEnabledByArc) {
-				const registerArcProviderResponse = await this.migrationStateModel.registerArcResourceProvider();
-				if (registerArcProviderResponse?.status === 401) {
-					this.wizard.message = {
-						text: constants.REGISTER_ARC_RESOURCE_PROVIDER_UNAUTHORIZED_ERROR,
-						level: azdata.window.MessageLevel.Warning
-					}
-					return true;
-				}
+			if (!this.migrationStateModel._isSqlServerEnabledByArc && !this.migrationStateModel._arcSqlServer) {
 				const fullInstanceName = await this.migrationStateModel.getFullArcInstanceName();
 				const getArcSqlServerResponse = await this.migrationStateModel.getArcSqlServerInstance(fullInstanceName);
 				if (getArcSqlServerResponse?.status === 200) {
@@ -142,6 +134,14 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 					}
 					return false;
 				} else {
+					const registerArcProviderResponse = await this.migrationStateModel.registerArcResourceProvider();
+					if (registerArcProviderResponse?.status === 401) {
+						this.wizard.message = {
+							text: constants.REGISTER_ARC_RESOURCE_PROVIDER_UNAUTHORIZED_ERROR,
+							level: azdata.window.MessageLevel.Warning
+						}
+						return true;
+					}
 					await this.migrationStateModel.createArcSqlServerInstance(fullInstanceName);
 				}
 			}
