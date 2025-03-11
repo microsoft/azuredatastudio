@@ -63,7 +63,7 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 	return filteredLocations;
 }
 
-export async function getArcLocations(account: azdata.Account, subscription: Subscription): Promise<azurecore.azureResource.AzureLocation[]> {
+export async function getAzureArcLocations(account: azdata.Account, subscription: Subscription): Promise<azurecore.azureResource.AzureLocation[]> {
 	const api = await getAzureCoreAPI();
 	const response = await api.getLocations(account, subscription, true);
 

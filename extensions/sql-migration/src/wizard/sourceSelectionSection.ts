@@ -99,7 +99,7 @@ export class SourceSelectionSection {
 		try {
 			this._azureLocationDropdown.loading = true;
 
-			this.migrationStateModel._locations = await utils.getArcLocations(
+			this.migrationStateModel._locations = await utils.getAzureArcLocations(
 				this.migrationStateModel._arcResourceAzureAccount,
 				this.migrationStateModel._arcResourceSubscription);
 
