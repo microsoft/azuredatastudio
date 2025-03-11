@@ -260,7 +260,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const arcSqlServer = this.migrationStateModel._arcSqlServer;
 		if (arcSqlServer) {
 			if (this.migrationStateModel._isSqlServerEnabledByArc) {
-				if (arcSqlServer.migration?.assessment?.assessmentUploadTime) {
+				if (arcSqlServer.properties.migration?.assessment?.assessmentUploadTime) {
 					this._textBeforeArcServerLink.value = constants.ARC_RESOURCE_ASSESSMENT_COMPUTED_BEFORE_TEXT;
 					await this._arcServerLink.updateProperties({
 						label: constants.ARC_RESOURCE_ASSESSMENT_COMPUTED_HYPERLINK_TEXT,

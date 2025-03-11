@@ -95,8 +95,8 @@ export class SummaryPage extends MigrationWizardPage {
 			], { CSSStyles: { 'margin-right': '5px' } })
 			.component();
 
-		this._flexContainer
-			.addItems([
+		if (this.migrationStateModel._isSqlServerEnabledByArc || this.migrationStateModel._trackMigration) {
+			this._flexContainer.addItems([
 				await createHeadingTextComponent(
 					this._view,
 					constants.SQL_SERVER_INSTANCE),
@@ -118,8 +118,12 @@ export class SummaryPage extends MigrationWizardPage {
 					constants.RESOURCE_GROUP,
 					this.migrationStateModel._arcResourceResourceGroup.name),
 
-				arcServerRow,
+				arcServerRow
+			]);
+		}
 
+		this._flexContainer
+			.addItems([
 				await createHeadingTextComponent(
 					this._view,
 					constants.SOURCE_DATABASES),
