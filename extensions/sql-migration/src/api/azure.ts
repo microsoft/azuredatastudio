@@ -65,7 +65,7 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 	return filteredLocations;
 }
 
-export async function getArcLocations(account: azdata.Account, subscription: Subscription): Promise<azurecore.azureResource.AzureLocation[]> {
+export async function getAzureArcLocations(account: azdata.Account, subscription: Subscription): Promise<azurecore.azureResource.AzureLocation[]> {
 	const api = await getAzureCoreAPI();
 	const response = await api.getLocations(account, subscription, true);
 
@@ -300,7 +300,7 @@ export function getSessionIdHeader(sessionId: string): Record<string, string> {
 	};
 }
 
-export async function makeAzureRequest(account: azdata.Account, subscription: Subscription, path: string, requestType: azurecore.HttpRequestMethod, requestBody: any?) {
+export async function makeAzureRequest(account: azdata.Account, subscription: Subscription, path: string, requestType: azurecore.HttpRequestMethod, requestBody?: any) {
 	const api = await getAzureCoreAPI();
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	return await api.makeAzureRestRequest<any>(account, subscription, path, requestType, requestBody, true, host, getDefaultHeader());
