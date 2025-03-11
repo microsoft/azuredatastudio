@@ -8,7 +8,7 @@ import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as contracts from '../service/contracts';
 import * as features from '../service/features';
-import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView, ArcSqlServer, ArcSqlServerInstanceRequest, createMigrationArcSqlServerInstance, getMigrationArcSqlServerInstance, registerArcResourceProvider } from '../api/azure';
+import { GetOrCreateMigrationArcSqlServerInstanceResponse, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView, ArcSqlServer, ArcSqlServerInstanceRequest, createOrUpdateMigrationArcSqlServerInstance, getMigrationArcSqlServerInstance, registerArcResourceProvider } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
@@ -555,6 +555,22 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				fullInstanceName = machineName;
 			}
 		}
+		return fullInstanceName;
+	}
+
+	public async getFullArcInstanceName() {
+		let fullInstanceName: string;
+		const connectionProfile = await getSourceConnectionProfile();
+		const serverInfo = await getSourceConnectionServerInfo();
+		const machineName = (<any>serverInfo)['machineName'];				// contains the correct machine name but not necessarily the correct instance name
+		const instanceName = connectionProfile.serverName;					// contains the correct instance name but not necessarily the correct machine name
+
+		if (instanceName.includes('\\')) {
+			fullInstanceName = machineName + '_' + instanceName.substring(instanceName.indexOf('\\') + 1);
+		} else {
+			fullInstanceName = machineName;
+		}
+
 		return fullInstanceName;
 	}
 
@@ -1137,19 +1153,20 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		}
 	}
 
-	public async createArcSqlServerInstance(fullInstanceName: string) {
+	public async createOrUpdateArcSqlServerInstance(fullInstanceName: string) {
 		try {
 			const serverInfo = await getSourceConnectionServerInfo();
 
 			const requestBody: ArcSqlServerInstanceRequest = {
 				location: this._arcResourceLocation.name,
 				properties: {
+					hostType: constants.SourceInfrastructureTypeLookup[this._sourceInfrastructureType],
 					version: getSqlServerName(serverInfo.serverMajorVersion ?? 0),
 					edition: getSqlServerEdition(serverInfo.serverEdition),
 				}
 			}
 
-			const response = await createMigrationArcSqlServerInstance(
+			const response = await createOrUpdateMigrationArcSqlServerInstance(
 				this._arcResourceAzureAccount,
 				this._arcResourceSubscription,
 				this._arcResourceResourceGroup,
@@ -1158,11 +1175,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			);
 			this._arcSqlServer = response.arcSqlServer;
 		} catch (error) {
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorCreatingArcSqlServerInstance', error);
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorCreatingOrUpdatingArcSqlServerInstance', error);
 		}
 	}
 
-	public async getArcSqlServerInstance(fullInstanceName: string): Promise<any> {
+	public async getArcSqlServerInstance(fullInstanceName: string): Promise<GetOrCreateMigrationArcSqlServerInstanceResponse | void> {
 		try {
 			return await getMigrationArcSqlServerInstance(
 				this._arcResourceAzureAccount,
@@ -1173,7 +1190,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		} catch (error) {
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorGettingArcSqlServerInstance', error);
 		}
-		return;
 	}
 
 	public async startMigration() {

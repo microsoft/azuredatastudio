@@ -437,6 +437,7 @@ export class SourceSelectionSection {
 				} else {
 					this.migrationStateModel._arcResourceSubscription = undefined!;
 				}
+				this.migrationStateModel._arcSqlServer = undefined!;
 				await utils.clearDropDown(this._azureLocationDropdown);
 				await this.populateLocationDropdown();
 				await utils.clearDropDown(this._azureResourceGroupDropdown);
@@ -479,6 +480,7 @@ export class SourceSelectionSection {
 				} else {
 					this.migrationStateModel._arcResourceLocation = undefined!;
 				}
+				this.migrationStateModel._arcSqlServer = undefined!;
 				await utils.clearDropDown(this._azureArcSqlServerDropdown);
 				await this.populateArcSqlServerDropdown();
 			})
@@ -520,6 +522,7 @@ export class SourceSelectionSection {
 				} else {
 					this.migrationStateModel._arcResourceResourceGroup = undefined!;
 				}
+				this.migrationStateModel._arcSqlServer = undefined!;
 				await utils.clearDropDown(this._azureArcSqlServerDropdown);
 				await this.populateArcSqlServerDropdown();
 			})
@@ -555,11 +558,11 @@ export class SourceSelectionSection {
 		this._disposables.push(
 			this._azureArcSqlServerDropdown.onValueChanged(async (value) => {
 				if (value && value !== 'undefined' && value !== constants.SQL_SERVER_INSTANCE_NOT_FOUND) {
-					const selectedArcResource = this.migrationStateModel._sourceArcSqlServers?.find(rg => rg.name === value);
+					const selectedArcResource = this.migrationStateModel._sourceArcSqlServers?.find(resource => resource.name === value);
 					if (selectedArcResource) {
 						const arcSqlServer = utils.deepClone(selectedArcResource)!;
 						const getArcSqlServerResponse = await this.migrationStateModel.getArcSqlServerInstance(arcSqlServer.name);
-						this.migrationStateModel._arcSqlServer = getArcSqlServerResponse.status === 200 ? getArcSqlServerResponse.arcSqlServer : undefined!;
+						this.migrationStateModel._arcSqlServer = getArcSqlServerResponse?.status === 200 ? getArcSqlServerResponse.arcSqlServer : undefined!;
 					} else {
 						this.migrationStateModel._arcSqlServer = undefined!;
 					}
