@@ -72,6 +72,17 @@ export enum SourceInfrastructureType {
 	Other = 'Other',
 }
 
+export enum SqlServerEdition {
+	EVALUATION = "Evaluation",
+	ENTERPRISE = "Enterprise",
+	STANDARD = "Standard",
+	WEB = "Web",
+	DEVELOPER = "Developer",
+	EXPRESS = "Express",
+	BUSINESS_INTELLIGENCE = "Business Intelligence",
+	UNKNOWN = "Unknown"
+}
+
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
 		return obj;
@@ -91,7 +102,7 @@ export function deepClone<T>(obj: T): T {
 	return result;
 }
 
-export function getSqlServerName(majorVersion: number): string | undefined {
+export function getSqlServerName(majorVersion: number): string {
 	switch (majorVersion) {
 		case 10:
 			return 'SQL Server 2008';
@@ -105,8 +116,31 @@ export function getSqlServerName(majorVersion: number): string | undefined {
 			return 'SQL Server 2017';
 		case 15:
 			return 'SQL Server 2019';
+		case 16:
+			return 'SQL Server 2012';
 		default:
-			return undefined;
+			return 'Unknown';
+	}
+}
+
+export function getSqlServerEdition(edition: string): string {
+	switch (true) {
+		case /Enterprise/i.test(edition):
+			return SqlServerEdition.ENTERPRISE;
+		case /Standard/i.test(edition):
+			return SqlServerEdition.STANDARD;
+		case /Web/i.test(edition):
+			return SqlServerEdition.WEB;
+		case /Developer/i.test(edition):
+			return SqlServerEdition.DEVELOPER;
+		case /Express/i.test(edition):
+			return SqlServerEdition.EXPRESS;
+		case /Business Intelligence/i.test(edition):
+			return SqlServerEdition.BUSINESS_INTELLIGENCE;
+		case /Evaluation/i.test(edition):
+			return SqlServerEdition.EVALUATION;
+		default:
+			return SqlServerEdition.UNKNOWN;
 	}
 }
 
@@ -1776,4 +1810,3 @@ export async function refreshIntegrationRuntimeTable(_view: ModelView, _integrat
 		await _integrationRuntimeTable.setDataValues(data);
 	}
 }
-
