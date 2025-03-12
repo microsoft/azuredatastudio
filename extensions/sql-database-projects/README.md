@@ -53,7 +53,7 @@ The extension will prompt to install the [.NET SDK](https://aka.ms/sqlprojects-d
 ### General Settings
 
 - `sqlDatabaseProjects.dotnetSDK Location`: The path to the folder containing the `dotnet` folder for the .NET SDK. If not set, the extension will attempt to find the .NET SDK on the system.
-- `sqlDatabaseProjects.microsoftBuildSqlVersion`: Version of Microsoft.Build.Sql binaries used when building SQL projects that are not SDK-style SQL projects. If not set, the extension will use Microsoft.Build.Sql 0.2.5-preview.
+- `sqlDatabaseProjects.microsoftBuildSqlVersion`: Version of Microsoft.Build.Sql binaries used when building SQL projects that are not SDK-style SQL projects. If not set, the extension will use Microsoft.Build.Sql 1.0.0.
 - `sqlDatabaseProjects.netCoreDoNotAsk`: When true, no longer prompts to install .NET SDK when a supported installation is not found.
 - `sqlDatabaseProjects.collapseProjectNodes`: Option to set the default state of the project nodes in the database projects view to collapsed. If not set, the extension will default to expanded.
 
