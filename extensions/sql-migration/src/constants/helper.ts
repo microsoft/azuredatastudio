@@ -383,3 +383,5 @@ export function getSchemaMigrationStatusString(migration: DatabaseMigration | un
 	const schemaMigrationStatus = getSchemaMigrationStatus(migration) ?? DefaultSettingValue;
 	return loc.SchemaMigrationStatusLookup[schemaMigrationStatus] ?? schemaMigrationStatus;
 }
+
+export const forbiddenStatusCode = 403;
