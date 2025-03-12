@@ -78,7 +78,7 @@ export class SummaryPage extends MigrationWizardPage {
 
 		const arcServerHyperlink = this._view.modelBuilder.hyperlink()
 			.withProps({
-				url: '',
+				url: `https://portal.azure.com/#resource/${this.migrationStateModel._arcSqlServer?.id}`,
 				label: this.migrationStateModel._arcSqlServer?.name,
 				CSSStyles: { ...styles.BODY_CSS, 'margin': '0px', 'width': '300px', }
 			}).component();
