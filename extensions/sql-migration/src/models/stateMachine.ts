@@ -153,6 +153,7 @@ export interface SavedInfo {
 	databaseList: string[];
 	sourceInfrastructureType: SourceInfrastructureType | null;
 	isSqlServerEnabledByArc: boolean | null;
+	trackMigration: boolean | null;
 	arcResourceAzureAccount: azdata.Account | null;
 	arcResourceSubscription: azurecore.azureResource.AzureResourceSubscription | null;
 	arcResourceLocation: azurecore.azureResource.AzureLocation | null;
@@ -204,6 +205,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public _sourceInfrastructureType!: SourceInfrastructureType;
 	public _isSqlServerEnabledByArc: boolean = false;
+	public _trackMigration: boolean = true;
 	public _arcResourceAzureAccount!: azdata.Account;
 	public _arcResourceSubscription!: azurecore.azureResource.AzureResourceSubscription;
 	public _arcResourceLocation!: azurecore.azureResource.AzureLocation;
@@ -1363,6 +1365,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							'sqlMigrationServiceId': Buffer.from(this._sqlMigrationService?.id!).toString('base64'),
 							'irRegistered': (this._nodeNames?.length > 0).toString(),
 							'wizardEntryPoint': wizardEntryPoint,
+							'migrationTracked': String(this._trackMigration)
 						},
 						{
 						});
@@ -1401,6 +1404,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			databaseAssessment: [],
 			sourceInfrastructureType: null,
 			isSqlServerEnabledByArc: null,
+			trackMigration: null,
 			arcResourceAzureAccount: null,
 			arcResourceSubscription: null,
 			arcResourceLocation: null,
@@ -1473,6 +1477,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			case Page.DatabaseSelector:
 				saveInfo.sourceInfrastructureType = this._sourceInfrastructureType;
 				saveInfo.isSqlServerEnabledByArc = this._isSqlServerEnabledByArc;
+				saveInfo.trackMigration = this._trackMigration;
 				saveInfo.arcResourceAzureAccount = deepClone(this._arcResourceAzureAccount);
 				saveInfo.arcResourceSubscription = this._arcResourceSubscription;
 				saveInfo.arcResourceLocation = this._arcResourceLocation;
@@ -1489,6 +1494,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			this._sourceInfrastructureType = this.savedInfo.sourceInfrastructureType || undefined!;
 			this._isSqlServerEnabledByArc = this.savedInfo.isSqlServerEnabledByArc ?? false;
+			this._trackMigration = this.savedInfo.trackMigration ?? true;
 			this._arcResourceAzureAccount = this.savedInfo.arcResourceAzureAccount || undefined!;
 			this._arcResourceSubscription = this.savedInfo.arcResourceSubscription || undefined!;
 			this._arcResourceLocation = this.savedInfo.arcResourceLocation || undefined!;
