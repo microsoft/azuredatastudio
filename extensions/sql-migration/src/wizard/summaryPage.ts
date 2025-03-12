@@ -96,14 +96,23 @@ export class SummaryPage extends MigrationWizardPage {
 			.component();
 
 		if (this.migrationStateModel._isSqlServerEnabledByArc || this.migrationStateModel._trackMigration) {
-			this._flexContainer.addItems([
+			let items = [
 				await createHeadingTextComponent(
 					this._view,
-					constants.SQL_SERVER_INSTANCE),
-				createInformationRow(
-					this._view,
-					constants.SOURCE_INFRASTRUCTURE_TYPE,
-					constants.SourceInfrastructureTypeLookup[this.migrationStateModel._sourceInfrastructureType]),
+					constants.SQL_SERVER_INSTANCE)
+			];
+
+			if (!this.migrationStateModel._isSqlServerEnabledByArc) {
+				items.push(
+					createInformationRow(
+						this._view,
+						constants.SOURCE_INFRASTRUCTURE_TYPE,
+						constants.SourceInfrastructureTypeLookup[this.migrationStateModel._sourceInfrastructureType]
+					)
+				)
+			}
+
+			items.push(
 				createInformationRow(
 					this._view,
 					constants.SUBSCRIPTION,
@@ -119,7 +128,8 @@ export class SummaryPage extends MigrationWizardPage {
 					this.migrationStateModel._arcResourceResourceGroup.name),
 
 				arcServerRow
-			]);
+			)
+			this._flexContainer.addItems(items);
 		}
 
 		this._flexContainer

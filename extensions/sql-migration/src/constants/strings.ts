@@ -112,9 +112,9 @@ export const ARC_RESOURCE_SUBSCRIPTION_INFO = localize('sql.migration.arc.subscr
 export const ARC_RESOURCE_LOCATION_INFO = localize('sql.migration.arc.location', "Select the Azure region under which your resource resides.");
 export const ARC_RESOURCE_RESOURCE_GROUP_INFO = localize('sql.migration.arc.resource_group', "Select the Azure rsource group under which your SQL Server resource resides.");
 export const ARC_RESOURCE_INFO = localize('sql.migration.arc.resource', "Select the SQL Server enabled by Azure Arc residing in above subscription, location and resource group.");
-export const NON_ARC_RESOURCE_SUBSCRIPTION_INFO = localize('sql.migration.non.arc.subscription', "Select the Azure subscription for creating Arc SQL Server that will be used for tracking the migration.");
-export const NON_ARC_RESOURCE_LOCATION_INFO = localize('sql.migration.non.arc.location', "Select the Azure region for creating Arc SQL Server that will be used for tracking the migration.");
-export const NON_ARC_RESOURCE_RESOURCE_GROUP_INFO = localize('sql.migration.non.arc.resource_group', "Select the resource group for creating Arc SQL Server that will be used for tracking the migration.");
+export const NON_ARC_RESOURCE_SUBSCRIPTION_INFO = localize('sql.migration.non.arc.subscription', "Select the Azure subscription for creating SQL Server that will be used for tracking the migration.");
+export const NON_ARC_RESOURCE_LOCATION_INFO = localize('sql.migration.non.arc.location', "Select the Azure region for creating SQL Server that will be used for tracking the migration.");
+export const NON_ARC_RESOURCE_RESOURCE_GROUP_INFO = localize('sql.migration.non.arc.resource_group', "Select the resource group for creating SQL Server that will be used for tracking the migration.");
 export const ARC_RESOURCE_CREATION_INFO = localize('sql.migration.arc.resource.creation.info', "To help track the migration process in the Azure portal, a SQL Server instance resource will be created. There is no cost associated with this resource. Please choose a location, subscription and resource group in which to create the resource.");
 
 // XEvents assessment
@@ -254,7 +254,7 @@ export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number): string {
 	return localize('sql.migration.can.be.migrated', "{0}/{1} databases can be migrated without issues", eligibleDbs, totalDbs);
 }
 
-export const ARC_RESOURCE_CREATED_BEFORE_TEXT = localize('sql.migration.arc.resource.created.before.text', "We have created Arc SQL Server resource ");
+export const ARC_RESOURCE_CREATED_BEFORE_TEXT = localize('sql.migration.arc.resource.created.before.text', "We have created SQL Server instance ");
 export const ARC_RESOURCE_CREATED_AFTER_TEXT = localize('sql.migration.arc.resource.created.after.text', " It will assist with migrations from the same source SQL Server. This resource allows users to select the same source for future migrations and save time.");
 export const ARC_RESOURCE_ASSESSMENT_COMPUTED_BEFORE_TEXT = localize('sql.migration.arc.resource.assessment.computed.before.text', "Assessment and SKU recommendation for this SQL Server instance enabled by Azure Arc has been computed. ");
 export const ARC_RESOURCE_ASSESSMENT_COMPUTED_HYPERLINK_TEXT = localize('sql.migration.arc.resource.assessment.computed.after.text', "Click here to continue migration process from Azure Portal. ");
