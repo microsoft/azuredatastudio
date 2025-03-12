@@ -19,6 +19,7 @@ import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, get
 import { LoginMigrationModel } from './loginMigrationModel';
 import { TdeMigrationDbResult, TdeMigrationModel, TdeValidationResult } from './tdeModels';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
+import { forbiddenStatusCode } from '../constants/helper';
 const localize = nls.loadMessageBundle();
 
 export enum ValidateIrState {
@@ -1143,12 +1144,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async registerArcResourceProvider() {
 		try {
-			const response = await registerArcResourceProvider(
+			const responseStatus = await registerArcResourceProvider(
 				this._arcResourceAzureAccount,
 				this._arcResourceSubscription,
 			);
-			this._arcRpRegistrationStatus = response.status;
+			this._arcRpRegistrationStatus = responseStatus;
 		} catch (error) {
+			if (error.message && error.message.includes("403")) {
+				this._arcRpRegistrationStatus = forbiddenStatusCode;
+			}
 			logError(TelemetryViews.DatabaseBackupPage, 'ErrorRegisteringArcResourceProvider', error);
 		}
 	}
