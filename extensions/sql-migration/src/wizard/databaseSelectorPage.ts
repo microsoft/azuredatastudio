@@ -144,15 +144,10 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 						}
 						return false;
 					} else {
-						const registerArcProviderResponse = await this.migrationStateModel.registerArcResourceProvider();
-						if (registerArcProviderResponse?.status === 401) {
-							this.wizard.message = {
-								text: constants.REGISTER_ARC_RESOURCE_PROVIDER_UNAUTHORIZED_ERROR,
-								level: azdata.window.MessageLevel.Warning
-							}
-							return true;
+						await this.migrationStateModel.registerArcResourceProvider();
+						if (this.migrationStateModel._arcRpRegistrationStatus === 200) {
+							await this.migrationStateModel.createOrUpdateArcSqlServerInstance(fullInstanceName);
 						}
-						await this.migrationStateModel.createOrUpdateArcSqlServerInstance(fullInstanceName);
 					}
 				}
 			}

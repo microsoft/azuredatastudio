@@ -19,7 +19,7 @@ import { AssessmentSummaryCard } from './assessmentSummaryCard';
 import { MigrationTargetType } from '../../api/utils';
 import { logError, TelemetryViews } from '../../telemetry';
 import { getSourceConnectionProfile } from '../../api/sqlUtils';
-import { IssueCategory } from '../../constants/helper';
+import { forbiddenStatusCode, IssueCategory } from '../../constants/helper';
 import { WizardController } from '../wizardController';
 
 export class SKURecommendationPage extends MigrationWizardPage {
@@ -260,7 +260,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const arcSqlServer = this.migrationStateModel._arcSqlServer;
 		if (arcSqlServer) {
 			if (this.migrationStateModel._isSqlServerEnabledByArc) {
-				if (arcSqlServer.properties.migration?.assessment?.assessmentUploadTime) {
+				if (arcSqlServer.properties?.migration?.assessment?.assessmentUploadTime) {
 					this._textBeforeArcServerLink.value = constants.ARC_RESOURCE_ASSESSMENT_COMPUTED_BEFORE_TEXT;
 					await this._arcServerLink.updateProperties({
 						label: constants.ARC_RESOURCE_ASSESSMENT_COMPUTED_HYPERLINK_TEXT,
@@ -285,7 +285,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				});
 			}
 		} else {
-			if (this.migrationStateModel._arcRpRegistrationStatus === 401) {
+			if (this.migrationStateModel._arcRpRegistrationStatus === forbiddenStatusCode) {
 				this.wizard.message = {
 					text: constants.REGISTER_ARC_RESOURCE_PROVIDER_UNAUTHORIZED_ERROR,
 					level: azdata.window.MessageLevel.Warning
