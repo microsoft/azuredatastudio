@@ -253,8 +253,8 @@ export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number): string {
 	return localize('sql.migration.can.be.migrated', "{0}/{1} databases can be migrated without issues", eligibleDbs, totalDbs);
 }
 
-export const ARC_RESOURCE_CREATED_BEFORE_TEXT = localize('sql.migration.arc.resource.created.before.text', "We have created Arc SQL Server resource ");
-export const ARC_RESOURCE_CREATED_AFTER_TEXT = localize('sql.migration.arc.resource.created.after.text', " It will assist with migrations from the same source SQL Server. This resource allows users to select the same source for future migrations and save time.");
+export const ARC_RESOURCE_CREATED_BEFORE_TEXT = localize('sql.migration.arc.resource.created.before.text', "To help track the migration process in the Azure portal, a SQL Server instance resource named ");
+export const ARC_RESOURCE_CREATED_AFTER_TEXT = localize('sql.migration.arc.resource.created.after.text', " is created.");
 export const ARC_RESOURCE_ASSESSMENT_COMPUTED_BEFORE_TEXT = localize('sql.migration.arc.resource.assessment.computed.before.text', "Assessment and SKU recommendation for this SQL Server instance enabled by Azure Arc has been computed. ");
 export const ARC_RESOURCE_ASSESSMENT_COMPUTED_HYPERLINK_TEXT = localize('sql.migration.arc.resource.assessment.computed.after.text', "Click here to continue migration process from Azure Portal. ");
 export const ARC_RESOURCE_ASSESSMENT_NOT_COMPUTED_TEXT = localize('sql.migration.arc.resource.assessment.not.computed.text', "Assessment and SKU recommendation for this SQL Server instance enabled by Azure Arc has not been computed.");
@@ -264,6 +264,7 @@ export const ASSESSMENT_MIGRATION_WARNING_SQLDB = localize('sql.migration.assess
 export const ASSESSMENT_MIGRATION_WARNING_SQLMI = localize('sql.migration.assessment.migration.warning.sqlmi', "Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Database migration readiness.");
 export const DATABASES_TABLE_TILE = localize('sql.migration.databases.table.title', "Databases");
 export const SQL_SERVER_INSTANCE = localize('sql.migration.sql.server.instance', "SQL Server instance");
+export const SOURCE_SQL_SERVER_INSTANCE = localize('sql.migration.sql.server.instance', "Source SQL Server instance");
 export const LOAD_ASSESSMENT_REPORT = localize('sql.migration.load.assessment.report', "Load assessment report");
 export const SAVE_ASSESSMENT_REPORT = localize('sql.migration.save.assessment.report', "Save assessment report");
 export const SAVE_RECOMMENDATION_REPORT = localize('sql.migration.save.recommendation.report', "Save recommendation report");

@@ -99,7 +99,7 @@ export class SummaryPage extends MigrationWizardPage {
 			.addItems([
 				await createHeadingTextComponent(
 					this._view,
-					constants.SQL_SERVER_INSTANCE),
+					constants.SOURCE_SQL_SERVER_INSTANCE),
 				createInformationRow(
 					this._view,
 					constants.SOURCE_INFRASTRUCTURE_TYPE,

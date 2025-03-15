@@ -39,6 +39,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _arcResourceCreationComponent!: azdata.FlexContainer;
 	private _textBeforeArcServerLink!: azdata.TextComponent;
 	private _textAfterArcServerLink!: azdata.TextComponent;
+	private _arcResourceIcon!: azdata.ImageComponent;
 
 	private _assessmentSummaryCard!: azdata.FlexContainer;
 	private _assessmentSummaryCardLoader!: azdata.LoadingComponent;
@@ -71,7 +72,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._skuDataCollectionToolbar = new SkuDataCollectionToolbar(this, this.wizard, this.migrationStateModel);
 		const toolbar = this._skuDataCollectionToolbar.createToolbar(view);
 
-		const arcResourceIcon = this._view.modelBuilder.image()
+		this._arcResourceIcon = this._view.modelBuilder.image()
 			.withProps({
 				iconPath: IconPathHelper.completedMigration,
 				iconHeight: 16,
@@ -101,7 +102,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._arcResourceCreationComponent = this._view.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).withItems(
 			[
-				arcResourceIcon,
+				this._arcResourceIcon,
 				this._textBeforeArcServerLink,
 				this._arcServerLink,
 				this._textAfterArcServerLink
@@ -266,8 +267,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						label: constants.ARC_RESOURCE_ASSESSMENT_COMPUTED_HYPERLINK_TEXT,
 						url: `https://portal.azure.com/#resource/${arcSqlServer.id}/migrationAssessment`,
 					});
+					this._arcResourceIcon.iconPath = IconPathHelper.completedMigration;
 				} else {
 					this._textBeforeArcServerLink.value = constants.ARC_RESOURCE_ASSESSMENT_NOT_COMPUTED_TEXT;
+					this._arcResourceIcon.iconPath = IconPathHelper.warning;
 					await this._arcServerLink.updateProperties({
 						label: '',
 						url: ''
@@ -278,6 +281,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this._textAfterArcServerLink.display = 'flex';
 				this._textBeforeArcServerLink.value = constants.ARC_RESOURCE_CREATED_BEFORE_TEXT;
 				this._textAfterArcServerLink.value = constants.ARC_RESOURCE_CREATED_AFTER_TEXT;
+				this._arcResourceIcon.iconPath = IconPathHelper.completedMigration;
 
 				await this._arcServerLink.updateProperties({
 					label: `${arcSqlServer.name}.`,
