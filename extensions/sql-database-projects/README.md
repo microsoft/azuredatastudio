@@ -33,6 +33,7 @@ The extension will prompt to install the [.NET SDK](https://aka.ms/sqlprojects-d
 
 ## Features
 
+- [Microsoft.Build.Sql SDK-style projects](https://aka.ms/sqlprojects)
 - [Develop and validate database objects using T-SQL](https://learn.microsoft.com/sql/tools/sql-database-projects/sql-database-projects#validation)
 - [Start from an existing database to get it in source control](https://learn.microsoft.com/sql/tools/sql-database-projects/tutorials/start-from-existing-database?pivots=sq1-visual-studio-code)
 - [Publish the database objects to a SQL Server or Azure SQL instance](https://learn.microsoft.com/sql/tools/sql-database-projects/sql-database-projects#deployment)
@@ -45,7 +46,6 @@ The extension will prompt to install the [.NET SDK](https://aka.ms/sqlprojects-d
 
 ### Preview Features
 
-- Microsoft.Build.Sql SDK-style projects
 - Generate SQL projects from OpenAPI/Swagger specs
 
 ## Settings
