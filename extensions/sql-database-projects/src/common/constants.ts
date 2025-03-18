@@ -40,7 +40,7 @@ export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription',
 
 export const emptySqlDatabaseSdkProjectTypeId = 'EmptySqlDbSdkProj';
 export const emptySdkProjectTypeDisplayName = localize('emptySdkProjectTypeDisplayName', "SQL Database (SDK)");
-export const emptySdkProjectTypeDescription = localize('emptySdkProjectTypeDescription', "Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.");
+export const emptySdkProjectTypeDescription = localize('emptySdkProjectTypeDescription', "Develop and publish schemas for SQL databases with Microsoft.Build.Sql, starting from an empty SDK-style project.");
 
 export const emptyAzureDbSqlDatabaseProjectTypeId = 'EmptyAzureSqlDbProj';
 export const emptyAzureDbProjectTypeDisplayName = localize('emptyAzureDbProjectTypeDisplayName', "Azure SQL Database");
@@ -341,7 +341,7 @@ export const includePermissionsLabel = localize('includePermissionsLabel', "Incl
 export const includePermissionsInProject = localize('includePermissionsInProject', "Include permissions in project");
 export const browseEllipsisWithIcon = `$(folder) ${localize('browseEllipsis', "Browse...")}`;
 export const selectProjectLocation = localize('selectProjectLocation', "Select project location");
-export const sdkStyleProject = localize('sdkStyleProject', 'SDK-style project (Preview)');
+export const sdkStyleProject = localize('sdkStyleProject', 'SDK-style project');
 export const YesRecommended = localize('yesRecommended', "Yes (Recommended)");
 export const SdkLearnMorePlaceholder = localize('sdkLearnMorePlaceholder', "Click \"Learn More\" button for more information about SDK-style projects");
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
