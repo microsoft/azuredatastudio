@@ -40,7 +40,7 @@ export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription',
 
 export const emptySqlDatabaseSdkProjectTypeId = 'EmptySqlDbSdkProj';
 export const emptySdkProjectTypeDisplayName = localize('emptySdkProjectTypeDisplayName', "SQL Database (SDK)");
-export const emptySdkProjectTypeDescription = localize('emptySdkProjectTypeDescription', "Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.");
+export const emptySdkProjectTypeDescription = localize('emptySdkProjectTypeDescription', "Develop and publish schemas for SQL databases with Microsoft.Build.Sql, starting from an empty SDK-style project.");
 
 export const emptyAzureDbSqlDatabaseProjectTypeId = 'EmptyAzureSqlDbProj';
 export const emptyAzureDbProjectTypeDisplayName = localize('emptyAzureDbProjectTypeDisplayName', "Azure SQL Database");
