@@ -78,7 +78,7 @@ export class SummaryPage extends MigrationWizardPage {
 
 		const arcServerHyperlink = this._view.modelBuilder.hyperlink()
 			.withProps({
-				url: '',
+				url: `https://portal.azure.com/#resource/${this.migrationStateModel._arcSqlServer?.id}`,
 				label: this.migrationStateModel._arcSqlServer?.name,
 				CSSStyles: { ...styles.BODY_CSS, 'margin': '0px', 'width': '300px', }
 			}).component();
@@ -95,15 +95,24 @@ export class SummaryPage extends MigrationWizardPage {
 			], { CSSStyles: { 'margin-right': '5px' } })
 			.component();
 
-		this._flexContainer
-			.addItems([
+		if (this.migrationStateModel._isSqlServerEnabledByArc || this.migrationStateModel._trackMigration) {
+			let items = [
 				await createHeadingTextComponent(
 					this._view,
-					constants.SOURCE_SQL_SERVER_INSTANCE),
-				createInformationRow(
-					this._view,
-					constants.SOURCE_INFRASTRUCTURE_TYPE,
-					constants.SourceInfrastructureTypeLookup[this.migrationStateModel._sourceInfrastructureType]),
+					constants.SQL_SERVER_INSTANCE)
+			];
+
+			if (!this.migrationStateModel._isSqlServerEnabledByArc) {
+				items.push(
+					createInformationRow(
+						this._view,
+						constants.SOURCE_INFRASTRUCTURE_TYPE,
+						constants.SourceInfrastructureTypeLookup[this.migrationStateModel._sourceInfrastructureType]
+					)
+				)
+			}
+
+			items.push(
 				createInformationRow(
 					this._view,
 					constants.SUBSCRIPTION,
@@ -118,8 +127,13 @@ export class SummaryPage extends MigrationWizardPage {
 					constants.RESOURCE_GROUP,
 					this.migrationStateModel._arcResourceResourceGroup.name),
 
-				arcServerRow,
+				arcServerRow
+			)
+			this._flexContainer.addItems(items);
+		}
 
+		this._flexContainer
+			.addItems([
 				await createHeadingTextComponent(
 					this._view,
 					constants.SOURCE_DATABASES),
