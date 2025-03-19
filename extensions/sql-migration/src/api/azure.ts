@@ -65,7 +65,7 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 	return filteredLocations;
 }
 
-export async function getArcLocations(account: azdata.Account, subscription: Subscription): Promise<azurecore.azureResource.AzureLocation[]> {
+export async function getAzureArcLocations(account: azdata.Account, subscription: Subscription): Promise<azurecore.azureResource.AzureLocation[]> {
 	const api = await getAzureCoreAPI();
 	const response = await api.getLocations(account, subscription, true);
 
@@ -298,6 +298,12 @@ export function getSessionIdHeader(sessionId: string): Record<string, string> {
 		'User-Agent': getUserAgent(),
 		'SqlMigrationSessionId': sessionId,
 	};
+}
+
+export async function makeAzureRequest(account: azdata.Account, subscription: Subscription, path: string, requestType: azurecore.HttpRequestMethod, requestBody?: any) {
+	const api = await getAzureCoreAPI();
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	return await api.makeAzureRestRequest<any>(account, subscription, path, requestType, requestBody, true, host, getDefaultHeader());
 }
 
 export async function getAvailableSqlDatabaseServers(account: azdata.Account, subscription: Subscription): Promise<AzureSqlDatabaseServer[]> {
@@ -599,14 +605,9 @@ export async function registerArcResourceProvider(
 	subscription: Subscription,
 ) {
 	const path = encodeURI(`/subscriptions/${subscription.id}/providers/Microsoft.AzureArcData/register?api-version=${REGISTER_ARC_RP_VERSION}`);
-	const api = await getAzureCoreAPI();
-	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
-	const response = await api.makeAzureRestRequest<any>(account, subscription, path, azurecore.HttpRequestMethod.POST, {}, true, host, getDefaultHeader());
+	const response = await makeAzureRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, {});
 	if (response.errors.length > 0) {
-		const message = response.errors
-			.map(err => err.message)
-			.join(', ');
-		throw new Error(message);
+		throw new Error(response.errors.map(err => err.message).join(', '));
 	}
 
 	return response.response!.status;
@@ -620,14 +621,9 @@ export async function createOrUpdateMigrationArcSqlServerInstance(
 	requestBody: ArcSqlServerInstanceRequest
 ): Promise<GetOrCreateMigrationArcSqlServerInstanceResponse> {
 	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${resourceGroup.name}/providers/Microsoft.AzureArcData/sqlServerInstances/${sqlServerName}?api-version=${SQL_ARC_API_VERSION}`);
-	const api = await getAzureCoreAPI();
-	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
-	const response = await api.makeAzureRestRequest<any>(account, subscription, path, azurecore.HttpRequestMethod.PUT, requestBody, true, host, getDefaultHeader());
+	const response = await makeAzureRequest(account, subscription, path, azurecore.HttpRequestMethod.PUT, requestBody);
 	if (response.errors.length > 0) {
-		const message = response.errors
-			.map(err => err.message)
-			.join(', ');
-		throw new Error(message);
+		throw new Error(response.errors.map(err => err.message).join(', '));
 	}
 
 	return {
@@ -643,14 +639,9 @@ export async function getMigrationArcSqlServerInstance(
 	sqlServerName: string,
 ): Promise<GetOrCreateMigrationArcSqlServerInstanceResponse> {
 	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${resourceGroup.name}/providers/Microsoft.AzureArcData/sqlServerInstances/${sqlServerName}?api-version=${SQL_ARC_API_VERSION}`);
-	const api = await getAzureCoreAPI();
-	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
-	const response = await api.makeAzureRestRequest<any>(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host, getDefaultHeader());
+	const response = await makeAzureRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined);
 	if (response.errors.length > 0) {
-		const message = response.errors
-			.map(err => err.message)
-			.join(', ');
-		throw new Error(message);
+		throw new Error(response.errors.map(err => err.message).join(', '));
 	}
 
 	return {

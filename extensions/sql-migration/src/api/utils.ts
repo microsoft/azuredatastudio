@@ -666,13 +666,13 @@ export async function getResourceLocations(
 	return [];
 }
 
-export async function getArcLocations(
+export async function getAzureArcLocations(
 	account?: Account,
 	subscription?: azureResource.AzureResourceSubscription): Promise<azureResource.AzureLocation[]> {
 
 	try {
 		if (account && subscription) {
-			const locations = await azure.getArcLocations(account, subscription);
+			const locations = await azure.getAzureArcLocations(account, subscription);
 			return locations.sort((a, b) => a.displayName.localeCompare(b.displayName));
 		}
 	} catch (e) {
