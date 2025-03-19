@@ -666,17 +666,16 @@ export async function getResourceLocations(
 	return [];
 }
 
-export async function getArcLocations(
+export async function getAzureArcLocations(
 	account?: Account,
 	subscription?: azureResource.AzureResourceSubscription): Promise<azureResource.AzureLocation[]> {
-
 	try {
 		if (account && subscription) {
-			const locations = await azure.getArcLocations(account, subscription);
+			const locations = await azure.getAzureArcLocations(account, subscription);
 			return locations.sort((a, b) => a.displayName.localeCompare(b.displayName));
 		}
 	} catch (e) {
-		logError(TelemetryViews.Utils, 'utils.getArcLocations', e);
+		logError(TelemetryViews.Utils, 'utils.getAzureArcLocations', e);
 	}
 	return [];
 }
@@ -1032,6 +1031,22 @@ export async function getAzureSqlDatabaseServers(account?: Account, subscription
 	}
 	sqlDatabaseServers.sort((a, b) => a.name.localeCompare(b.name));
 	return sqlDatabaseServers;
+}
+
+export async function getAzureSqlArcServersByLocation(account?: Account, subscription?: azureResource.AzureResourceSubscription, location?: azureResource.AzureLocation, resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<azure.ArcSqlServer[]> {
+	let sqlArcServers: azure.ArcSqlServer[] = [];
+	try {
+		if (account && subscription && resourceGroup && location) {
+			sqlArcServers = await azure.getSqlArcServersFromResourceGroup(account, subscription, resourceGroup.name);
+			return sqlArcServers
+				.filter((arcServer) => arcServer.location.toLowerCase() === location.name.toLowerCase())
+				.sort((a, b) => a.name.localeCompare(b.name));
+		}
+	} catch (e) {
+		logError(TelemetryViews.Utils, 'utils.getAzureSqlArcServers', e);
+	}
+	sqlArcServers.sort((a, b) => a.name.localeCompare(b.name));
+	return sqlArcServers;
 }
 
 export async function getAzureSqlArcServersByLocation(account?: Account, subscription?: azureResource.AzureResourceSubscription, location?: azureResource.AzureLocation, resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<azure.ArcSqlServer[]> {
