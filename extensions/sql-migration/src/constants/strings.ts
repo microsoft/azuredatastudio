@@ -254,8 +254,8 @@ export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number): string {
 	return localize('sql.migration.can.be.migrated', "{0}/{1} databases can be migrated without issues", eligibleDbs, totalDbs);
 }
 
-export const ARC_RESOURCE_CREATED_BEFORE_TEXT = localize('sql.migration.arc.resource.created.before.text', "We have created SQL Server instance ");
-export const ARC_RESOURCE_CREATED_AFTER_TEXT = localize('sql.migration.arc.resource.created.after.text', " It will assist with migrations from the same source SQL Server. This resource allows users to select the same source for future migrations and save time.");
+export const ARC_RESOURCE_CREATED_BEFORE_TEXT = localize('sql.migration.arc.resource.created.before.text', "To help track the migration process in the Azure portal, a SQL Server instance resource named ");
+export const ARC_RESOURCE_CREATED_AFTER_TEXT = localize('sql.migration.arc.resource.created.after.text', " is created.");
 export const ARC_RESOURCE_ASSESSMENT_COMPUTED_BEFORE_TEXT = localize('sql.migration.arc.resource.assessment.computed.before.text', "Assessment and SKU recommendation for this SQL Server instance enabled by Azure Arc has been computed. ");
 export const ARC_RESOURCE_ASSESSMENT_COMPUTED_HYPERLINK_TEXT = localize('sql.migration.arc.resource.assessment.computed.after.text', "Click here to continue migration process from Azure Portal. ");
 export const ARC_RESOURCE_ASSESSMENT_NOT_COMPUTED_TEXT = localize('sql.migration.arc.resource.assessment.not.computed.text', "Assessment and SKU recommendation for this SQL Server instance enabled by Azure Arc has not been computed.");

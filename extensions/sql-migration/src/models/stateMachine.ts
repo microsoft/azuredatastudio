@@ -534,33 +534,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._armTemplateResult;
 	}
 
-	public async getFullInstanceName() {
-		let fullInstanceName: string;
-
-		// execute a query against the source to get the correct instance name
-		const connectionProfile = await getSourceConnectionProfile();
-		const connectionUri = await getSourceConnectionUri();
-		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
-		const queryString = 'SELECT SERVERPROPERTY(\'ServerName\');';
-		const queryResult = await queryProvider.runQueryAndReturn(connectionUri, queryString);
-
-		if (queryResult.rowCount > 0) {
-			fullInstanceName = queryResult.rows[0][0].displayValue;
-		} else {
-			// get the instance name from connection info in case querying for the instance name doesn't work for whatever reason
-			const serverInfo = await getSourceConnectionServerInfo();
-			const machineName = (<any>serverInfo)['machineName'];				// contains the correct machine name but not necessarily the correct instance name
-			const instanceName = connectionProfile.serverName;					// contains the correct instance name but not necessarily the correct machine name
-
-			if (instanceName.includes('\\')) {
-				fullInstanceName = machineName + '\\' + instanceName.substring(instanceName.indexOf('\\') + 1);
-			} else {
-				fullInstanceName = machineName;
-			}
-		}
-		return fullInstanceName;
-	}
-
 	public async getFullArcInstanceName() {
 		let fullInstanceName: string;
 		const connectionProfile = await getSourceConnectionProfile();
@@ -569,7 +542,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		const instanceName = connectionProfile.serverName;					// contains the correct instance name but not necessarily the correct machine name
 
 		if (instanceName.includes('\\')) {
-			fullInstanceName = machineName + '_' + instanceName.substring(instanceName.indexOf('\\') + 1);
+			fullInstanceName = `${machineName}_${instanceName.substring(instanceName.indexOf('\\') + 1)}`;
 		} else {
 			fullInstanceName = machineName;
 		}
@@ -580,7 +553,29 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async getSkuRecommendations(): Promise<SkuRecommendation> {
 		try {
-			const fullInstanceName = await this.getFullInstanceName();
+			let fullInstanceName: string;
+
+			// execute a query against the source to get the correct instance name
+			const connectionProfile = await getSourceConnectionProfile();
+			const connectionUri = await getSourceConnectionUri();
+			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
+			const queryString = 'SELECT SERVERPROPERTY(\'ServerName\');';
+			const queryResult = await queryProvider.runQueryAndReturn(connectionUri, queryString);
+
+			if (queryResult.rowCount > 0) {
+				fullInstanceName = queryResult.rows[0][0].displayValue;
+			} else {
+				// get the instance name from connection info in case querying for the instance name doesn't work for whatever reason
+				const serverInfo = await getSourceConnectionServerInfo();
+				const machineName = (<any>serverInfo)['machineName'];				// contains the correct machine name but not necessarily the correct instance name
+				const instanceName = connectionProfile.serverName;					// contains the correct instance name but not necessarily the correct machine name
+
+				if (instanceName.includes('\\')) {
+					fullInstanceName = machineName + '\\' + instanceName.substring(instanceName.indexOf('\\') + 1);
+				} else {
+					fullInstanceName = machineName;
+				}
+			}
 
 			const response = (await this.migrationService.getSkuRecommendations(
 				this._skuRecommendationPerformanceLocation,
