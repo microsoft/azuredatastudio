@@ -19,6 +19,7 @@ import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, get
 import { LoginMigrationModel } from './loginMigrationModel';
 import { TdeMigrationDbResult, TdeMigrationModel, TdeValidationResult } from './tdeModels';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
+import { forbiddenStatusCode } from '../constants/helper';
 const localize = nls.loadMessageBundle();
 
 export enum ValidateIrState {
@@ -209,6 +210,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _arcResourceResourceGroup!: azurecore.azureResource.AzureResourceResourceGroup;
 	public _sourceArcSqlServers!: ArcSqlServer[];
 	public _arcSqlServer!: ArcSqlServer;
+	public _arcRpRegistrationStatus!: number;
 
 	public _subscriptions!: azurecore.azureResource.AzureResourceSubscription[];
 	public _targetSubscription!: azurecore.azureResource.AzureResourceSubscription;
@@ -545,6 +547,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 		return fullInstanceName;
 	}
+
 
 	public async getSkuRecommendations(): Promise<SkuRecommendation> {
 		try {
@@ -1132,57 +1135,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		}
 
 		return opResult;
-	}
-
-	public async registerArcResourceProvider() {
-		try {
-			return await registerArcResourceProvider(
-				this._arcResourceAzureAccount,
-				this._arcResourceSubscription,
-			);
-		} catch (error) {
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorRegisteringArcResourceProvider', error);
-		}
-		return;
-	}
-
-	public async createOrUpdateArcSqlServerInstance(fullInstanceName: string) {
-		try {
-			const serverInfo = await getSourceConnectionServerInfo();
-
-			const requestBody: ArcSqlServerInstanceRequest = {
-				location: this._arcResourceLocation.name,
-				properties: {
-					hostType: constants.SourceInfrastructureTypeLookup[this._sourceInfrastructureType],
-					version: getSqlServerName(serverInfo.serverMajorVersion ?? 0),
-					edition: getSqlServerEdition(serverInfo.serverEdition),
-				}
-			}
-
-			const response = await createOrUpdateMigrationArcSqlServerInstance(
-				this._arcResourceAzureAccount,
-				this._arcResourceSubscription,
-				this._arcResourceResourceGroup,
-				fullInstanceName,
-				requestBody
-			);
-			this._arcSqlServer = response.arcSqlServer;
-		} catch (error) {
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorCreatingOrUpdatingArcSqlServerInstance', error);
-		}
-	}
-
-	public async getArcSqlServerInstance(fullInstanceName: string): Promise<GetOrCreateMigrationArcSqlServerInstanceResponse | void> {
-		try {
-			return await getMigrationArcSqlServerInstance(
-				this._arcResourceAzureAccount,
-				this._arcResourceSubscription,
-				this._arcResourceResourceGroup,
-				fullInstanceName,
-			);
-		} catch (error) {
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorGettingArcSqlServerInstance', error);
-		}
 	}
 
 	public async startMigration() {

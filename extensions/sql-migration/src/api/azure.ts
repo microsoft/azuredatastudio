@@ -610,10 +610,7 @@ export async function registerArcResourceProvider(
 		throw new Error(response.errors.map(err => err.message).join(', '));
 	}
 
-	return {
-		status: response.response!.status,
-		arcSqlServer: response.response!.data,
-	}
+	return response.response!.status;
 }
 
 export async function createOrUpdateMigrationArcSqlServerInstance(
