@@ -59,11 +59,13 @@ function pushDisposable(disposable: vscode.Disposable): void {
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext): Promise<azurecore.IExtension> {
+	Logger.verbose("In activate");
 	extensionContext = context;
 	let appContext = new AppContext(extensionContext);
 
 	let storagePath = await findOrMakeStoragePath();
 	if (!storagePath) {
+		Logger.error("Could not find or create storage path");
 		throw new Error('Could not find or create storage path');
 	}
 
@@ -93,8 +95,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 		registerAzureServices(appContext);
 		const azureResourceTree = new AzureResourceTreeProvider(appContext);
 		const connectionDialogTree = new ConnectionDialogTreeProvider(appContext);
+		Logger.verbose("Registering azure resource explorer");
 		pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
+
+		Logger.verbose("Registering connectionDialog/azureResourceExplorer");
 		pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
+
 		pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e)));
 		registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree);
 		azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext));
@@ -105,6 +111,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			const type = item.type;
 			const name = item.name;
 			if (portalEndpoint && subscriptionId && resourceGroup && type && name) {
+				Logger.verbose("Opening the following url externally: " + `${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`);
 				await vscode.env.openExternal(vscode.Uri.parse(`${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`));
 			} else {
 				Logger.error(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
@@ -227,6 +234,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 
 // Create the folder for storing the token caches
 async function findOrMakeStoragePath() {
+	Logger.verbose("In findOrMakeStoragePath");
 	let defaultLogLocation = getDefaultLogLocation();
 	let storagePath = path.join(defaultLogLocation, Constants.AzureTokenFolderName);
 
@@ -254,10 +262,12 @@ async function findOrMakeStoragePath() {
 }
 
 async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string): Promise<AzureAccountProviderService | undefined> {
+	Logger.verbose("In initAzureAccountProvider");
 	try {
 		const accountProviderService = new AzureAccountProviderService(extensionContext, storagePath);
 		extensionContext.subscriptions.push(accountProviderService);
 		await accountProviderService.activate();
+		Logger.verbose("Completed initializing azure account provider");
 		return accountProviderService;
 	} catch (err) {
 		Logger.error('Unexpected error starting account provider: ' + err.message);

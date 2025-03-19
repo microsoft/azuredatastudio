@@ -7,6 +7,7 @@ import { NodeInfo } from 'azdata';
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
+import { Logger } from '../utils/Logger';
 
 import { TreeNode } from './treeNode';
 import { AzureResourceService } from './resourceService';
@@ -30,6 +31,7 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
+		Logger.verbose("In AzureResourceResourceTreeNode: getChildren");
 		// It is a leaf node.
 		if (this.resourceNode.treeItem.collapsibleState === TreeItemCollapsibleState.None) {
 			return <TreeNode[]>[];
@@ -39,8 +41,10 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 			const children = await this._resourceService.getChildren(this.resourceNode.resourceProviderId, this.resourceNode);
 
 			if (children.length === 0) {
+				Logger.piiSanitized(`No resources found for account: ${JSON.stringify(this.resourceNode.account)}, and subscription ${this.resourceNode.subscription}`, [], []);
 				return [AzureResourceMessageTreeNode.create(localize('azure.resource.resourceTreeNode.noResourcesLabel', "No Resources found"), this)];
 			} else {
+				Logger.piiSanitized(`Found ${children.length} resources for account: ${JSON.stringify(this.resourceNode.account)}, and subscription ${this.resourceNode.subscription}`, [], []);
 				return children.map((child) => {
 					// To make tree node's id unique, otherwise, treeModel.js would complain 'item already registered'
 					child.treeItem.id = `${this.resourceNode.treeItem.id}.${child.treeItem.id}`;
@@ -48,6 +52,7 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 				});
 			}
 		} catch (error) {
+			Logger.error(`AzureResourceResourceTreeNode: GetChildren - Failed to get children for resource node: ${JSON.stringify(this.resourceNode)}, with error: ${error}`);
 			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
 		}
 	}
