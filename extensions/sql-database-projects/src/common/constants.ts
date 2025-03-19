@@ -190,14 +190,14 @@ export const SqlServerName = 'SQL server';
 export const AzureSqlServerName = 'Azure SQL server';
 export const SqlServerDockerImageName = 'Microsoft SQL Server';
 export const SqlServerDocker2022ImageName = 'Microsoft SQL Server 2022';
-export const AzureSqlDbFullDockerImageName = 'Azure SQL Database emulator';
+export const AzureSqlDbFullDockerImageName = 'Microsoft SQL Server';
 export const AzureSqlLogicalServerName = 'Azure SQL logical server';
 export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
 export const defaultQuickPickItem = localize('defaultQuickPickItem', "Default - image defined as default in the container registry");
 export function publishToExistingServer(name: string) { return localize('publishToExistingServer', "Publish to an existing {0}", name); }
 export function publishToDockerContainer(name: string) { return localize('publishToDockerContainer', "Publish to new {0} local development container", name); }
 export function publishToDockerContainerPreview(name: string) { return localize('publishToDockerContainerPreview', "Publish to new {0} local development container (Preview)", name); }
-export const publishToAzureEmulator = localize('publishToAzureEmulator', "Publish to new Azure SQL Database emulator");
+export const publishToAzureEmulator = localize('publishToAzureEmulator', "Publish to new SQL Server local development container");
 export const publishToNewAzureServer = localize('publishToNewAzureServer', "Publish to new Azure SQL logical server (Preview)");
 export const azureServerName = localize('azureServerName', "Azure SQL server name");
 export const azureSubscription = localize('azureSubscription', "Azure subscription");
