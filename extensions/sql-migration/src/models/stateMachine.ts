@@ -8,12 +8,12 @@ import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as contracts from '../service/contracts';
 import * as features from '../service/features';
-import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView, ArcSqlServer } from '../api/azure';
+import { GetOrCreateMigrationArcSqlServerInstanceResponse, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView, ArcSqlServer, ArcSqlServerInstanceRequest, createOrUpdateMigrationArcSqlServerInstance, getMigrationArcSqlServerInstance, registerArcResourceProvider } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
-import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBackupFileNameWithoutFolder, MigrationTargetType, SourceInfrastructureType } from '../api/utils';
+import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBackupFileNameWithoutFolder, MigrationTargetType, SourceInfrastructureType, getSqlServerName, getSqlServerEdition } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendation/skuRecommendationPage';
 import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getTrustServerCertificateValue, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel } from './loginMigrationModel';
@@ -530,6 +530,21 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._armTemplateResult;
 	}
 
+	public async getFullArcInstanceName() {
+		let fullInstanceName: string;
+		const connectionProfile = await getSourceConnectionProfile();
+		const serverInfo = await getSourceConnectionServerInfo();
+		const machineName = (<any>serverInfo)['machineName'];				// contains the correct machine name but not necessarily the correct instance name
+		const instanceName = connectionProfile.serverName;					// contains the correct instance name but not necessarily the correct machine name
+
+		if (instanceName.includes('\\')) {
+			fullInstanceName = `${machineName}_${instanceName.substring(instanceName.indexOf('\\') + 1)}`;
+		} else {
+			fullInstanceName = machineName;
+		}
+
+		return fullInstanceName;
+	}
 
 	public async getSkuRecommendations(): Promise<SkuRecommendation> {
 		try {
@@ -1117,6 +1132,57 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		}
 
 		return opResult;
+	}
+
+	public async registerArcResourceProvider() {
+		try {
+			return await registerArcResourceProvider(
+				this._arcResourceAzureAccount,
+				this._arcResourceSubscription,
+			);
+		} catch (error) {
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorRegisteringArcResourceProvider', error);
+		}
+		return;
+	}
+
+	public async createOrUpdateArcSqlServerInstance(fullInstanceName: string) {
+		try {
+			const serverInfo = await getSourceConnectionServerInfo();
+
+			const requestBody: ArcSqlServerInstanceRequest = {
+				location: this._arcResourceLocation.name,
+				properties: {
+					hostType: constants.SourceInfrastructureTypeLookup[this._sourceInfrastructureType],
+					version: getSqlServerName(serverInfo.serverMajorVersion ?? 0),
+					edition: getSqlServerEdition(serverInfo.serverEdition),
+				}
+			}
+
+			const response = await createOrUpdateMigrationArcSqlServerInstance(
+				this._arcResourceAzureAccount,
+				this._arcResourceSubscription,
+				this._arcResourceResourceGroup,
+				fullInstanceName,
+				requestBody
+			);
+			this._arcSqlServer = response.arcSqlServer;
+		} catch (error) {
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorCreatingOrUpdatingArcSqlServerInstance', error);
+		}
+	}
+
+	public async getArcSqlServerInstance(fullInstanceName: string): Promise<GetOrCreateMigrationArcSqlServerInstanceResponse | void> {
+		try {
+			return await getMigrationArcSqlServerInstance(
+				this._arcResourceAzureAccount,
+				this._arcResourceSubscription,
+				this._arcResourceResourceGroup,
+				fullInstanceName,
+			);
+		} catch (error) {
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorGettingArcSqlServerInstance', error);
+		}
 	}
 
 	public async startMigration() {

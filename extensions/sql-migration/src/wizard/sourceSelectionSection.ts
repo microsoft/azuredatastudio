@@ -33,8 +33,9 @@ export class SourceSelectionSection {
 	constructor(private wizard: azdata.window.Wizard, public migrationStateModel: MigrationStateModel) { }
 
 	public _updateNextButton() {
+		const nextPage = this.wizard.pages[this.wizard.currentPage + 1];
+
 		if (!this.migrationStateModel._isSqlServerEnabledByArc) {
-			const nextPage = this.wizard.pages[this.wizard.currentPage + 1];
 			const isSourceInfrastructureTypeValid = this.migrationStateModel._sourceInfrastructureType !== undefined;
 
 			if (nextPage) {
@@ -42,6 +43,9 @@ export class SourceSelectionSection {
 			}
 
 			this.wizard.nextButton.enabled = isSourceInfrastructureTypeValid;
+		} else {
+			nextPage.enabled = true;
+			this.wizard.nextButton.enabled = true;
 		}
 	}
 
@@ -414,6 +418,7 @@ export class SourceSelectionSection {
 				} else {
 					this.migrationStateModel._arcResourceSubscription = undefined!;
 				}
+				this.migrationStateModel._arcSqlServer = undefined!;
 				await utils.clearDropDown(this._azureLocationDropdown);
 				await this.populateLocationDropdown();
 				await utils.clearDropDown(this._azureResourceGroupDropdown);
@@ -456,6 +461,7 @@ export class SourceSelectionSection {
 				} else {
 					this.migrationStateModel._arcResourceLocation = undefined!;
 				}
+				this.migrationStateModel._arcSqlServer = undefined!;
 				await utils.clearDropDown(this._azureArcSqlServerDropdown);
 				await this.populateArcSqlServerDropdown();
 			})
@@ -497,6 +503,7 @@ export class SourceSelectionSection {
 				} else {
 					this.migrationStateModel._arcResourceResourceGroup = undefined!;
 				}
+				this.migrationStateModel._arcSqlServer = undefined!;
 				await utils.clearDropDown(this._azureArcSqlServerDropdown);
 				await this.populateArcSqlServerDropdown();
 			})
@@ -532,10 +539,14 @@ export class SourceSelectionSection {
 		this._disposables.push(
 			this._azureArcSqlServerDropdown.onValueChanged(async (value) => {
 				if (value && value !== 'undefined' && value !== constants.SQL_SERVER_INSTANCE_NOT_FOUND) {
-					const selectedArcResource = this.migrationStateModel._sourceArcSqlServers?.find(rg => rg.name === value);
-					this.migrationStateModel._arcSqlServer = (selectedArcResource)
-						? utils.deepClone(selectedArcResource)!
-						: undefined!;
+					const selectedArcResource = this.migrationStateModel._sourceArcSqlServers?.find(resource => resource.name === value);
+					if (selectedArcResource) {
+						const arcSqlServer = utils.deepClone(selectedArcResource)!;
+						const getArcSqlServerResponse = await this.migrationStateModel.getArcSqlServerInstance(arcSqlServer.name);
+						this.migrationStateModel._arcSqlServer = getArcSqlServerResponse?.status === 200 ? getArcSqlServerResponse.arcSqlServer : undefined!;
+					} else {
+						this.migrationStateModel._arcSqlServer = undefined!;
+					}
 				} else {
 					this.migrationStateModel._arcSqlServer = undefined!;
 				}
