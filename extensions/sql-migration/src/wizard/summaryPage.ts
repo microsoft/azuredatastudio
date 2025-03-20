@@ -76,6 +76,62 @@ export class SummaryPage extends MigrationWizardPage {
 				{ CSSStyles: { 'margin-right': '5px' } })
 			.component();
 
+		const arcServerHyperlink = this._view.modelBuilder.hyperlink()
+			.withProps({
+				url: `https://portal.azure.com/#resource/${this.migrationStateModel._arcSqlServer?.id}`,
+				label: this.migrationStateModel._arcSqlServer?.name,
+				CSSStyles: { ...styles.BODY_CSS, 'margin': '0px', 'width': '300px', }
+			}).component();
+
+		const arcServerRow = this._view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'row', alignItems: 'center', })
+			.withItems([
+				createLabelTextComponent(
+					this._view,
+					constants.SQL_SERVER_INSTANCE,
+					{ ...styles.BODY_CSS, 'width': '300px' }
+				),
+				this.migrationStateModel._arcSqlServer ? arcServerHyperlink : this._view.modelBuilder.text().withProps({ value: '-' }).component(),
+			], { CSSStyles: { 'margin-right': '5px' } })
+			.component();
+
+		if (this.migrationStateModel._isSqlServerEnabledByArc || this.migrationStateModel._trackMigration) {
+			let items = [
+				await createHeadingTextComponent(
+					this._view,
+					constants.SQL_SERVER_INSTANCE)
+			];
+
+			if (!this.migrationStateModel._isSqlServerEnabledByArc) {
+				items.push(
+					createInformationRow(
+						this._view,
+						constants.SOURCE_INFRASTRUCTURE_TYPE,
+						constants.SourceInfrastructureTypeLookup[this.migrationStateModel._sourceInfrastructureType]
+					)
+				)
+			}
+
+			items.push(
+				createInformationRow(
+					this._view,
+					constants.SUBSCRIPTION,
+					this.migrationStateModel._arcResourceSubscription.name),
+				createInformationRow(
+					this._view,
+					constants.LOCATION,
+					this.migrationStateModel._arcResourceLocation.displayName),
+
+				createInformationRow(
+					this._view,
+					constants.RESOURCE_GROUP,
+					this.migrationStateModel._arcResourceResourceGroup.name),
+
+				arcServerRow
+			)
+			this._flexContainer.addItems(items);
+		}
+
 		this._flexContainer
 			.addItems([
 				await createHeadingTextComponent(

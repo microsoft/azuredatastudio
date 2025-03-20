@@ -13,6 +13,8 @@ import { MigrationSourceAuthenticationType, MigrationStateModel, NetworkShare } 
 import { NetworkInterface } from './dataModels/azure/networkInterfaceModel';
 import { EOL } from 'os';
 
+const SQL_ARC_API_VERSION = '2024-09-01-preview';
+const REGISTER_ARC_RP_VERSION = '2024-05-01-preview'
 const ARM_MGMT_API_VERSION = '2021-04-01';
 const SQL_VM_API_VERSION = '2021-11-01-preview';
 const SQL_MI_API_VERSION = '2021-11-01-preview';
@@ -29,6 +31,7 @@ async function getAzureCoreAPI(): Promise<azurecore.IExtension> {
 }
 
 export type Subscription = azurecore.azureResource.AzureResourceSubscription;
+export type ResourceGroup = azurecore.azureResource.AzureResourceResourceGroup;
 export async function getSubscriptions(account: azdata.Account): Promise<Subscription[]> {
 	const api = await getAzureCoreAPI();
 	const subscriptions = await api.getSubscriptions(account, true);
@@ -56,6 +59,30 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 
 	const filteredLocations = response?.locations?.filter(
 		loc => sqlMigrationResourceLocations.includes(loc.displayName));
+
+	sortResourceArrayByName(filteredLocations);
+
+	return filteredLocations;
+}
+
+export async function getAzureArcLocations(account: azdata.Account, subscription: Subscription): Promise<azurecore.azureResource.AzureLocation[]> {
+	const api = await getAzureCoreAPI();
+	const response = await api.getLocations(account, subscription, true);
+
+	const path = `/subscriptions/${subscription.id}/providers/Microsoft.AzureArcData?api-version=${ARM_MGMT_API_VERSION}`;
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	const dataMigrationResourceProvider = (await api.makeAzureRestRequest<any>(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host, getDefaultHeader()))?.response?.data;
+	const sqlServerInstanceResource = dataMigrationResourceProvider?.resourceTypes?.find((r: any) => r.resourceType === 'SqlServerInstances');
+	const sqlServerInstanceLocations = sqlServerInstanceResource?.locations ?? [];
+	if (response.errors?.length > 0) {
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+	}
+
+	const filteredLocations = response?.locations?.filter(
+		loc => sqlServerInstanceLocations.includes(loc.displayName));
 
 	sortResourceArrayByName(filteredLocations);
 
@@ -213,6 +240,21 @@ export type SqlVMServer = {
 	networkInterfaces: Map<string, NetworkInterface>,
 };
 
+export type ArcSqlServer = {
+	location: string,
+	id: string,
+	name: string,
+	type: string,
+	properties: {
+		hostType: string,
+		migration: {
+			assessment: {
+				assessmentUploadTime: string,
+			}
+		}
+	} | null,
+};
+
 export type VirtualMachineInstanceView = {
 	computerName: string,
 	osName: string,
@@ -258,9 +300,30 @@ export function getSessionIdHeader(sessionId: string): Record<string, string> {
 	};
 }
 
+export async function makeAzureRequest(account: azdata.Account, subscription: Subscription, path: string, requestType: azurecore.HttpRequestMethod, requestBody?: any) {
+	const api = await getAzureCoreAPI();
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	return await api.makeAzureRestRequest<any>(account, subscription, path, requestType, requestBody, true, host, getDefaultHeader());
+}
+
 export async function getAvailableSqlDatabaseServers(account: azdata.Account, subscription: Subscription): Promise<AzureSqlDatabaseServer[]> {
 	const api = await getAzureCoreAPI();
 	const path = encodeURI(`/subscriptions/${subscription.id}/providers/Microsoft.Sql/servers?api-version=${SQL_SQLDB_API_VERSION}`);
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	const response = await api.makeAzureRestRequest<any>(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host, getDefaultHeader());
+	if (response.errors.length > 0) {
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+	}
+	sortResourceArrayByName(response.response!.data.value);
+	return response.response!.data.value;
+}
+
+export async function getSqlArcServersFromResourceGroup(account: azdata.Account, subscription: Subscription, resourceGroupName: string): Promise<ArcSqlServer[]> {
+	const api = await getAzureCoreAPI();
+	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.AzureArcData/sqlServerInstances?api-version=${SQL_ARC_API_VERSION}`);
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const response = await api.makeAzureRestRequest<any>(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host, getDefaultHeader());
 	if (response.errors.length > 0) {
@@ -535,6 +598,56 @@ export async function getSqlMigrationServiceMonitoringData(account: azdata.Accou
 
 export async function getIrNodes(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationService: string): Promise<IntegrationRuntimeNode[]> {
 	return (await getSqlMigrationServiceMonitoringData(account, subscription, resourceGroupName, regionName, sqlMigrationService)).nodes;
+}
+
+export async function registerArcResourceProvider(
+	account: azdata.Account,
+	subscription: Subscription,
+) {
+	const path = encodeURI(`/subscriptions/${subscription.id}/providers/Microsoft.AzureArcData/register?api-version=${REGISTER_ARC_RP_VERSION}`);
+	const response = await makeAzureRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, {});
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.map(err => err.message).join(', '));
+	}
+
+	return response.response!.status;
+}
+
+export async function createOrUpdateMigrationArcSqlServerInstance(
+	account: azdata.Account,
+	subscription: Subscription,
+	resourceGroup: ResourceGroup,
+	sqlServerName: string,
+	requestBody: ArcSqlServerInstanceRequest
+): Promise<GetOrCreateMigrationArcSqlServerInstanceResponse> {
+	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${resourceGroup.name}/providers/Microsoft.AzureArcData/sqlServerInstances/${sqlServerName}?api-version=${SQL_ARC_API_VERSION}`);
+	const response = await makeAzureRequest(account, subscription, path, azurecore.HttpRequestMethod.PUT, requestBody);
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.map(err => err.message).join(', '));
+	}
+
+	return {
+		status: response.response!.status,
+		arcSqlServer: response.response!.data,
+	};
+}
+
+export async function getMigrationArcSqlServerInstance(
+	account: azdata.Account,
+	subscription: Subscription,
+	resourceGroup: ResourceGroup,
+	sqlServerName: string,
+): Promise<GetOrCreateMigrationArcSqlServerInstanceResponse> {
+	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${resourceGroup.name}/providers/Microsoft.AzureArcData/sqlServerInstances/${sqlServerName}?api-version=${SQL_ARC_API_VERSION}`);
+	const response = await makeAzureRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined);
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.map(err => err.message).join(', '));
+	}
+
+	return {
+		status: response.response!.status,
+		arcSqlServer: response.response!.data,
+	};
 }
 
 export async function startDatabaseMigration(
@@ -976,6 +1089,20 @@ export interface StartDatabaseMigrationRequest {
 		sqlSchemaMigrationConfiguration?: SqlSchemaMigrationConfiguration,
 		sqlDataMigrationConfiguration?: SqlDataMigrationConfiguration,
 	}
+}
+
+export interface ArcSqlServerInstanceRequest {
+	location: string,
+	properties: {
+		hostType: string,
+		version: string,
+		edition: string,
+	}
+}
+
+export interface GetOrCreateMigrationArcSqlServerInstanceResponse {
+	status: number,
+	arcSqlServer: ArcSqlServer,
 }
 
 export interface StartDatabaseMigrationResponse {

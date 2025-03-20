@@ -8,6 +8,7 @@ import { EOL } from 'os';
 import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 import { BackupTypeCodes, formatNumber, InternalManagedDatabaseRestoreDetailsBackupSetStatusCodes, InternalManagedDatabaseRestoreDetailsStatusCodes, ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
 import { ValidationError } from '../api/azure';
+import { SourceInfrastructureType } from '../api/utils';
 import { AzureManagedDiskType, ErrorModel } from '../service/contracts';
 import { IntegrationRuntimeVersionInfo } from '../api/sqlUtils';
 const localize = nls.loadMessageBundle();
@@ -89,6 +90,32 @@ export const RUN_VALIDATION = localize('sql.migration.run.validation', "Run vali
 // Databases for assessment
 export const DATABASE_FOR_ASSESSMENT_PAGE_TITLE = localize('sql.migration.database.assessment.title', "Databases for assessment");
 export const DATABASE_FOR_ASSESSMENT_DESCRIPTION = localize('sql.migration.database.assessment.description', "Select the databases that you want to assess for migration to Azure SQL.");
+export const SOURCE_INFRASTRUCTURE_TYPE = localize('sql.migration.source.infrastructure.type', "Source Infrastructure Type");
+export const SOURCE_INFRASTRUCTURE_TYPE_INFO = localize('sql.migration.sourceinfrastructuretype.info', "Select Source Infrastructure type from the list of options");
+export const IS_SQL_SERVER_ENABLED_BY_AZURE_ARC = localize('sql.migration.is.sql.server.enabled.by.azure.arc', "Is your source SQL Server instance enabled by Azure Arc?");
+export const SQL_SERVER_ENABLED_BY_AZURE_ARC_DETAILS = localize('sql.migration.sql.server.enabled.by.azure.arc.details', "SQL Server enabled by Azure Arc details");
+export const SQL_SERVER_ENABLED_BY_AZURE_ARC = localize('sql.migration.sql.server.enabled.by.azure.arc', "SQL Server enabled by Azure Arc");
+export const SELECT_A_SQL_SERVER_INSTANCE = localize('sql.migration.select.a.sql.server.instance', "Select a SQL Server instance");
+export const INVALID_SQL_SERVER_INSTANCE_ERROR = localize('sql.migration.invalid.sql.server.instance.error', "To continue, select a valid SQL Server instance.");
+export const SQL_SERVER_INSTANCE_NOT_FOUND = localize('sql.migration.sql.server.instance.not.found', "No SQL Server instance found.");
+export const SQL_SERVER_INSTANCE_DETAILS = localize('sql.migration.sql.server.instance.details', "SQL Server instance details");
+export const SQL_SERVER_INSTANCE_EXISTS = localize('sql.migration.sql.server.instance.exists', "SQL Server instance already exists with same name. Verify the selected details or check if the SQL Server is enabled by Azure Arc, and make appropriate selection.");
+export const SQL_SERVER_INSTANCE_EXISTS_IN_LOCATION = (location: string): string => {
+	return localize('sql.migration.sql.server.instance.exists.in.location', "SQL Server instance already exists in location {0} under selected resource group. Check if the SQL Server is enabled by Azure Arc, and make appropriate selection.", location);
+}
+export const REGISTER_ARC_RESOURCE_PROVIDER_UNAUTHORIZED_ERROR = localize('sql.migration.register.arc.resource.provider.unauthorized.error', "Failed to create SQL Server instance. Insufficient permissions to register resource provider Microsoft.AzureArcData.");
+export const TRACK_MIGRATION_PROCESS_IN_AZURE_PORTAL = localize('sql.migration.track.migration.in.portal', "Do you want to track the migration process in Azure Portal?");
+
+// Arc resource info tooltip
+export const ARC_RESOURCE_ACCOUNT_INFO = localize('sql.migration.arc.subscription', "Select the Azure account under which your SQL Server subscription, resource group, location and resource resides.");
+export const ARC_RESOURCE_SUBSCRIPTION_INFO = localize('sql.migration.arc.subscription', "Select the Azure subscription under which your SQL Server resource group, location and resource resides.");
+export const ARC_RESOURCE_LOCATION_INFO = localize('sql.migration.arc.location', "Select the Azure region under which your resource resides.");
+export const ARC_RESOURCE_RESOURCE_GROUP_INFO = localize('sql.migration.arc.resource_group', "Select the Azure rsource group under which your SQL Server resource resides.");
+export const ARC_RESOURCE_INFO = localize('sql.migration.arc.resource', "Select the SQL Server enabled by Azure Arc residing in above subscription, location and resource group.");
+export const NON_ARC_RESOURCE_SUBSCRIPTION_INFO = localize('sql.migration.non.arc.subscription', "Select the Azure subscription for creating SQL Server that will be used for tracking the migration.");
+export const NON_ARC_RESOURCE_LOCATION_INFO = localize('sql.migration.non.arc.location', "Select the Azure region for creating SQL Server that will be used for tracking the migration.");
+export const NON_ARC_RESOURCE_RESOURCE_GROUP_INFO = localize('sql.migration.non.arc.resource_group', "Select the resource group for creating SQL Server that will be used for tracking the migration.");
+export const ARC_RESOURCE_CREATION_INFO = localize('sql.migration.arc.resource.creation.info', "To help track the migration process in the Azure portal, a SQL Server instance resource will be created. There is no cost associated with this resource. Please choose a location, subscription and resource group in which to create the resource.");
 
 // XEvents assessment
 export const XEVENTS_ASSESSMENT_TITLE = localize('sql.migration.database.assessment.xevents.title', "Assess Ad-hoc or dynamic SQL");
@@ -227,11 +254,18 @@ export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number): string {
 	return localize('sql.migration.can.be.migrated', "{0}/{1} databases can be migrated without issues", eligibleDbs, totalDbs);
 }
 
+export const ARC_RESOURCE_CREATED_BEFORE_TEXT = localize('sql.migration.arc.resource.created.before.text', "To help track the migration process in the Azure portal, a SQL Server instance resource named ");
+export const ARC_RESOURCE_CREATED_AFTER_TEXT = localize('sql.migration.arc.resource.created.after.text', " is created.");
+export const ARC_RESOURCE_ASSESSMENT_COMPUTED_BEFORE_TEXT = localize('sql.migration.arc.resource.assessment.computed.before.text', "Assessment and SKU recommendation for this SQL Server instance enabled by Azure Arc has been computed. ");
+export const ARC_RESOURCE_ASSESSMENT_COMPUTED_HYPERLINK_TEXT = localize('sql.migration.arc.resource.assessment.computed.after.text', "Click here to continue migration process from Azure Portal. ");
+export const ARC_RESOURCE_ASSESSMENT_NOT_COMPUTED_TEXT = localize('sql.migration.arc.resource.assessment.not.computed.text', "Assessment and SKU recommendation for this SQL Server instance enabled by Azure Arc has not been computed.");
+
 export const ASSESSMENT_MIGRATION_WARNING = localize('sql.migration.assessment.migration.warning', "Databases that are not ready for migration to Azure SQL Managed Instance or Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines.");
 export const ASSESSMENT_MIGRATION_WARNING_SQLDB = localize('sql.migration.assessment.migration.warning.sqldb', "Databases that are not ready for migration to Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Managed Instance migration readiness.");
 export const ASSESSMENT_MIGRATION_WARNING_SQLMI = localize('sql.migration.assessment.migration.warning.sqlmi', "Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Database migration readiness.");
 export const DATABASES_TABLE_TILE = localize('sql.migration.databases.table.title', "Databases");
 export const SQL_SERVER_INSTANCE = localize('sql.migration.sql.server.instance', "SQL Server instance");
+export const SOURCE_SQL_SERVER_INSTANCE = localize('sql.migration.sql.server.instance', "Source SQL Server instance");
 export const LOAD_ASSESSMENT_REPORT = localize('sql.migration.load.assessment.report', "Load assessment report");
 export const SAVE_ASSESSMENT_REPORT = localize('sql.migration.save.assessment.report', "Save assessment report");
 export const SAVE_RECOMMENDATION_REPORT = localize('sql.migration.save.recommendation.report', "Save recommendation report");
@@ -751,6 +785,7 @@ export const NO_BLOBFOLDERS_FOUND = localize('sql.migration.no.blobFolders.found
 export const INVALID_SUBSCRIPTION_ERROR = localize('sql.migration.invalid.subscription.error', "To continue, select a valid subscription.");
 export const INVALID_LOCATION_ERROR = localize('sql.migration.invalid.location.error', "To continue, select a valid location.");
 export const INVALID_RESOURCE_GROUP_ERROR = localize('sql.migration.invalid.resourceGroup.error', "To continue, select a valid resource group.");
+export const INVALID_SOURCE_INFRASTRUCTURE_TYPE_ERROR = localize('sql.migration.invalid.resourceGroup.error', "To continue, select a valid source infrastructure type.");
 export const INVALID_STORAGE_ACCOUNT_ERROR = localize('sql.migration.invalid.storageAccount.error', "To continue, select a valid storage account.");
 export const MISSING_TARGET_USERNAME_ERROR = localize('sql.migration.missing.targetUserName.error', "To continue, enter a valid target user name.");
 export const MISSING_TARGET_PASSWORD_ERROR = localize('sql.migration.missing.targetPassword.error', "To continue, enter a valid target password.");
@@ -1490,6 +1525,23 @@ export const ERROR_DIALOG_ARIA_CLICK_VIEW_ERROR_DETAILS = localize('sql.migratio
 export interface LookupTable<T> {
 	[key: string]: T;
 }
+
+export const SourceInfrastructureTypeLookup: LookupTable<string> = {
+	[SourceInfrastructureType.AzureVirtualMachine]: localize('sql.migration.status.azurevmarc', 'Azure Virtual Machine'),
+	[SourceInfrastructureType.AzureKubernetesService]: localize('sql.migration.status.azurekubernetesservice', 'Azure Kubernetes Service'),
+	[SourceInfrastructureType.AzureVMWareVirtualMachine]: localize('sql.migration.status.azurevmwarevm', 'Azure VMWare Virtual Machine'),
+	[SourceInfrastructureType.AWSVirtualMachine]: localize('sql.migration.status.awsvm', 'AWS Virtual Machine'),
+	[SourceInfrastructureType.AWSKubernetesService]: localize('sql.migration.status.awskubernetesservice', 'AWS Kubernetes Service'),
+	[SourceInfrastructureType.AWSVMWareVirtualMachine]: localize('sql.migration.status.awsvmwarevm', 'AWS VMWare Virtual Machine'),
+	[SourceInfrastructureType.GCPVMWareVirtualMachine]: localize('sql.migration.status.gcpvmwarevm', 'GCP VMWare Virtual Machine'),
+	[SourceInfrastructureType.GCPKubernetesService]: localize('sql.migration.status.gcpkubernetesservice', 'GCP Kubernetes Service'),
+	[SourceInfrastructureType.GCPVirtualMachine]: localize('sql.migration.status.gcpvm', 'GCP Virtual Machine'),
+	[SourceInfrastructureType.Container]: localize('sql.migration.status.container', 'Container'),
+	[SourceInfrastructureType.VirtualMachine]: localize('sql.migration.status.vm', 'Virtual Machine'),
+	[SourceInfrastructureType.PhysicalServer]: localize('sql.migration.status.physicalserver', 'Physical Server'),
+	[SourceInfrastructureType.Other]: localize('sql.migration.status.other', 'Other'),
+	[SourceInfrastructureType.HyperV]: localize('sql.migration.status.other', 'Hyper V'),
+};
 
 export const StatusLookup: LookupTable<string | undefined> = {
 	[MigrationState.Canceled]: localize('sql.migration.status.canceled', 'Canceled'),

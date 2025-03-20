@@ -55,6 +55,34 @@ export enum MigrationTargetType {
 	SQLDB = 'AzureSqlDatabase'
 }
 
+export enum SourceInfrastructureType {
+	AWSKubernetesService = 'AWSKubernetesService',
+	AWSVMWareVirtualMachine = 'AWSVMWareVirtualMachine',
+	AWSVirtualMachine = 'AWSVirtualMachine',
+	AzureKubernetesService = 'AzureKubernetesService',
+	AzureVMWareVirtualMachine = 'AzureVMWareVirtualMachine',
+	AzureVirtualMachine = 'AzureVirtualMachine',
+	Container = 'Container',
+	GCPKubernetesService = 'GCPKubernetesService',
+	GCPVMWareVirtualMachine = 'GCPVMWareVirtualMachine',
+	GCPVirtualMachine = 'GCPVirtualMachine',
+	HyperV = 'Hyper-V',
+	PhysicalServer = 'PhysicalServer',
+	VirtualMachine = 'VirtualMachine',
+	Other = 'Other',
+}
+
+export enum SqlServerEdition {
+	EVALUATION = "Evaluation",
+	ENTERPRISE = "Enterprise",
+	STANDARD = "Standard",
+	WEB = "Web",
+	DEVELOPER = "Developer",
+	EXPRESS = "Express",
+	BUSINESS_INTELLIGENCE = "Business Intelligence",
+	UNKNOWN = "Unknown"
+}
+
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
 		return obj;
@@ -74,7 +102,7 @@ export function deepClone<T>(obj: T): T {
 	return result;
 }
 
-export function getSqlServerName(majorVersion: number): string | undefined {
+export function getSqlServerName(majorVersion: number): string {
 	switch (majorVersion) {
 		case 10:
 			return 'SQL Server 2008';
@@ -88,8 +116,31 @@ export function getSqlServerName(majorVersion: number): string | undefined {
 			return 'SQL Server 2017';
 		case 15:
 			return 'SQL Server 2019';
+		case 16:
+			return 'SQL Server 2012';
 		default:
-			return undefined;
+			return 'Unknown';
+	}
+}
+
+export function getSqlServerEdition(edition: string): string {
+	switch (true) {
+		case /Enterprise/i.test(edition):
+			return SqlServerEdition.ENTERPRISE;
+		case /Standard/i.test(edition):
+			return SqlServerEdition.STANDARD;
+		case /Web/i.test(edition):
+			return SqlServerEdition.WEB;
+		case /Developer/i.test(edition):
+			return SqlServerEdition.DEVELOPER;
+		case /Express/i.test(edition):
+			return SqlServerEdition.EXPRESS;
+		case /Business Intelligence/i.test(edition):
+			return SqlServerEdition.BUSINESS_INTELLIGENCE;
+		case /Evaluation/i.test(edition):
+			return SqlServerEdition.EVALUATION;
+		default:
+			return SqlServerEdition.UNKNOWN;
 	}
 }
 
@@ -570,6 +621,9 @@ export async function getAzureSubscriptions(account?: Account, tenantId?: string
 	} catch (e) {
 		logError(TelemetryViews.Utils, 'utils.getAzureSubscriptions', e);
 	}
+	if (!tenantId) {
+		return subscriptions.sort((a, b) => a.name.localeCompare(b.name));
+	}
 	const filtered = subscriptions.filter(subscription => subscription.tenant === tenantId);
 	filtered.sort((a, b) => a.name.localeCompare(b.name));
 	return filtered;
@@ -608,6 +662,20 @@ export async function getResourceLocations(
 		}
 	} catch (e) {
 		logError(TelemetryViews.Utils, 'utils.getResourceLocations', e);
+	}
+	return [];
+}
+
+export async function getAzureArcLocations(
+	account?: Account,
+	subscription?: azureResource.AzureResourceSubscription): Promise<azureResource.AzureLocation[]> {
+	try {
+		if (account && subscription) {
+			const locations = await azure.getAzureArcLocations(account, subscription);
+			return locations.sort((a, b) => a.displayName.localeCompare(b.displayName));
+		}
+	} catch (e) {
+		logError(TelemetryViews.Utils, 'utils.getAzureArcLocations', e);
 	}
 	return [];
 }
@@ -963,6 +1031,22 @@ export async function getAzureSqlDatabaseServers(account?: Account, subscription
 	}
 	sqlDatabaseServers.sort((a, b) => a.name.localeCompare(b.name));
 	return sqlDatabaseServers;
+}
+
+export async function getAzureSqlArcServersByLocation(account?: Account, subscription?: azureResource.AzureResourceSubscription, location?: azureResource.AzureLocation, resourceGroup?: azureResource.AzureResourceResourceGroup): Promise<azure.ArcSqlServer[]> {
+	let sqlArcServers: azure.ArcSqlServer[] = [];
+	try {
+		if (account && subscription && resourceGroup && location) {
+			sqlArcServers = await azure.getSqlArcServersFromResourceGroup(account, subscription, resourceGroup.name);
+			return sqlArcServers
+				.filter((arcServer) => arcServer.location.toLowerCase() === location.name.toLowerCase())
+				.sort((a, b) => a.name.localeCompare(b.name));
+		}
+	} catch (e) {
+		logError(TelemetryViews.Utils, 'utils.getAzureSqlArcServers', e);
+	}
+	sqlArcServers.sort((a, b) => a.name.localeCompare(b.name));
+	return sqlArcServers;
 }
 
 export async function getAzureSqlDatabases(account?: Account, subscription?: azureResource.AzureResourceSubscription, resourceGroupName?: string, serverName?: string): Promise<azure.AzureSqlDatabase[]> {
@@ -1726,4 +1810,3 @@ export async function refreshIntegrationRuntimeTable(_view: ModelView, _integrat
 		await _integrationRuntimeTable.setDataValues(data);
 	}
 }
-

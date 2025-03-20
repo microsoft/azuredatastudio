@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { EOL } from 'os';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
@@ -13,9 +14,12 @@ import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { getDatabasesList, excludeDatabases, SourceDatabaseInfo, getSourceConnectionProfile } from '../api/sqlUtils';
 import { WizardController } from './wizardController';
+import { SourceSelectionSection } from './sourceSelectionSection';
+
 
 export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
+	private _sourceSelectionSection!: azdata.Component;
 	private _databaseSelectorTable!: azdata.TableComponent;
 	private _xEventsGroup!: azdata.GroupContainer;
 	private _xEventsFolderPickerInput!: azdata.InputBoxComponent;
@@ -26,11 +30,13 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _disposables: vscode.Disposable[] = [];
 	private _enableNavigationValidation: boolean = true;
 	private _adhocQueryCollectionCheckbox!: azdata.CheckBoxComponent;
+	private _sourceSelection;
 
 	private readonly TABLE_WIDTH = 650;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel, private wizardController: WizardController) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_FOR_ASSESSMENT_PAGE_TITLE), migrationStateModel);
+		this._sourceSelection = new SourceSelectionSection(wizard, migrationStateModel);
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
@@ -49,6 +55,10 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		}));
 
 		await view.initializeModel(flex);
+		await this._sourceSelection.populateAzureAccountsDropdown();
+		await this._sourceSelection.populateSubscriptionDropdown();
+		await this._sourceSelection.populateLocationDropdown();
+		await this._sourceSelection.populateResourceGroupDropdown();
 	}
 
 	public async onPageEnter(): Promise<void> {
@@ -57,7 +67,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			constants.WIZARD_CANCEL_REASON_CHANGE_SOURCE_SQL_SERVER
 		]);
 
-		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+		this.wizard.registerNavigationValidator(async (pageChangeInfo) => {
 			this.wizard.message = {
 				text: '',
 				level: azdata.window.MessageLevel.Error
@@ -71,13 +81,77 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				return true;
 			}
 
+			const errors: string[] = [];
 			if (this.selectedDbs().length === 0) {
+				errors.push(constants.SELECT_DATABASE_TO_CONTINUE);
+			}
+
+			if (this.migrationStateModel._isSqlServerEnabledByArc || this.migrationStateModel._trackMigration) {
+				if (!this.migrationStateModel._azureAccount) {
+					errors.push(constants.INVALID_ACCOUNT_ERROR);
+				}
+
+				if (!this.migrationStateModel._arcResourceSubscription ||
+					(<azdata.CategoryValue>this._sourceSelection._azureSubscriptionDropdown.value)?.displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
+					errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
+				}
+				if (!this.migrationStateModel._arcResourceLocation ||
+					(<azdata.CategoryValue>this._sourceSelection._azureLocationDropdown.value)?.displayName === constants.NO_LOCATION_FOUND) {
+					errors.push(constants.INVALID_LOCATION_ERROR);
+				}
+				if (!this.migrationStateModel._arcResourceResourceGroup ||
+					(<azdata.CategoryValue>this._sourceSelection._azureResourceGroupDropdown.value)?.displayName === constants.RESOURCE_GROUP_NOT_FOUND) {
+					errors.push(constants.INVALID_RESOURCE_GROUP_ERROR);
+				}
+
+				if (!this.migrationStateModel._isSqlServerEnabledByArc && !this.migrationStateModel._sourceInfrastructureType) {
+					errors.push(constants.INVALID_SOURCE_INFRASTRUCTURE_TYPE_ERROR);
+				}
+
+				if (this.migrationStateModel._isSqlServerEnabledByArc && (!this.migrationStateModel._arcSqlServer ||
+					(<azdata.CategoryValue>this._sourceSelection._azureArcSqlServerDropdown.value)?.displayName === constants.SQL_SERVER_INSTANCE_NOT_FOUND)) {
+					errors.push(constants.INVALID_SQL_SERVER_INSTANCE_ERROR);
+				}
+			}
+
+			if (errors.length > 0) {
 				this.wizard.message = {
-					text: constants.SELECT_DATABASE_TO_CONTINUE,
+					text: errors.join(EOL),
 					level: azdata.window.MessageLevel.Error
 				};
 				return false;
 			}
+
+			if (!this.migrationStateModel._isSqlServerEnabledByArc) {
+				const fullInstanceName = await this.migrationStateModel.getFullArcInstanceName();
+				const getArcSqlServerResponse = await this.migrationStateModel.getArcSqlServerInstance(fullInstanceName);
+				if (this.migrationStateModel._arcSqlServer) {
+					if (getArcSqlServerResponse?.arcSqlServer.properties?.hostType !== this.migrationStateModel._sourceInfrastructureType) {
+						await this.migrationStateModel.createOrUpdateArcSqlServerInstance(fullInstanceName);
+					}
+				} else {
+					if (getArcSqlServerResponse?.status === 200) {
+						if (getArcSqlServerResponse?.arcSqlServer.location !== this.migrationStateModel._arcResourceLocation.name) {
+							this.wizard.message = {
+								text: constants.SQL_SERVER_INSTANCE_EXISTS_IN_LOCATION(getArcSqlServerResponse.arcSqlServer.location),
+								level: azdata.window.MessageLevel.Error
+							};
+						} else {
+							this.wizard.message = {
+								text: constants.SQL_SERVER_INSTANCE_EXISTS,
+								level: azdata.window.MessageLevel.Error
+							};
+						}
+						return false;
+					} else {
+						await this.migrationStateModel.registerArcResourceProvider();
+						if (this.migrationStateModel._arcRpRegistrationStatus === 200) {
+							await this.migrationStateModel.createOrUpdateArcSqlServerInstance(fullInstanceName);
+						}
+					}
+				}
+			}
+
 			return true;
 		});
 
@@ -167,6 +241,8 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 
 
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
+		this._sourceSelectionSection = await this._sourceSelection.createSourceSelectionContainer(this._view);
+
 		await this._loadDatabaseList(this.migrationStateModel, this.migrationStateModel._assessedDatabaseList);
 
 		const text = this._view.modelBuilder.text().withProps({
@@ -337,6 +413,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}
 		}).component();
 
+		flex.addItem(this._sourceSelectionSection, { flex: '0 0 auto' });
 		flex.addItem(text, { flex: '0 0 auto' });
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._dbCount, { flex: '0 0 auto' });

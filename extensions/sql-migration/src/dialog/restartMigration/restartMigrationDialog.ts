@@ -39,6 +39,14 @@ export class RestartMigrationDialog {
 			closedPage: 0,
 
 			// DatabaseSelector
+			isSqlServerEnabledByArc: null,
+			trackMigration: null,
+			sourceInfrastructureType: null,
+			arcResourceAzureAccount: null,
+			arcResourceSubscription: null,
+			arcResourceLocation: null,
+			arcResourceResourceGroup: null,
+			arcSqlServer: null,
 			databaseAssessment: [sourceDatabaseName],
 
 			// SKURecommendation
