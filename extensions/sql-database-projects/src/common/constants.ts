@@ -461,8 +461,8 @@ export const publishProfileFriendlyName = localize('publishProfileFriendlyName',
 //#endregion
 
 //#region Build
-export const DotnetInstallationConfirmation: string = localize('sqlDatabaseProjects.DotnetInstallationConfirmation', "The .NET SDK cannot be located. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK location in settings if already installed.");
-export function NetCoreSupportedVersionInstallationConfirmation(installedVersion: string) { return localize('sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation', "Currently installed .NET SDK version is {0}, which is not supported. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK supported version location in settings if already installed.", installedVersion); }
+export const DotnetInstallationConfirmation: string = localize('sqlDatabaseProjects.DotnetInstallationConfirmation', "The .NET SDK cannot be located. Project build will not work. Please install .NET 8 SDK or higher or update the .NET SDK location in settings if already installed.");
+export function NetCoreSupportedVersionInstallationConfirmation(installedVersion: string) { return localize('sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation', "Currently installed .NET SDK version is {0}, which is not supported. Project build will not work. Please install .NET 8 SDK or higher or update the .NET SDK supported version location in settings if already installed.", installedVersion); }
 export const UpdateDotnetLocation: string = localize('sqlDatabaseProjects.UpdateDotnetLocation', "Update Location");
 export const projectsOutputChannel = localize('sqlDatabaseProjects.outputChannel', "Database Projects");
 
