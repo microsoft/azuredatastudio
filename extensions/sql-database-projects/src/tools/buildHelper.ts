@@ -76,14 +76,14 @@ export class BuildHelper {
 		const microsoftBuildSqlVersionConfig = vscode.workspace.getConfiguration(DBProjectConfigurationKey)[constants.microsoftBuildSqlVersionKey];
 		const sdkVersion = !!microsoftBuildSqlVersionConfig ? microsoftBuildSqlVersionConfig : microsoftBuildSqlDefaultVersion;
 
-		const microsoftBuildSqlDllLocation = path.join('tools', 'netstandard2.1');
+		const microsoftBuildSqlDllLocation = path.join('tools', 'net8.0');
 		return this.ensureNugetAndFilesPresence(sdkName, sdkVersion, dacFxBuildFiles, microsoftBuildSqlDllLocation, outputChannel);
 	}
 
 	public async ensureScriptDomDllPresence(outputChannel: vscode.OutputChannel): Promise<boolean> {
 		const scriptdomNugetPkgName = 'Microsoft.SqlServer.TransactSql.ScriptDom';
 		const scriptDomDll = 'Microsoft.SqlServer.TransactSql.ScriptDom.dll';
-		const scriptDomNugetVersion = '161.8910.0'; // TODO: make this a configurable setting, like the Microsoft.Build.Sql version
+		const scriptDomNugetVersion = '161.9142.1'; // TODO: make this a configurable setting, like the Microsoft.Build.Sql version
 		const scriptDomDllLocation = path.join('lib', 'netstandard2.1');
 
 		return this.ensureNugetAndFilesPresence(scriptdomNugetPkgName, scriptDomNugetVersion, [scriptDomDll], scriptDomDllLocation, outputChannel);
