@@ -122,7 +122,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				return false;
 			}
 
-			if (!this.migrationStateModel._isSqlServerEnabledByArc) {
+			if (!this.migrationStateModel._isSqlServerEnabledByArc && this.migrationStateModel._trackMigration) {
 				const fullInstanceName = await this.migrationStateModel.getFullArcInstanceName();
 				const getArcSqlServerResponse = await this.migrationStateModel.getArcSqlServerInstance(fullInstanceName);
 				if (this.migrationStateModel._arcSqlServer) {
