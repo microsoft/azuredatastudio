@@ -18,6 +18,7 @@ export const TelemetryReporter = new AdsTelemetryReporter<TelemetryViews, Teleme
 export enum TelemetryViews {
 	SqlServerDashboard = 'SqlServerDashboard',
 	CreateDataMigrationServiceDialog = 'CreateDataMigrationServiceDialog',
+	DatabaseSelectorPage = 'DatabaseSelectorPage',
 	AssessmentsDialog = 'AssessmentsDialog',
 	DatabaseBackupPage = 'DatabaseBackupPage',
 	IntegrationRuntimePage = 'IntegrationRuntimePage',

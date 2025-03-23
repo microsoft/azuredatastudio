@@ -1150,7 +1150,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			if (error.message && error.message.includes("403")) {
 				this._arcRpRegistrationStatus = forbiddenStatusCode;
 			}
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorRegisteringArcResourceProvider', error);
+			logError(TelemetryViews.DatabaseSelectorPage, 'ErrorRegisteringArcResourceProvider', error);
 		}
 	}
 
@@ -1176,7 +1176,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			);
 			this._arcSqlServer = response.arcSqlServer;
 		} catch (error) {
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorCreatingOrUpdatingArcSqlServerInstance', error);
+			logError(TelemetryViews.DatabaseSelectorPage, 'ErrorCreatingOrUpdatingArcSqlServerInstance', error);
 		}
 	}
 
@@ -1189,7 +1189,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				fullInstanceName,
 			);
 		} catch (error) {
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorGettingArcSqlServerInstance', error);
+			logError(TelemetryViews.DatabaseSelectorPage, 'ErrorGettingArcSqlServerInstance', error);
 		}
 	}
 
