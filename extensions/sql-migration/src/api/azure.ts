@@ -1167,10 +1167,11 @@ export interface ArcSqlServerInstanceDatabaseRequest {
 		sizeMB?: number,
 		state?: string,
 		migration?: {
-			// jobs: [{
-			// targetType: MigrationTargetType,
-			// migration
-			//}]
+			jobs: [{
+				targetType?: MigrationTargetType,
+				targetUri?: string,
+				id?: string
+			}]
 		}
 	}
 }

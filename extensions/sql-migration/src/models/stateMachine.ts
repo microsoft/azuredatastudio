@@ -1232,6 +1232,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						migration: {
 							jobs: [{
 								targetType: this._targetType,
+								targetUri: this._targetServerInstance.id
 							}]
 						}
 					}
@@ -1404,7 +1405,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						properties: {
 							migration: {
 								jobs: [{
-									migrationId: response.databaseMigration.id,
+									id: response.databaseMigration.id,
 								}]
 							}
 						}
