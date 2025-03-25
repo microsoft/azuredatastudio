@@ -25,7 +25,7 @@ export const NetCoreLinuxDefaultPath = '/usr/share';
 export const winPlatform: string = 'win32';
 export const macPlatform: string = 'darwin';
 export const linuxPlatform: string = 'linux';
-export const minSupportedNetCoreVersionForBuild: string = '3.1.0'; // TODO: watch out for EOL support in Dec 2022 https://github.com/microsoft/azuredatastudio/issues/17800
+export const minSupportedNetCoreVersionForBuild: string = '8.0.0';
 
 export const enum netCoreInstallState {
 	netCoreNotPresent,
