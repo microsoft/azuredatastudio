@@ -753,6 +753,10 @@ export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.
 				targetPlatform = SqlTargetPlatform.sqlAzure;
 			}
 		}
+	} else if (serverInfo.engineEditionId === vscodeMssql.DatabaseEngineEdition.SqlDbFabric || serverInfo.engineEditionId === getAzdataApi()?.DatabaseEngineEdition.SqlDbFabric) {
+		// Temporary workaround for https://github.com/microsoft/azuredatastudio/issues/26260
+		// SqlDbFabric is not grouped into isCloud properly, remove this condition when it is fixed in SqlToolsService
+		targetPlatform = SqlTargetPlatform.sqlDbFabric;
 	} else {
 		const serverMajorVersion = serverInfo.serverMajorVersion;
 		targetPlatform = serverMajorVersion ? constants.onPremServerVersionToTargetPlatform.get(serverMajorVersion) : undefined;
