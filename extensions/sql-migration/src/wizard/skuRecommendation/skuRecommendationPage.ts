@@ -284,7 +284,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this._arcResourceIcon.iconPath = IconPathHelper.completedMigration;
 
 				await this._arcServerLink.updateProperties({
-					label: `${arcSqlServer.name}.`,
+					label: arcSqlServer.name,
 					url: `https://portal.azure.com/#resource/${arcSqlServer.id}`,
 				});
 			}

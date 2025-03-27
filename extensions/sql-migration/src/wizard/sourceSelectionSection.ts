@@ -33,7 +33,6 @@ export class SourceSelectionSection {
 
 	public async populateAzureAccountsDropdown(): Promise<void> {
 		try {
-			this._azureAccountsDropdown.loading = true;
 			this.migrationStateModel._azureAccounts = await utils.getAzureAccounts();
 
 			const accountId =
@@ -51,14 +50,13 @@ export class SourceSelectionSection {
 			this.migrationStateModel._azureAccount = (selectedAccount)
 				? utils.deepClone(selectedAccount)!
 				: undefined!;
-		} finally {
-			this._azureAccountsDropdown.loading = false;
+		} catch (e) {
+			console.log(e);
 		}
 	}
 
 	public async populateSubscriptionDropdown(): Promise<void> {
 		try {
-			this._azureSubscriptionDropdown.loading = true;
 			this.migrationStateModel._subscriptions = await utils.getAzureSubscriptions(this.migrationStateModel._azureAccount);
 			const subscriptionId = this.migrationStateModel._arcResourceSubscription?.id;
 			this._azureSubscriptionDropdown.values = await utils.getAzureSubscriptionsDropdownValues(this.migrationStateModel._subscriptions);
@@ -76,15 +74,11 @@ export class SourceSelectionSection {
 			this.migrationStateModel.refreshDatabaseBackupPage = true;
 		} catch (e) {
 			console.log(e);
-		} finally {
-			this._azureSubscriptionDropdown.loading = false;
 		}
 	}
 
 	public async populateLocationDropdown(): Promise<void> {
 		try {
-			this._azureLocationDropdown.loading = true;
-
 			this.migrationStateModel._locations = await utils.getAzureArcLocations(
 				this.migrationStateModel._arcResourceAzureAccount,
 				this.migrationStateModel._arcResourceSubscription);
@@ -104,15 +98,11 @@ export class SourceSelectionSection {
 				: undefined!;
 		} catch (e) {
 			console.log(e);
-		} finally {
-			this._azureLocationDropdown.loading = false;
 		}
 	}
 
 	public async populateResourceGroupDropdown(): Promise<void> {
 		try {
-			this._azureResourceGroupDropdown.loading = true;
-
 			this.migrationStateModel._resourceGroups = await utils.getAllResourceGroups(
 				this.migrationStateModel._azureAccount,
 				this.migrationStateModel._arcResourceSubscription);
@@ -137,14 +127,11 @@ export class SourceSelectionSection {
 				: undefined!;
 		} catch (e) {
 			console.log(e);
-		} finally {
-			this._azureResourceGroupDropdown.loading = false;
 		}
 	}
 
 	private async populateArcSqlServerDropdown(): Promise<void> {
 		try {
-			this._azureArcSqlServerDropdown.loading = true;
 			const arcSqlServer = this.migrationStateModel._arcSqlServer?.name;
 
 			this.migrationStateModel._sourceArcSqlServers = await utils.getAzureSqlArcServersByLocation(
@@ -165,8 +152,6 @@ export class SourceSelectionSection {
 				true);
 		} catch (e) {
 			console.log(e);
-		} finally {
-			this._azureArcSqlServerDropdown.loading = false;
 		}
 	}
 
