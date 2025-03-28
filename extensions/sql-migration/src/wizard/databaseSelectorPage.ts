@@ -56,9 +56,6 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 
 		await view.initializeModel(flex);
 		await this._sourceSelection.populateAzureAccountsDropdown();
-		await this._sourceSelection.populateSubscriptionDropdown();
-		await this._sourceSelection.populateLocationDropdown();
-		await this._sourceSelection.populateResourceGroupDropdown();
 	}
 
 	public async onPageEnter(): Promise<void> {
@@ -122,7 +119,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				return false;
 			}
 
-			if (!this.migrationStateModel._isSqlServerEnabledByArc) {
+			if (!this.migrationStateModel._isSqlServerEnabledByArc && this.migrationStateModel._trackMigration) {
 				const fullInstanceName = await this.migrationStateModel.getFullArcInstanceName();
 				const getArcSqlServerResponse = await this.migrationStateModel.getArcSqlServerInstance(fullInstanceName);
 				if (this.migrationStateModel._arcSqlServer) {
