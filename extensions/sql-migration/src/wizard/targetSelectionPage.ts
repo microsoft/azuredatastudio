@@ -149,7 +149,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				break;
 		}
 
-		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+		this.wizard.registerNavigationValidator(async (pageChangeInfo) => {
 			this.wizard.message = { text: '' };
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
@@ -239,6 +239,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				return false;
 			}
 
+			await this.migrationStateModel.createOrUpdateArcSqlServerInstanceDatabaseWithTargetInfo();
 			return true;
 		});
 

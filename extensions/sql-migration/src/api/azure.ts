@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as constants from '../constants/strings';
-import { SqlMigrationExtensionId } from './utils';
+import { SqlMigrationExtensionId, MigrationTargetType } from './utils';
 import { URL } from 'url';
 import { MigrationSourceAuthenticationType, MigrationStateModel, NetworkShare } from '../models/stateMachine';
 import { NetworkInterface } from './dataModels/azure/networkInterfaceModel';
@@ -253,6 +253,13 @@ export type ArcSqlServer = {
 			}
 		}
 	} | null,
+};
+
+export type ArcSqlServerDatabase = {
+	location: string,
+	id: string,
+	name: string,
+	type: string
 };
 
 export type VirtualMachineInstanceView = {
@@ -648,6 +655,60 @@ export async function getMigrationArcSqlServerInstance(
 		status: response.response!.status,
 		arcSqlServer: response.response!.data,
 	};
+}
+
+export async function getArcSqlServerInstanceDatabases(
+	account: azdata.Account,
+	subscription: Subscription,
+	resourceId: string,
+): Promise<any> {
+	const path = encodeURI(`${resourceId}/databases?api-version=${SQL_ARC_API_VERSION}`);
+	const response = await makeAzureRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined);
+	if (response.errors.length > 0) {
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+	}
+
+	return response.response!.data;
+}
+
+export async function createArcSqlServerInstanceDatabase(
+	account: azdata.Account,
+	subscription: Subscription,
+	resourceId: string,
+	dbName: string,
+	requestBody: ArcSqlServerInstanceDatabaseRequest
+): Promise<any> {
+	const path = encodeURI(`${resourceId}/databases/${dbName}?api-version=${SQL_ARC_API_VERSION}`);
+	const response = await makeAzureRequest(account, subscription, path, azurecore.HttpRequestMethod.PUT, requestBody);
+	if (response.errors.length > 0) {
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+	}
+
+	return response.response!.data;
+}
+
+export async function updateArcSqlServerInstanceDatabase(
+	account: azdata.Account,
+	subscription: Subscription,
+	resourceId: string,
+	requestBody: ArcSqlServerInstanceDatabaseRequest
+): Promise<any> {
+	const path = encodeURI(`${resourceId}?api-version=${SQL_ARC_API_VERSION}`);
+	const response = await makeAzureRequest(account, subscription, path, azurecore.HttpRequestMethod.PATCH, requestBody);
+	if (response.errors.length > 0) {
+		const message = response.errors
+			.map(err => err.message)
+			.join(', ');
+		throw new Error(message);
+	}
+
+	return response.response!.data;
 }
 
 export async function startDatabaseMigration(
@@ -1097,6 +1158,21 @@ export interface ArcSqlServerInstanceRequest {
 		hostType: string,
 		version: string,
 		edition: string,
+	}
+}
+
+export interface ArcSqlServerInstanceDatabaseRequest {
+	location?: string,
+	properties: {
+		sizeMB?: number,
+		state?: string,
+		migration?: {
+			jobs: [{
+				targetType?: MigrationTargetType,
+				targetUri?: string,
+				id?: string
+			}]
+		}
 	}
 }
 

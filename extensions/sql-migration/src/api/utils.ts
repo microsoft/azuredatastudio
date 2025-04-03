@@ -83,6 +83,18 @@ export enum SqlServerEdition {
 	UNKNOWN = "Unknown"
 }
 
+export enum ArcSqlServerInstanceDatabaseState {
+	ONLINE = "Online",
+	RESTORING = "Restoring",
+	RECOVERING = "Recovering",
+	RECOVERYPENDING = "RecoveryPending",
+	SUSPECT = "Suspect",
+	EMERGENCY = "Emergency",
+	OFFLINE = "Offline",
+	COPYING = "Copying",
+	OFFLINESECONDARY = "OfflineSecondary"
+}
+
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
 		return obj;
