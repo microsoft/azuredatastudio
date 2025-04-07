@@ -159,13 +159,13 @@ export class SourceSelectionSection {
 		this._view = view;
 		this._serviceContext = await MigrationLocalStorage.getMigrationServiceContext();
 
-		const isSqlServerEnabledByArcQuestion = this._view.modelBuilder.text()
+		const isSqlServerTrackedInAzureQuestion = this._view.modelBuilder.text()
 			.withProps({
-				value: constants.IS_SQL_SERVER_ENABLED_BY_AZURE_ARC,
+				value: constants.IS_SQL_SERVER_TRACKED_IN_AZURE,
 				CSSStyles: { ...styles.BODY_CSS, 'margin-right': '20px' }
 			}).component();
-		const buttonGroup = 'isSqlServerEnabledByArc';
-		const isSqlServerEnabledByArcButton = this._view.modelBuilder.radioButton()
+		const buttonGroup = 'isSqlServerTrackedInAzure';
+		const isSqlServerTrackedInAzureButton = this._view.modelBuilder.radioButton()
 			.withProps({
 				name: buttonGroup,
 				label: constants.YES,
@@ -173,7 +173,7 @@ export class SourceSelectionSection {
 				CSSStyles: { ...styles.BODY_CSS },
 			}).component();
 
-		const isSqlServerNotEnabledByArcButton = this._view.modelBuilder.radioButton()
+		const isSqlServerNotTrackedInAzureButton = this._view.modelBuilder.radioButton()
 			.withProps({
 				name: buttonGroup,
 				label: constants.NO,
@@ -181,8 +181,8 @@ export class SourceSelectionSection {
 				CSSStyles: { ...styles.BODY_CSS, 'margin-left': '30px' }
 			}).component();
 
-		const isSqlServerEnabledByArcButtonContainer = view.modelBuilder.flexContainer().withItems(
-			[isSqlServerEnabledByArcQuestion, isSqlServerEnabledByArcButton, isSqlServerNotEnabledByArcButton],
+		const isSqlServerTrackedInAzureButtonContainer = view.modelBuilder.flexContainer().withItems(
+			[isSqlServerTrackedInAzureQuestion, isSqlServerTrackedInAzureButton, isSqlServerNotTrackedInAzureButton],
 			{ flex: '0 0 auto' }
 		).withLayout({ flexFlow: 'row' }).component();
 
@@ -236,7 +236,7 @@ export class SourceSelectionSection {
 
 		const arcResourceHeading = this._view.modelBuilder.text()
 			.withProps({
-				value: constants.SQL_SERVER_ENABLED_BY_AZURE_ARC_DETAILS,
+				value: constants.SQL_SERVER_TARCKED_IN_AZURE_DETAILS,
 				CSSStyles: {
 					...styles.LABEL_CSS,
 					'margin-top': '5px'
@@ -278,11 +278,11 @@ export class SourceSelectionSection {
 		]);
 
 		const flex = view.modelBuilder.flexContainer().withItems(
-			[isSqlServerEnabledByArcButtonContainer, trackMigrationButtonContainer]
+			[isSqlServerTrackedInAzureButtonContainer, trackMigrationButtonContainer]
 		).withLayout({ flexFlow: 'column' }).component();
 
 		this._disposables.push(
-			isSqlServerEnabledByArcButton.onDidChangeCheckedState(async (checked) => {
+			isSqlServerTrackedInAzureButton.onDidChangeCheckedState(async (checked) => {
 				if (checked) {
 					await this._azureSubscriptionLabel.updateProperties({ description: constants.ARC_RESOURCE_SUBSCRIPTION_INFO });
 					await this._azureLocationLabel.updateProperties({ description: constants.ARC_RESOURCE_LOCATION_INFO });
@@ -296,7 +296,7 @@ export class SourceSelectionSection {
 			})
 		);
 		this._disposables.push(
-			isSqlServerNotEnabledByArcButton.onDidChangeCheckedState(async (checked) => {
+			isSqlServerNotTrackedInAzureButton.onDidChangeCheckedState(async (checked) => {
 				if (checked) {
 					flex.removeItem(arcResourceContainer);
 					trackMigrationButtonContainer.display = 'flex';

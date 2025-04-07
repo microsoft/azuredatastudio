@@ -29,6 +29,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	private _skuDataCollectionToolbar!: SkuDataCollectionToolbar;
 	private _igComponent!: azdata.TextComponent;
+	private _igContainer!: azdata.FlexContainer;
 	private _assessmentStatusIcon!: azdata.ImageComponent;
 	private _skipAssessmentCheckbox!: azdata.CheckBoxComponent;
 	private _skipAssessmentSubText!: azdata.TextComponent;
@@ -110,19 +111,23 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._assessmentStatusIcon = this._view.modelBuilder.image()
 			.withProps({
-				iconPath: IconPathHelper.completedMigration,
+				iconPath: undefined,
 				iconHeight: 16,
 				iconWidth: 16,
 				width: 16,
 				height: 16
 			}).component();
 
-		this._igComponent = this.createStatusComponent(view);
-		const igContainer = this._view.modelBuilder.flexContainer()
-			.withProps({ CSSStyles: { 'align-items': 'center' } })
-			.component();
-		igContainer.addItem(this._assessmentStatusIcon, { flex: '0 0 auto' });
-		igContainer.addItem(this._igComponent, { flex: '0 0 auto' });
+		this._igComponent = this._view.modelBuilder.text().withProps({
+			CSSStyles: { ...styles.BODY_CSS, 'margin-block-start': '0px', 'margin-block-end': '0px', 'margin-left': '8px' }
+		}).component();
+		this._igContainer = this._view.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).withItems(
+			[
+				this._assessmentStatusIcon,
+				this._igComponent,
+			], { flex: '0 0 auto' }).withProps({
+				CSSStyles: { 'margin-top': '10px' }
+			}).component();
 
 		this._skuDataCollectionStatusContainer = this.createPerformanceCollectionStatusContainer(view);
 
@@ -156,7 +161,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			.withLayout({ flexFlow: 'column' })
 			.withItems([
 				this._arcResourceCreationComponent,
-				igContainer,
+				this._igContainer,
 				this._skuDataCollectionStatusContainer,
 				this._skipAssessmentCheckbox,
 				this._skipAssessmentSubText])
@@ -198,20 +203,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				d => { try { d.dispose(); } catch { } })));
 
 		await this._view.initializeModel(this._rootContainer);
-	}
-
-	private createStatusComponent(view: azdata.ModelView): azdata.TextComponent {
-		const component = view.modelBuilder.text()
-			.withProps({
-				CSSStyles: {
-					'font-size': '13px',
-					'font-weight': '400',
-					'line-height': '18px',
-					'text-decoration': 'none',
-					'margin-left': '8px'
-				}
-			}).component();
-		return component;
 	}
 
 	// Creates the Assessment summary container.
@@ -259,47 +250,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._serverName = this.migrationStateModel.serverName || (await getSourceConnectionProfile()).serverName;
 		const arcSqlServer = this.migrationStateModel._arcSqlServer;
-		if (arcSqlServer) {
-			if (this.migrationStateModel._isSqlServerEnabledByArc) {
-				if (arcSqlServer.properties?.migration?.assessment?.assessmentUploadTime) {
-					this._textBeforeArcServerLink.value = constants.ARC_RESOURCE_ASSESSMENT_COMPUTED_BEFORE_TEXT;
-					await this._arcServerLink.updateProperties({
-						label: constants.ARC_RESOURCE_ASSESSMENT_COMPUTED_HYPERLINK_TEXT,
-						url: `https://portal.azure.com/#resource/${arcSqlServer.id}/migrationAssessment`,
-					});
-					this._arcResourceIcon.iconPath = IconPathHelper.completedMigration;
-				} else {
-					this._textBeforeArcServerLink.value = constants.ARC_RESOURCE_ASSESSMENT_NOT_COMPUTED_TEXT;
-					this._arcResourceIcon.iconPath = IconPathHelper.warning;
-					await this._arcServerLink.updateProperties({
-						label: '',
-						url: ''
-					});
-				}
-				this._textAfterArcServerLink.display = 'none';
-			} else {
-				this._textAfterArcServerLink.display = 'flex';
-				this._textBeforeArcServerLink.value = constants.ARC_RESOURCE_CREATED_BEFORE_TEXT;
-				this._textAfterArcServerLink.value = constants.ARC_RESOURCE_CREATED_AFTER_TEXT;
-				this._arcResourceIcon.iconPath = IconPathHelper.completedMigration;
-
-				await this._arcServerLink.updateProperties({
-					label: arcSqlServer.name,
-					url: `https://portal.azure.com/#resource/${arcSqlServer.id}`,
-				});
-			}
-		} else {
-			if (this.migrationStateModel._arcRpRegistrationStatus === forbiddenStatusCode) {
-				this.wizard.message = {
-					text: constants.REGISTER_ARC_RESOURCE_PROVIDER_UNAUTHORIZED_ERROR,
-					level: azdata.window.MessageLevel.Warning
-				}
-			}
-			this._statusContainer.removeItem(this._arcResourceCreationComponent);
-		}
+		const assessmentUploadTime = arcSqlServer ? arcSqlServer.properties?.migration?.assessment?.assessmentUploadTime : undefined;
+		const errors: string[] = [];
 
 		if (this.migrationStateModel._runAssessments) {
-			const errors: string[] = [];
 			await this._setAssessmentState(true, false);
 
 			try {
@@ -323,17 +277,62 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						description: errors.join(EOL),
 						level: azdata.window.MessageLevel.Error
 					};
+					this._igContainer.display = "flex";
 					this._assessmentStatusIcon.iconPath = IconPathHelper.error;
-					this._igComponent.value = constants.ASSESSMENT_FAILED(this._serverName);
+					this._igComponent.value = assessmentUploadTime ? constants.LOCAL_ASSESSMENT_FAILED(this._serverName) : constants.ASSESSMENT_FAILED(this._serverName);
 				} else {
-					this._assessmentStatusIcon.iconPath = IconPathHelper.completedMigration;
-					this._igComponent.value = constants.ASSESSMENT_COMPLETED(this._serverName);
+					if (assessmentUploadTime) {
+						this._igContainer.display = "none";
+					} else {
+						this._igContainer.display = "flex";
+						this._assessmentStatusIcon.iconPath = IconPathHelper.completedMigration;
+						this._igComponent.value = constants.ASSESSMENT_COMPLETED(this._serverName);
+					}
 				}
 			}
 		} else {
-			// use prior assessment results
-			this._assessmentStatusIcon.iconPath = IconPathHelper.completedMigration;
-			this._igComponent.value = constants.ASSESSMENT_COMPLETED(this._serverName);
+			if (assessmentUploadTime) {
+				this._igContainer.display = "none";
+			} else {
+				this._igContainer.display = "flex";
+				this._assessmentStatusIcon.iconPath = IconPathHelper.completedMigration;
+				this._igComponent.value = constants.ASSESSMENT_COMPLETED(this._serverName);
+			}
+		}
+
+		if (arcSqlServer) {
+			this._arcResourceCreationComponent.display = "flex";
+			if (this.migrationStateModel._isSqlServerEnabledByArc) {
+				if (arcSqlServer.properties?.migration?.assessment?.assessmentUploadTime) {
+					this._textBeforeArcServerLink.value = constants.ARC_RESOURCE_ASSESSMENT_COMPUTED_BEFORE_TEXT;
+					await this._arcServerLink.updateProperties({
+						label: constants.ARC_RESOURCE_ASSESSMENT_COMPUTED_HYPERLINK_TEXT,
+						url: `https://portal.azure.com/#resource/${arcSqlServer.id}/migrationAssessment`,
+					});
+					this._arcResourceIcon.iconPath = IconPathHelper.completedMigration;
+					this._textAfterArcServerLink.value = errors.length > 0 ? '' : constants.ARC_RESOURCE_ASSESSMENT_COMPUTED_AFTER_TEXT(this._serverName);
+				} else {
+					this._arcResourceCreationComponent.display = "none";
+				}
+			} else {
+				this._textAfterArcServerLink.display = 'flex';
+				this._textBeforeArcServerLink.value = constants.ARC_RESOURCE_CREATED_BEFORE_TEXT;
+				this._textAfterArcServerLink.value = constants.ARC_RESOURCE_CREATED_AFTER_TEXT;
+				this._arcResourceIcon.iconPath = IconPathHelper.completedMigration;
+
+				await this._arcServerLink.updateProperties({
+					label: arcSqlServer.name,
+					url: `https://portal.azure.com/#resource/${arcSqlServer.id}`,
+				});
+			}
+		} else {
+			if (this.migrationStateModel._arcRpRegistrationStatus === forbiddenStatusCode) {
+				this.wizard.message = {
+					text: constants.REGISTER_ARC_RESOURCE_PROVIDER_UNAUTHORIZED_ERROR,
+					level: azdata.window.MessageLevel.Warning
+				}
+			}
+			this._arcResourceCreationComponent.display = "none";
 		}
 
 		let shouldGetSkuRecommendations = false;
