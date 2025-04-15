@@ -111,6 +111,9 @@ export const ARC_RESOURCE_SUBSCRIPTION_INFO = localize('sql.migration.arc.subscr
 export const ARC_RESOURCE_LOCATION_INFO = localize('sql.migration.arc.location', "Select the Azure region under which your resource resides.");
 export const ARC_RESOURCE_RESOURCE_GROUP_INFO = localize('sql.migration.arc.resource_group', "Select the Azure rsource group under which your SQL Server resource resides.");
 export const ARC_RESOURCE_INFO = localize('sql.migration.arc.resource', "Select the SQL Server instance residing in above subscription, location and resource group.");
+export function ARC_RESOURCE_HINT(serverName: string) {
+	return localize('sql.migration.arc.resource.hint', "Ensure to select the correct SQL Server instance associated with the source '{0}'.", serverName);
+}
 export const NON_ARC_RESOURCE_SUBSCRIPTION_INFO = localize('sql.migration.non.arc.subscription', "Select the Azure subscription for creating SQL Server instance that will be used for tracking the migration.");
 export const NON_ARC_RESOURCE_LOCATION_INFO = localize('sql.migration.non.arc.location', "Select the Azure region for creating SQL Server instance that will be used for tracking the migration.");
 export const NON_ARC_RESOURCE_RESOURCE_GROUP_INFO = localize('sql.migration.non.arc.resource_group', "Select the resource group for creating SQL Server instance that will be used for tracking the migration.");

@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { MigrationStateModel } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import * as utils from '../api/utils';
+import { getSourceConnectionProfile } from '../api/sqlUtils';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
@@ -256,7 +257,7 @@ export class SourceSelectionSection {
 		const subscriptionDropdown = this.createSubscriptionDropdown();
 		const resourceGroupDropdown = this.createResourceGroupDropdown();
 		const locationDropdown = this.createLocationDropdown();
-		const arcSqlServerDropdown = this.createArcSqlServerDropdown();
+		const arcSqlServerDropdown = await this.createArcSqlServerDropdown();
 
 		arcResourceContainer.addItems([
 			arcResourceHeading,
@@ -577,7 +578,7 @@ export class SourceSelectionSection {
 			.component();
 	}
 
-	private createArcSqlServerDropdown(): azdata.FlexContainer {
+	private async createArcSqlServerDropdown(): Promise<azdata.FlexContainer> {
 		this._azureArcSqlServerLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.SQL_SERVER_INSTANCE,
@@ -592,7 +593,13 @@ export class SourceSelectionSection {
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				editable: true,
 				placeholder: constants.SELECT_A_SQL_SERVER_INSTANCE,
-				CSSStyles: { 'margin-top': '-1em' },
+				CSSStyles: { 'margin-top': '-1em', 'margin-bottom': '-1em' },
+			}).component();
+		const serverName = this.migrationStateModel.serverName || (await getSourceConnectionProfile()).serverName;
+
+		const sqlServerHint = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.ARC_RESOURCE_HINT(serverName),
 			}).component();
 		this._disposables.push(
 			this._azureArcSqlServerDropdown.onValueChanged(async (value) => {
@@ -615,6 +622,7 @@ export class SourceSelectionSection {
 			.withItems([
 				this._azureArcSqlServerLabel,
 				this._azureArcSqlServerDropdown,
+				sqlServerHint,
 			])
 			.withLayout({ flexFlow: 'column' })
 			.component();
