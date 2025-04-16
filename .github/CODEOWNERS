@@ -12,7 +12,7 @@
 /extensions/schema-compare/ @kisantia
 /extensions/sql-bindings/ @vasubhog @Charles-Gagnon @chlafreniere @MaddyDev
 /extensions/sql-database-projects/ @Benjin @kisantia
-/extensions/sql-migration @AkshayMata @raymondtruong @brian-harris @junierch @siyangMicrosoft
+/extensions/sql-migration @akshika898 @JyotikaGargg @shilpimitra @Shiwani-K @radheyshah
 /extensions/mssql/config.json @kburtram
 
 /src/sql/**/notebook @azure-data-studio-notebook-devs
