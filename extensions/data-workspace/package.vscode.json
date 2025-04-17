@@ -1,4 +1,5 @@
 {
 	"name": "data-workspace-vscode",
-	"publisher": "ms-mssql"
+	"publisher": "ms-mssql",
+	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
 }
