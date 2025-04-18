@@ -1,5 +1,4 @@
 {
-	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/sql-bindings/LICENSE.txt",
 	"extensionDependencies": [
 		"ms-mssql.mssql"
 	]
