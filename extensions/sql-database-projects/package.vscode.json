@@ -5,7 +5,6 @@
 		"ms-mssql.mssql",
 		"ms-mssql.data-workspace-vscode"
 	],
-	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/LICENSE.txt",
 	"contributes": {
 		"configuration": [
 			{
