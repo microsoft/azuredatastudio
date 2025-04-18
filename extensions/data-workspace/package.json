@@ -2,7 +2,7 @@
   "name": "data-workspace",
   "displayName": "Data Workspace",
   "description": "Additional common functionality for database projects",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "publisher": "Microsoft",
   "preview": true,
 	"license": "SEE LICENSE IN LICENSE.txt",
