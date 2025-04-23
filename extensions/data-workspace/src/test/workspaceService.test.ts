@@ -53,23 +53,24 @@ suite('WorkspaceService', function (): void {
 		should.strictEqual(projects.length, 0, 'no projects should be returned when projects are present in the workspace file');
 		workspaceFoldersStub.restore();
 
-		// Projects are present
+		// Projects are present - Not in order
 		sinon.stub(vscode.workspace, 'workspaceFolders').value([{ uri: vscode.Uri.file('') }]);
-		sinon.stub(service, 'getAllProjectsInFolder').resolves([vscode.Uri.file('/test/folder/abc.sqlproj'), vscode.Uri.file('/test/folder/folder1/abc1.sqlproj'), vscode.Uri.file('/test/folder/folder2/abc2.sqlproj')]);
+		sinon.stub(service, 'getAllProjectsInFolder').resolves([
+			vscode.Uri.file('/test/folder/folder2/abc2.sqlproj'),
+			vscode.Uri.file('/test/folder/abc.sqlproj'),
+			vscode.Uri.file('/test/folder/folder1/abc1.sqlproj')
+		]);
+
 		projects = await service.getProjectsInWorkspace(undefined, true);
 		should.strictEqual(projects.length, 3, 'there should be 3 projects');
 		const project1 = vscode.Uri.file('/test/folder/abc.sqlproj');
 		const project2 = vscode.Uri.file('/test/folder/folder1/abc1.sqlproj');
 		const project3 = vscode.Uri.file('/test/folder/folder2/abc2.sqlproj');
+
+		// Verify if the projects are sorted correctly by their paths
 		should.strictEqual(projects[0].path, project1.path);
 		should.strictEqual(projects[1].path, project2.path);
 		should.strictEqual(projects[2].path, project3.path);
-
-		// Verify if the projects are sorted correctly by their paths
-		const sortedProjects = projects.sort((a, b) => a.path.localeCompare(b.path));
-		should.strictEqual(sortedProjects[0].path, project1.path);
-		should.strictEqual(sortedProjects[1].path, project2.path);
-		should.strictEqual(sortedProjects[2].path, project3.path);
 	});
 
 	test('getAllProjectTypes', async () => {
