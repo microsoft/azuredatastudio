@@ -148,6 +148,13 @@ export class WorkspaceService implements IWorkspaceService {
 		this.excludedProjects = this.getWorkspaceConfigurationValue<string[]>(ExcludedProjectsConfigurationName);
 		this.openedProjects = this.openedProjects.filter(project => !this.excludedProjects?.find(excludedProject => excludedProject === vscode.workspace.asRelativePath(project)));
 
+		// Sort the projects based on the project name extracted from the path property
+		this.openedProjects = this.openedProjects.sort((a, b) => {
+			const projectA = path.basename(a?.path ?? '');
+			const projectB = path.basename(b?.path ?? '');
+			return projectA.localeCompare(projectB);
+		});
+
 		Logger.log(`Finished looking for projects in workspace. Opened: ${this.openedProjects.length}. Excluded: ${this.excludedProjects.length}. Total time = ${new Date().getTime() - startTime}ms`);
 
 		// filter by specified extension
