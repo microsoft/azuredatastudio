@@ -64,6 +64,12 @@ suite('WorkspaceService', function (): void {
 		should.strictEqual(projects[0].path, project1.path);
 		should.strictEqual(projects[1].path, project2.path);
 		should.strictEqual(projects[2].path, project3.path);
+
+		// Verify if the projects are sorted correctly by their paths
+		const sortedProjects = projects.sort((a, b) => a.path.localeCompare(b.path));
+		should.strictEqual(sortedProjects[0].path, project1.path);
+		should.strictEqual(sortedProjects[1].path, project2.path);
+		should.strictEqual(sortedProjects[2].path, project3.path);
 	});
 
 	test('getAllProjectTypes', async () => {
