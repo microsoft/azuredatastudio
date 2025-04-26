@@ -17,7 +17,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { FlexContainer } from 'azdata';
 import { AssessmentSummaryCard } from './assessmentSummaryCard';
 import { MigrationTargetType } from '../../api/utils';
-import { logError, TelemetryViews } from '../../telemetry';
+import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../../telemetry';
 import { getSourceConnectionProfile } from '../../api/sqlUtils';
 import { forbiddenStatusCode, IssueCategory } from '../../constants/helper';
 import { WizardController } from '../wizardController';
@@ -95,6 +95,16 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					...styles.BODY_CSS,
 				}
 			}).component();
+
+		this._arcServerLink.onDidClick(() => {
+			sendSqlMigrationActionEvent(
+				TelemetryViews.SkuRecommendationWizard,
+				TelemetryAction.OnArcAssessmentLinkClick,
+				{
+					'sessionId': this.migrationStateModel._sessionId,
+				},
+				{});
+		})
 
 		this._textAfterArcServerLink = this._view.modelBuilder.text().withProps({
 			value: constants.ARC_RESOURCE_CREATED_AFTER_TEXT,

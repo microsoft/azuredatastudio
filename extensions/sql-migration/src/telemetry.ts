@@ -99,7 +99,8 @@ export enum TelemetryAction {
 	CopyArmTemplateSuccess = 'CopyArmTemplateSuccess',
 	OpenCustomDeploymentPortalSuccess = 'OpenCustomDeploymentPortalSuccess',
 	OpenTargetProvisioningWizard = 'OpenTargetProvisioningWizard',
-	OpenDeployArmTemplateDialog = 'OpenDeployArmTemplateDialog'
+	OpenDeployArmTemplateDialog = 'OpenDeployArmTemplateDialog',
+	OnArcAssessmentLinkClick = 'OnArcAssessmentLinkClick'
 }
 
 export function logError(telemetryView: TelemetryViews, err: string, error: any): void {
@@ -124,6 +125,7 @@ export function getTelemetryProps(migrationStateModel: MigrationStateModel): Tel
 		'subscriptionId': migrationStateModel._targetSubscription?.id,
 		'resourceGroup': migrationStateModel._resourceGroup?.name,
 		'targetType': migrationStateModel._targetType,
+		'isSqlServerTrackedInAzure': String(migrationStateModel._isSqlServerEnabledByArc),
 		'sourceInfrastructureType': constants.SourceInfrastructureTypeLookup[migrationStateModel._sourceInfrastructureType],
 		'tenantId': tenantId,
 		'migrationTracked': String(migrationStateModel._trackMigration)
