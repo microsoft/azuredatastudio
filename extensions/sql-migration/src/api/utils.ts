@@ -61,7 +61,6 @@ export enum SourceInfrastructureType {
 	AWSVirtualMachine = 'AWSVirtualMachine',
 	AzureKubernetesService = 'AzureKubernetesService',
 	AzureVMWareVirtualMachine = 'AzureVMWareVirtualMachine',
-	AzureVirtualMachine = 'AzureVirtualMachine',
 	Container = 'Container',
 	GCPKubernetesService = 'GCPKubernetesService',
 	GCPVMWareVirtualMachine = 'GCPVMWareVirtualMachine',

@@ -1533,7 +1533,6 @@ export interface LookupTable<T> {
 }
 
 export const SourceInfrastructureTypeLookup: LookupTable<string> = {
-	[SourceInfrastructureType.AzureVirtualMachine]: localize('sql.migration.status.azurevmarc', 'Azure Virtual Machine'),
 	[SourceInfrastructureType.AzureKubernetesService]: localize('sql.migration.status.azurekubernetesservice', 'Azure Kubernetes Service'),
 	[SourceInfrastructureType.AzureVMWareVirtualMachine]: localize('sql.migration.status.azurevmwarevm', 'Azure VMWare Virtual Machine'),
 	[SourceInfrastructureType.AWSVirtualMachine]: localize('sql.migration.status.awsvm', 'AWS Virtual Machine'),
