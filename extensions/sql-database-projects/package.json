@@ -16,6 +16,8 @@
     "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.updateProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.generateProjectFromOpenApiSpec",
+    "onCommand:sqlDatabaseProjects.build",
+    "onCommand:sqlDatabaseProjects.buildWithCodeAnalysis",
     "workspaceContains:**/*.sqlproj",
     "onView:dataworkspace.views.main"
   ],
@@ -108,6 +110,11 @@
       {
         "command": "sqlDatabaseProjects.build",
         "title": "%sqlDatabaseProjects.build%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.buildWithCodeAnalysis",
+        "title": "%sqlDatabaseProjects.buildWithCodeAnalysis%",
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
@@ -262,6 +269,10 @@
           "when": "false"
         },
         {
+          "command": "sqlDatabaseProjects.buildWithCodeAnalysis",
+          "when": "false"
+        },
+        {
           "command": "sqlDatabaseProjects.publish",
           "when": "false"
         },
@@ -340,19 +351,24 @@
           "group": "1_dbProjectsFirst@1"
         },
         {
-          "command": "sqlDatabaseProjects.publish",
+          "command": "sqlDatabaseProjects.buildWithCodeAnalysis",
           "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "1_dbProjectsFirst@2"
         },
         {
+          "command": "sqlDatabaseProjects.publish",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
+          "group": "1_dbProjectsFirst@3"
+        },
+        {
           "command": "sqlDatabaseProjects.schemaCompare",
           "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && azdataAvailable",
-          "group": "1_dbProjectsFirst@3"
+          "group": "1_dbProjectsFirst@4"
         },
         {
           "command": "sqlDatabaseProjects.updateProjectFromDatabase",
           "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && azdataAvailable",
-          "group": "1_dbProjectsFirst@4"
+          "group": "1_dbProjectsFirst@5"
         },
         {
           "command": "sqlDatabaseProjects.newItem",

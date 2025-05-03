@@ -105,7 +105,8 @@ declare module 'sqldbproj' {
 		folder = 'folder',
 		preDeployScript = 'preDeployScript',
 		postDeployScript = 'postDeployScript',
-		publishProfile = 'publishProfile'
+		publishProfile = 'publishProfile',
+		tasks = 'tasks',
 	}
 
 	/**

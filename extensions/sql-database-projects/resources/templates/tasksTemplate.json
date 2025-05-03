@@ -1,0 +1,29 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build",
+			"type": "shell",
+			"command": "dotnet build @@SQL_PROJECT_PATH@@",
+			"problemMatcher": "$sqlproj-problem-matcher",
+			"isBackground": true,
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "Builds the SQL project"
+		},
+		{
+			"label": "Build with Code Analysis",
+			"type": "shell",
+			"command": "dotnet build @@SQL_PROJECT_PATH@@ /p:RunSqlCodeAnalysis=true",
+			"problemMatcher": "$sqlproj-problem-matcher",
+			"isBackground": true,
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "Builds the SQL project with code analysis"
+		}
+	]
+}

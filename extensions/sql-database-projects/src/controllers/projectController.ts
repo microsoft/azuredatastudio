@@ -23,7 +23,6 @@ import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
-import { ShellCommandOptions } from '../tools/shellExecutionHelper';
 import { BuildHelper } from '../tools/buildHelper';
 import { readPublishProfile, promptForSavingProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
@@ -224,13 +223,13 @@ export class ProjectsController {
 	 * @param projectTypeId project type id
 	 */
 	private async addTemplateFiles(newProjFilePath: string, projectTypeId: string): Promise<void> {
+		const project = await Project.openProject(newProjFilePath);
 		if (projectTypeId === constants.emptySqlDatabaseProjectTypeId || newProjFilePath === '') {
+			await this.addTasksJsonFile(project, newProjFilePath);
 			return;
 		}
 
 		if (projectTypeId === constants.edgeSqlDatabaseProjectTypeId) {
-			const project = await Project.openProject(newProjFilePath);
-
 			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.table), 'DataTable.sql', new Map([['OBJECT_NAME', 'DataTable']]));
 			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.dataSource), 'EdgeHubInputDataSource.sql', new Map([['OBJECT_NAME', 'EdgeHubInputDataSource'], ['LOCATION', 'edgehub://']]));
 			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.dataSource), 'SqlOutputDataSource.sql', new Map([['OBJECT_NAME', 'SqlOutputDataSource'], ['LOCATION', 'sqlserver://tcp:.,1433']]));
@@ -239,6 +238,17 @@ export class ProjectsController {
 			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStream), 'SqlOutputStream.sql', new Map([['OBJECT_NAME', 'SqlOutputStream'], ['DATA_SOURCE_NAME', 'SqlOutputDataSource'], ['LOCATION', 'TSQLStreaming.dbo.DataTable'], ['OPTIONS', '']]));
 			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStreamingJob), 'EdgeStreamingJob.sql', new Map([['OBJECT_NAME', 'EdgeStreamingJob']]));
 		}
+		await this.addTasksJsonFile(project, newProjFilePath);
+	}
+
+	/**
+	 * Adds a tasks.json file to the project
+	 * @param project project to add the tasks.json file to
+	 * @param newProjFilePath path to the project file
+	 */
+	private async addTasksJsonFile(project: ISqlProject, newProjFilePath: string): Promise<void> {
+		const projectPath = newProjFilePath.replace(/\\/g, '\\\\');
+		await this.addFileToProjectFromTemplate(project, templates.get(ItemType.tasks), 'tasks.json', new Map([['SQL_PROJECT_PATH', projectPath]]));
 	}
 
 	private async addFileToProjectFromTemplate(project: ISqlProject, itemType: templates.ProjectScriptType, relativePath: string, expansionMacros: Map<string, string>): Promise<string> {
@@ -271,14 +281,14 @@ export class ProjectsController {
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 * @returns path of the built dacpac
 	 */
-	public async buildProject(treeNode: dataworkspace.WorkspaceTreeItem): Promise<string>;
+	public async buildProject(treeNode: dataworkspace.WorkspaceTreeItem, codeAnalysis?: boolean): Promise<string>;
 	/**
 	 * Builds a project, producing a dacpac
 	 * @param project Project to be built
 	 * @returns path of the built dacpac
 	 */
-	public async buildProject(project: Project): Promise<string>;
-	public async buildProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<string> {
+	public async buildProject(project: Project, codeAnalysis?: boolean): Promise<string>;
+	public async buildProject(context: Project | dataworkspace.WorkspaceTreeItem, codeAnalysis?: boolean): Promise<string> {
 		const project: Project = await this.getProjectFromContext(context);
 
 		const startTime = new Date();
@@ -301,11 +311,34 @@ export class ProjectsController {
 			}
 		}
 
-		const options: ShellCommandOptions = {
-			commandTitle: 'Build',
-			workingDirectory: project.projectFolderPath,
-			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath, project.sqlProjStyle)
+		// Load tasks from tasks.json
+		const tasksFilePath = path.join(project.projectFolderPath, 'tasks.json');
+		const tasksContent = await fs.readFile(tasksFilePath, 'utf-8');
+		const tasks = JSON.parse(tasksContent).tasks;
+		let task;
+
+		// Find the task with the specified label
+		if (codeAnalysis) {
+			const lable = 'Build with Code Analysis';
+			task = tasks.find((t: any) => t.label === lable);
+		}
+		else {
+			const lable = 'Build';
+			task = tasks.find((t: any) => t.label === lable);
+		}
+
+		if (!task) {
+			void vscode.window.showErrorMessage("task not found"); //TODO: localize this message
+			return '';
+		}
+
+		const taskDefinition: vscode.TaskDefinition = {
+			type: 'shell',
+			label: task.label,
+			command: task.command
 		};
+		const taskExecution = new vscode.ShellExecution(task.command, { cwd: project.projectFolderPath });
+		const vscodeTask = new vscode.Task(taskDefinition, vscode.TaskScope.Workspace, task.label, 'shell', taskExecution, task.problemMatcher);
 
 		try {
 			const crossPlatCompatible: boolean = await Project.checkPromptCrossPlatStatus(project, true /* blocking prompt */);
@@ -321,9 +354,8 @@ export class ProjectsController {
 		}
 
 		try {
-			await this.netCoreTool.runDotnetCommand(options);
+			await vscode.tasks.executeTask(vscodeTask);
 			const timeToBuild = new Date().getTime() - startTime.getTime();
-
 			const currentBuildIndex = this.buildInfo.findIndex(b => b.startDate === currentBuildTimeInfo);
 			this.buildInfo[currentBuildIndex].status = Status.success;
 			this.buildInfo[currentBuildIndex].timeToCompleteAction = utils.timeConversion(timeToBuild);
@@ -334,6 +366,7 @@ export class ProjectsController {
 				.send();
 
 			return project.dacpacOutputPath;
+
 		} catch (err) {
 			const timeToFailureBuild = new Date().getTime() - startTime.getTime();
 
