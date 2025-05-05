@@ -346,6 +346,7 @@ export const YesRecommended = localize('yesRecommended', "Yes (Recommended)");
 export const SdkLearnMorePlaceholder = localize('sdkLearnMorePlaceholder', "Click \"Learn More\" button for more information about SDK-style projects");
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
+export const confirmCreateProjectWithBuildTaskDialogName = localize('configureSqlProjDefaultBuild', "Do you want to configure SQL project build as the default build configuration for this folder?");
 
 //#endregion
 

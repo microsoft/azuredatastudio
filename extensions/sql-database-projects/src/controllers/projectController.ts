@@ -48,6 +48,9 @@ import { ConnectionService } from '../models/connections/connectionService';
 import { getPublishToDockerSettings } from '../dialogs/publishToDockerQuickpick';
 import { SqlCmdVariableTreeItem } from '../models/tree/sqlcmdVariableTreeItem';
 import { IPublishToDockerSettings, ISqlProjectPublishSettings } from '../models/deploy/publishSettings';
+import { IDialogService } from '../../../../src/vs/platform/dialogs/common/dialogs';
+import { Severity } from '../../../../src/vs/platform/notification/common/notification';
+import { Codicon } from '../../../../src/vs/base/common/codicons';
 
 const maxTableLength = 10;
 
@@ -75,6 +78,7 @@ interface FileWatcherStatus {
  * Controller for managing lifecycle of projects
  */
 export class ProjectsController {
+	private readonly dialogService: IDialogService;
 	private netCoreTool: NetCoreTool;
 	private buildHelper: BuildHelper;
 	private buildInfo: DashboardData[] = [];
@@ -88,6 +92,7 @@ export class ProjectsController {
 	private fileWatchers = new Map<string, FileWatcherStatus>();
 
 	constructor(private _outputChannel: vscode.OutputChannel) {
+		this.dialogService = new IDialogService();
 		this.netCoreTool = new NetCoreTool(this._outputChannel);
 		this.buildHelper = new BuildHelper();
 		this.azureSqlClient = new AzureSqlClient();
@@ -225,7 +230,9 @@ export class ProjectsController {
 	private async addTemplateFiles(newProjFilePath: string, projectTypeId: string): Promise<void> {
 		const project = await Project.openProject(newProjFilePath);
 		if (projectTypeId === constants.emptySqlDatabaseProjectTypeId || newProjFilePath === '') {
-			await this.addTasksJsonFile(project, newProjFilePath);
+			if (await this.confirmToAppendBuildTasks()) {
+				await this.addTasksJsonFile(project, newProjFilePath);
+			}
 			return;
 		}
 
@@ -238,7 +245,20 @@ export class ProjectsController {
 			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStream), 'SqlOutputStream.sql', new Map([['OBJECT_NAME', 'SqlOutputStream'], ['DATA_SOURCE_NAME', 'SqlOutputDataSource'], ['LOCATION', 'TSQLStreaming.dbo.DataTable'], ['OPTIONS', '']]));
 			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStreamingJob), 'EdgeStreamingJob.sql', new Map([['OBJECT_NAME', 'EdgeStreamingJob']]));
 		}
-		await this.addTasksJsonFile(project, newProjFilePath);
+
+		if (await this.confirmToAppendBuildTasks()) {
+			await this.addTasksJsonFile(project, newProjFilePath);
+		}
+	}
+
+	public async confirmToAppendBuildTasks(): Promise<boolean> {
+		await this.dialogService.confirm({
+			type: Severity.Info,
+			message: constants.confirmCreateProjectWithBuildTaskDialogName,
+			cancelButton: constants.noString,
+			custom: { icon: Codicon.shield }
+		});
+		return true;
 	}
 
 	/**
