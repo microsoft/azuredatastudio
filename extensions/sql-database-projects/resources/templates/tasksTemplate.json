@@ -9,7 +9,7 @@
 			"isBackground": true,
 			"group": {
 				"kind": "build",
-				"isDefault": true
+				"isDefault": "@@ConfigureDefaultBuild@@"
 			},
 			"detail": "Builds the SQL project"
 		},
@@ -19,10 +19,6 @@
 			"command": "dotnet build @@SQL_PROJECT_PATH@@ /p:RunSqlCodeAnalysis=true",
 			"problemMatcher": "$sqlproj-problem-matcher",
 			"isBackground": true,
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
 			"detail": "Builds the SQL project with code analysis"
 		}
 	]

@@ -226,9 +226,7 @@ export class ProjectsController {
 	private async addTemplateFiles(newProjFilePath: string, projectTypeId: string): Promise<void> {
 		const project = await Project.openProject(newProjFilePath);
 		if (projectTypeId === constants.emptySqlDatabaseProjectTypeId || newProjFilePath === '') {
-			if (await this.confirmToAppendBuildTasks()) {
-				await this.addTasksJsonFile(project, newProjFilePath);
-			}
+			await this.addTasksJsonFile(project, newProjFilePath);
 			return;
 		}
 
@@ -242,16 +240,14 @@ export class ProjectsController {
 			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStreamingJob), 'EdgeStreamingJob.sql', new Map([['OBJECT_NAME', 'EdgeStreamingJob']]));
 		}
 
-		if (await this.confirmToAppendBuildTasks()) {
-			await this.addTasksJsonFile(project, newProjFilePath);
-		}
+		await this.addTasksJsonFile(project, newProjFilePath);
 	}
 
 	/**
 	 * Confirms with the user if they want to append build tasks to the project
 	 * @returns true if the user wants to append build tasks, false otherwise
 	*/
-	public async confirmToAppendBuildTasks(): Promise<boolean> {
+	public async configureDefaultBuildTask(): Promise<boolean> {
 		const action = await vscode.window.showQuickPick(
 			[constants.yesString, constants.noString],
 			{ title: constants.confirmCreateProjectWithBuildTaskDialogName, ignoreFocusOut: false });
@@ -266,7 +262,13 @@ export class ProjectsController {
 	 */
 	private async addTasksJsonFile(project: ISqlProject, newProjFilePath: string): Promise<void> {
 		const projectPath = newProjFilePath.replace(/\\/g, '\\\\');
-		await this.addFileToProjectFromTemplate(project, templates.get(ItemType.tasks), 'tasks.json', new Map([['SQL_PROJECT_PATH', projectPath]]));
+		let macros = new Map([['SQL_PROJECT_PATH', projectPath]])
+
+		// Prompt the user if they want to configure the default build tasks to the project
+		if (await this.configureDefaultBuildTask()) {
+			macros.set('ConfigureDefaultBuild', true.toString());
+		}
+		await this.addFileToProjectFromTemplate(project, templates.get(ItemType.tasks), '.vscode/tasks.json', macros);
 	}
 
 	private async addFileToProjectFromTemplate(project: ISqlProject, itemType: templates.ProjectScriptType, relativePath: string, expansionMacros: Map<string, string>): Promise<string> {

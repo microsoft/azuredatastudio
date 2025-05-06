@@ -54,37 +54,37 @@ export class SqlDatabaseProjectsTaskProvider implements vscode.TaskProvider {
 		}
 
 		// Get all the .sqlproj files in the workspace folders
-		let sqlprojFiles: string[] = []
 		for (const workspaceFolder of workspaceFolders) {
-			const folderString = workspaceFolder.uri.fsPath;
-			if (!folderString) {
+			const folderPath = workspaceFolder.uri.fsPath;
+			if (!folderPath) {
 				continue;
 			}
-			const sqlProjFile = await vscode.workspace.findFiles(new vscode.RelativePattern(folderString, '**/*.sqlproj'));
-			sqlProjFile.map(uri => sqlprojFiles.push(uri.fsPath));
+			const sqlProjUris = await vscode.workspace.findFiles(new vscode.RelativePattern(folderPath, '**/*.sqlproj'));
+
+			for (const sqlProjUri of sqlProjUris) {
+				const projectDir = path.dirname(sqlProjUri.fsPath);
+				const tasksJsonPath = path.join(projectDir, '.vscode', 'tasks.json');
+
+				// Try to read .vscode/tasks.json
+				const tasksJsonUri = vscode.Uri.file(tasksJsonPath);
+				const tasksJsonContent = await vscode.workspace.fs.readFile(tasksJsonUri);
+				const tasksJson = JSON.parse(tasksJsonContent.toString());
+
+				if (Array.isArray(tasksJson.tasks)) {
+					for (const taskConfig of tasksJson.tasks) {
+						const taskDefinition: SqlprojTaskDefinition = {
+							type: SqlDatabaseProjectsTaskProvider.SqlDatabaseProjectType,
+							filePath: tasksJsonPath,
+							fileDisplayName: path.basename(sqlProjUri.fsPath),
+						};
+
+						// Create a Build task
+						const task = this.getTask(taskDefinition, taskConfig.label === 'Build with Code Analysis' ? true : false);
+						tasks.push(task);
+					}
+				}
+			}
 		}
-
-		if (sqlprojFiles.length === 0) {
-			return tasks; // No .sqlproj files found
-		}
-
-		// Create tasks for each .sqlproj file
-		// We create two tasks for each .sqlproj file, one for build and one for build with code analysis
-		sqlprojFiles.forEach(sqlprojFile => {
-			const taskDefinition: SqlprojTaskDefinition = {
-				type: SqlDatabaseProjectsTaskProvider.SqlDatabaseProjectType,
-				filePath: sqlprojFile,
-				fileDisplayName: path.basename(sqlprojFile)
-			};
-
-			// Create a Build task
-			const buildTask = this.getTask(taskDefinition);
-			tasks.push(buildTask);
-
-			// Create a Build with code analysis task
-			const buildWithCodeAnalysisTask = this.getTask(taskDefinition, true);
-			tasks.push(buildWithCodeAnalysisTask);
-		});
 
 		return tasks;
 	}
