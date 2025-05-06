@@ -178,7 +178,7 @@ export class BuildHelper {
 		return this.extensionBuildDir;
 	}
 
-	public constructBuildArguments(projectPath: string, buildDirPath: string, sqlProjStyle: ProjectType): string {
+	public constructBuildArguments(projectPath: string, buildDirPath: string, sqlProjStyle: ProjectType, codeAnalysis: boolean): string {
 		projectPath = utils.getQuotedPath(projectPath);
 		buildDirPath = utils.getQuotedPath(buildDirPath);
 
@@ -187,15 +187,19 @@ export class BuildHelper {
 		// since SDK style projects don't to specify the targets path, just where the system dacpacs are
 		if (utils.getAzdataApi()) {
 			if (sqlProjStyle === mssql.ProjectType.SdkStyle) {
-				return ` build ${projectPath} /p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath}`;
+				return codeAnalysis ? ` build ${projectPath} /p:NetCoreBuild=true /p:RunSqlCodeAnalysis=true /p:SystemDacpacsLocation=${buildDirPath}`
+					: ` build ${projectPath} /p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath}`;
 			} else {
-				return ` build ${projectPath} /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath}`;
+				return codeAnalysis ? ` build ${projectPath} /p:NetCoreBuild=true /p:RunSqlCodeAnalysis=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath}`
+					: ` build ${projectPath} /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath}`;
 			}
 		} else {
 			if (sqlProjStyle === vscodeMssql.ProjectType.SdkStyle) {
-				return ` build ${projectPath} /p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath}`;
+				return codeAnalysis ? ` build ${projectPath} /p:NetCoreBuild=true /p:RunSqlCodeAnalysis=true /p:SystemDacpacsLocation=${buildDirPath}`
+					: ` build ${projectPath} /p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath}`;
 			} else {
-				return ` build ${projectPath} /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath}`;
+				return codeAnalysis ? ` build ${projectPath} /p:NetCoreBuild=true /p:RunSqlCodeAnalysis=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath}`
+					: ` build ${projectPath} /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath}`;
 			}
 		}
 	}

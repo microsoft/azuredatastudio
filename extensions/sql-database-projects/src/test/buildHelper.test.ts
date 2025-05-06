@@ -15,7 +15,7 @@ describe('BuildHelper: Build Helper tests', function (): void {
 	it('Should get correct build arguments for legacy-style projects', function (): void {
 		// update settings and validate
 		const buildHelper = new BuildHelper();
-		const resultArg = buildHelper.constructBuildArguments('dummy\\project path\\more space in path', 'dummy\\dll path', ProjectType.LegacyStyle);
+		const resultArg = buildHelper.constructBuildArguments('dummy\\project path\\more space in path', 'dummy\\dll path', ProjectType.LegacyStyle, false);
 
 		if (os.platform() === 'win32') {
 			should(resultArg).equal(' build "dummy\\\\project path\\\\more space in path" /p:NetCoreBuild=true /p:NETCoreTargetsPath="dummy\\\\dll path" /p:SystemDacpacsLocation="dummy\\\\dll path"');
@@ -28,7 +28,7 @@ describe('BuildHelper: Build Helper tests', function (): void {
 	it('Should get correct build arguments for SDK-style projects', function (): void {
 		// update settings and validate
 		const buildHelper = new BuildHelper();
-		const resultArg = buildHelper.constructBuildArguments('dummy\\project path\\more space in path', 'dummy\\dll path', ProjectType.SdkStyle);
+		const resultArg = buildHelper.constructBuildArguments('dummy\\project path\\more space in path', 'dummy\\dll path', ProjectType.SdkStyle, false);
 
 		if (os.platform() === 'win32') {
 			should(resultArg).equal(' build "dummy\\\\project path\\\\more space in path" /p:NetCoreBuild=true /p:SystemDacpacsLocation="dummy\\\\dll path"');

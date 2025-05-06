@@ -48,6 +48,7 @@ import { ConnectionService } from '../models/connections/connectionService';
 import { getPublishToDockerSettings } from '../dialogs/publishToDockerQuickpick';
 import { SqlCmdVariableTreeItem } from '../models/tree/sqlcmdVariableTreeItem';
 import { IPublishToDockerSettings, ISqlProjectPublishSettings } from '../models/deploy/publishSettings';
+import { ShellCommandOptions } from '../tools/shellExecutionHelper';
 
 const maxTableLength = 10;
 
@@ -246,6 +247,10 @@ export class ProjectsController {
 		}
 	}
 
+	/**
+	 * Confirms with the user if they want to append build tasks to the project
+	 * @returns true if the user wants to append build tasks, false otherwise
+	*/
 	public async confirmToAppendBuildTasks(): Promise<boolean> {
 		const action = await vscode.window.showQuickPick(
 			[constants.yesString, constants.noString],
@@ -301,7 +306,7 @@ export class ProjectsController {
 	 * @returns path of the built dacpac
 	 */
 	public async buildProject(project: Project, codeAnalysis?: boolean): Promise<string>;
-	public async buildProject(context: Project | dataworkspace.WorkspaceTreeItem, codeAnalysis?: boolean): Promise<string> {
+	public async buildProject(context: Project | dataworkspace.WorkspaceTreeItem, codeAnalysis: boolean = false): Promise<string> {
 		const project: Project = await this.getProjectFromContext(context);
 
 		const startTime = new Date();
@@ -325,34 +330,44 @@ export class ProjectsController {
 		}
 
 		// Load tasks from tasks.json
+		// When no tasks.json file is found, means the user doen't have any tasks defined for the project, so we will run the dotnet command directly
 		const tasksFilePath = path.join(project.projectFolderPath, 'tasks.json');
-		const tasksContent = await fs.readFile(tasksFilePath, 'utf-8');
-		const tasks = JSON.parse(tasksContent).tasks;
-		let task;
+		const isTaskFileExists = await utils.exists(tasksFilePath);
+		let vscodeTask: vscode.Task | undefined = undefined;
+		if (isTaskFileExists) {
+			const tasksContent = await fs.readFile(tasksFilePath, 'utf-8');
+			const tasks = JSON.parse(tasksContent).tasks;
+			let task;
 
-		// Find the task with the specified label
-		if (codeAnalysis) {
-			const lable = 'Build with Code Analysis';
-			task = tasks.find((t: any) => t.label === lable);
+			// Find the task with the specified label
+			if (codeAnalysis) {
+				const lable = constants.buildWithCodeAnalysisTaskName
+				task = tasks.find((t: any) => t.label === lable);
+			}
+			else {
+				const lable = constants.BuildTaskName;
+				task = tasks.find((t: any) => t.label === lable);
+			}
+
+			if (!task) {
+				void vscode.window.showErrorMessage("task not found"); //TODO: localize this message
+				return '';
+			}
+
+			const taskDefinition: vscode.TaskDefinition = {
+				type: 'shell',
+				label: task.label,
+				command: task.command
+			};
+			const taskExecution = new vscode.ShellExecution(task.command, { cwd: project.projectFolderPath });
+			vscodeTask = new vscode.Task(taskDefinition, vscode.TaskScope.Workspace, task.label, 'shell', taskExecution, task.problemMatcher);
 		}
-		else {
-			const lable = 'Build';
-			task = tasks.find((t: any) => t.label === lable);
+
+		const options: ShellCommandOptions = {
+			commandTitle: 'Build',
+			workingDirectory: project.projectFolderPath,
+			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath, project.sqlProjStyle, codeAnalysis)
 		}
-
-		if (!task) {
-			void vscode.window.showErrorMessage("task not found"); //TODO: localize this message
-			return '';
-		}
-
-		const taskDefinition: vscode.TaskDefinition = {
-			type: 'shell',
-			label: task.label,
-			command: task.command
-		};
-		const taskExecution = new vscode.ShellExecution(task.command, { cwd: project.projectFolderPath });
-		const vscodeTask = new vscode.Task(taskDefinition, vscode.TaskScope.Workspace, task.label, 'shell', taskExecution, task.problemMatcher);
-
 		try {
 			const crossPlatCompatible: boolean = await Project.checkPromptCrossPlatStatus(project, true /* blocking prompt */);
 
@@ -367,7 +382,12 @@ export class ProjectsController {
 		}
 
 		try {
-			await vscode.tasks.executeTask(vscodeTask);
+			// If vscodeTask is defined, run it, otherwise run the dotnet command directly
+			if (vscodeTask !== undefined) {
+				await vscode.tasks.executeTask(vscodeTask);
+			} else {
+				await this.netCoreTool.runDotnetCommand(options);
+			}
 			const timeToBuild = new Date().getTime() - startTime.getTime();
 			const currentBuildIndex = this.buildInfo.findIndex(b => b.startDate === currentBuildTimeInfo);
 			this.buildInfo[currentBuildIndex].status = Status.success;
