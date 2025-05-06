@@ -282,6 +282,7 @@ export class ProjectsController {
 				await project.addPostDeploymentScript(relativePath);
 				break;
 			case ItemType.publishProfile:
+			case ItemType.tasks: // tasks.json is not added to the build
 				await project.addNoneItem(relativePath);
 				break;
 			default: // a normal SQL object script
