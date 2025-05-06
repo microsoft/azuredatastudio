@@ -330,45 +330,15 @@ export class ProjectsController {
 			}
 		}
 
-		// Load tasks from tasks.json
-		// When no tasks.json file is found, means the user doen't have any tasks defined for the project, so we will run the dotnet command directly
-		const tasksFilePath = path.join(project.projectFolderPath, 'tasks.json');
-		const isTaskFileExists = await utils.exists(tasksFilePath);
-		let vscodeTask: vscode.Task | undefined = undefined;
-		if (isTaskFileExists) {
-			const tasksContent = await fs.readFile(tasksFilePath, 'utf-8');
-			const tasks = JSON.parse(tasksContent).tasks;
-			let task;
-
-			// Find the task with the specified label
-			if (codeAnalysis) {
-				const lable = constants.buildWithCodeAnalysisTaskName
-				task = tasks.find((t: any) => t.label === lable);
-			}
-			else {
-				const lable = constants.BuildTaskName;
-				task = tasks.find((t: any) => t.label === lable);
-			}
-
-			if (!task) {
-				void vscode.window.showErrorMessage("task not found"); //TODO: localize this message
-				return '';
-			}
-
-			const taskDefinition: vscode.TaskDefinition = {
-				type: 'shell',
-				label: task.label,
-				command: task.command
-			};
-			const taskExecution = new vscode.ShellExecution(task.command, { cwd: project.projectFolderPath });
-			vscodeTask = new vscode.Task(taskDefinition, vscode.TaskScope.Workspace, task.label, 'shell', taskExecution, task.problemMatcher);
-		}
+		// Load tasks from tasks.json and create a new vscode.task if it exist
+		const vscodeTask: vscode.Task | undefined = await this.createNewTask(project, codeAnalysis);
 
 		const options: ShellCommandOptions = {
 			commandTitle: 'Build',
 			workingDirectory: project.projectFolderPath,
 			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath, project.sqlProjStyle, codeAnalysis)
 		}
+
 		try {
 			const crossPlatCompatible: boolean = await Project.checkPromptCrossPlatStatus(project, true /* blocking prompt */);
 
@@ -389,6 +359,8 @@ export class ProjectsController {
 			} else {
 				await this.netCoreTool.runDotnetCommand(options);
 			}
+
+			// If the build was successful, we will get the path to the built dacpac
 			const timeToBuild = new Date().getTime() - startTime.getTime();
 			const currentBuildIndex = this.buildInfo.findIndex(b => b.startDate === currentBuildTimeInfo);
 			this.buildInfo[currentBuildIndex].status = Status.success;
@@ -422,6 +394,47 @@ export class ProjectsController {
 			}
 			return '';
 		}
+	}
+
+	private async createNewTask(project: Project, codeAnalysis: boolean): Promise<vscode.Task | undefined> {
+		let vscodeTask: vscode.Task | undefined = undefined;
+		const tasksFilePath = path.join(project.projectFolderPath, 'tasks.json');
+		const isTaskFileExists = await utils.exists(tasksFilePath);
+
+		// When no tasks.json file is found, means the user doen't have any tasks defined for the project, so we will run the dotnet command directly
+		if (isTaskFileExists) {
+			const tasksContent = (await fs.readFile(tasksFilePath)).toString();
+			const tasks = JSON.parse(tasksContent).tasks;
+
+			// Find the task with the specified label
+			const label = codeAnalysis ? constants.buildWithCodeAnalysisTaskName : constants.BuildTaskName;
+			const task = tasks.find((t: any) => t.label === label);
+
+			if (!task) {
+				void vscode.window.showErrorMessage(constants.buildTasksNotFound);
+				return undefined;
+			}
+
+			// Create a new task definition with the label and command
+			const taskDefinition: vscode.TaskDefinition = {
+				type: 'shell',
+				label: task.label,
+				command: task.command,
+				problemMatcher: task.problemMatcher
+			};
+
+			// Create a new task with the definition and shell executable
+			vscodeTask = new vscode.Task(
+				taskDefinition,
+				vscode.TaskScope.Workspace,
+				taskDefinition.label,
+				taskDefinition.type,
+				new vscode.ShellExecution(task.command, { cwd: project.projectFolderPath }),
+				taskDefinition.problemMatcher
+			);
+		}
+
+		return vscodeTask;
 	}
 
 	//#region Publish

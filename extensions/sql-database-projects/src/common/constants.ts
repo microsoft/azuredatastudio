@@ -349,6 +349,7 @@ export const ProjectDirectoryAlreadyExistError = (projectName: string, location:
 export const confirmCreateProjectWithBuildTaskDialogName = localize('configureSqlProjDefaultBuild', "Do you want to configure SQL project build as the default build configuration for this folder?");
 export const BuildTaskName = localize('buildTaskName', "Build");
 export const buildWithCodeAnalysisTaskName = localize('buildWithCodeAnalysisTaskName', "Build with Code Analysis");
+export const buildTasksNotFound = localize('buildTasksNotFound', "Build tasks for the SQL project could not be located");
 
 //#endregion
 
