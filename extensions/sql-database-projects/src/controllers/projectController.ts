@@ -22,7 +22,7 @@ import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewPro
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ImportDataModel } from '../models/api/import';
-import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
+import { DotNetError } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
 import { readPublishProfile, promptForSavingProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
@@ -48,7 +48,6 @@ import { ConnectionService } from '../models/connections/connectionService';
 import { getPublishToDockerSettings } from '../dialogs/publishToDockerQuickpick';
 import { SqlCmdVariableTreeItem } from '../models/tree/sqlcmdVariableTreeItem';
 import { IPublishToDockerSettings, ISqlProjectPublishSettings } from '../models/deploy/publishSettings';
-import { ShellCommandOptions } from '../tools/shellExecutionHelper';
 
 const maxTableLength = 10;
 
@@ -76,7 +75,6 @@ interface FileWatcherStatus {
  * Controller for managing lifecycle of projects
  */
 export class ProjectsController {
-	private netCoreTool: NetCoreTool;
 	private buildHelper: BuildHelper;
 	private buildInfo: DashboardData[] = [];
 	private publishInfo: PublishData[] = [];
@@ -89,7 +87,6 @@ export class ProjectsController {
 	private fileWatchers = new Map<string, FileWatcherStatus>();
 
 	constructor(private _outputChannel: vscode.OutputChannel) {
-		this.netCoreTool = new NetCoreTool(this._outputChannel);
 		this.buildHelper = new BuildHelper();
 		this.azureSqlClient = new AzureSqlClient();
 		this.deployService = new DeployService(this.azureSqlClient, this._outputChannel);
@@ -261,7 +258,7 @@ export class ProjectsController {
 	 * @param newProjFilePath path to the project file
 	 */
 	private async addTasksJsonFile(project: ISqlProject, newProjFilePath: string): Promise<void> {
-		const projectPath = newProjFilePath.replace(/\\/g, '\\\\');
+		const projectPath = utils.getNonQuotedPath(newProjFilePath);
 		let macros = new Map([['SQL_PROJECT_PATH', projectPath]])
 
 		// Prompt the user if they want to configure the default build tasks to the project
@@ -333,13 +330,8 @@ export class ProjectsController {
 		}
 
 		// Load tasks from tasks.json and create a new vscode.task if it exist
-		const vscodeTask: vscode.Task | undefined = await this.createNewTask(project, codeAnalysis);
-
-		const options: ShellCommandOptions = {
-			commandTitle: 'Build',
-			workingDirectory: project.projectFolderPath,
-			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath, project.sqlProjStyle, codeAnalysis)
-		}
+		const buildArgs = this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath, project.sqlProjStyle);
+		const vscodeTask: vscode.Task | undefined = await this.createNewTask(project, codeAnalysis, buildArgs);
 
 		try {
 			const crossPlatCompatible: boolean = await Project.checkPromptCrossPlatStatus(project, true /* blocking prompt */);
@@ -358,8 +350,6 @@ export class ProjectsController {
 			// If vscodeTask is defined, run it, otherwise run the dotnet command directly
 			if (vscodeTask !== undefined) {
 				await vscode.tasks.executeTask(vscodeTask);
-			} else {
-				await this.netCoreTool.runDotnetCommand(options);
 			}
 
 			// If the build was successful, we will get the path to the built dacpac
@@ -398,9 +388,9 @@ export class ProjectsController {
 		}
 	}
 
-	private async createNewTask(project: Project, codeAnalysis: boolean): Promise<vscode.Task | undefined> {
+	private async createNewTask(project: Project, codeAnalysis: boolean, buildArguments: string): Promise<vscode.Task | undefined> {
 		let vscodeTask: vscode.Task | undefined = undefined;
-		const tasksFilePath = path.join(project.projectFolderPath, 'tasks.json');
+		const tasksFilePath = path.join(project.projectFolderPath, '.vscode', 'tasks.json');
 		const isTaskFileExists = await utils.exists(tasksFilePath);
 
 		// When no tasks.json file is found, means the user doen't have any tasks defined for the project, so we will run the dotnet command directly
@@ -419,9 +409,9 @@ export class ProjectsController {
 
 			// Create a new task definition with the label and command
 			const taskDefinition: vscode.TaskDefinition = {
-				type: 'shell',
+				type: task.type,
 				label: task.label,
-				command: task.command,
+				command: task.command + buildArguments,
 				problemMatcher: task.problemMatcher
 			};
 
@@ -431,7 +421,7 @@ export class ProjectsController {
 				vscode.TaskScope.Workspace,
 				taskDefinition.label,
 				taskDefinition.type,
-				new vscode.ShellExecution(task.command, { cwd: project.projectFolderPath }),
+				new vscode.ShellExecution(taskDefinition.command, { cwd: project.projectFolderPath }),
 				taskDefinition.problemMatcher
 			);
 		}

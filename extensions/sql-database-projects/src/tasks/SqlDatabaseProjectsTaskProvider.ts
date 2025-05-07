@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as constants from '../common/constants';
 
 interface SqlprojTaskDefinition extends vscode.TaskDefinition {
 	filePath: string;
@@ -79,13 +80,12 @@ export class SqlDatabaseProjectsTaskProvider implements vscode.TaskProvider {
 						};
 
 						// Create a Build task
-						const task = this.getTask(taskDefinition, taskConfig.label === 'Build with Code Analysis' ? true : false);
+						const task = this.getTask(taskDefinition, taskConfig.label === constants.buildWithCodeAnalysisTaskName ? true : false);
 						tasks.push(task);
 					}
 				}
 			}
 		}
-
 		return tasks;
 	}
 
