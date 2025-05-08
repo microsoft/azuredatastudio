@@ -331,7 +331,7 @@ export class ProjectsController {
 
 		// Load tasks from tasks.json and create a new vscode.task if it exist
 		const buildArgs = this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath, project.sqlProjStyle);
-		const vscodeTask: vscode.Task | undefined = await this.createNewTask(project, codeAnalysis, buildArgs);
+		const vscodeTask: vscode.Task = await this.createVsCodeTask(project, codeAnalysis, buildArgs);
 
 		try {
 			const crossPlatCompatible: boolean = await Project.checkPromptCrossPlatStatus(project, true /* blocking prompt */);
@@ -348,9 +348,7 @@ export class ProjectsController {
 
 		try {
 			// If vscodeTask is defined, run it, otherwise run the dotnet command directly
-			if (vscodeTask !== undefined) {
-				await vscode.tasks.executeTask(vscodeTask);
-			}
+			await vscode.tasks.executeTask(vscodeTask);
 
 			// If the build was successful, we will get the path to the built dacpac
 			const timeToBuild = new Date().getTime() - startTime.getTime();
@@ -388,43 +386,28 @@ export class ProjectsController {
 		}
 	}
 
-	private async createNewTask(project: Project, codeAnalysis: boolean, buildArguments: string): Promise<vscode.Task | undefined> {
+	private async createVsCodeTask(project: Project, codeAnalysis: boolean, buildArguments: string): Promise<vscode.Task> {
 		let vscodeTask: vscode.Task | undefined = undefined;
-		const tasksFilePath = path.join(project.projectFolderPath, '.vscode', 'tasks.json');
-		const isTaskFileExists = await utils.exists(tasksFilePath);
+		const label = codeAnalysis ? constants.buildWithCodeAnalysisTaskName : constants.BuildTaskName;
+		const runCodeAnalysis = codeAnalysis ? constants.runCodeAnalysisParam : '';
 
-		// When no tasks.json file is found, means the user doen't have any tasks defined for the project, so we will run the dotnet command directly
-		if (isTaskFileExists) {
-			const tasksContent = (await fs.readFile(tasksFilePath)).toString();
-			const tasks = JSON.parse(tasksContent).tasks;
+		// Create a new task definition with the label and command
+		const taskDefinition: vscode.TaskDefinition = {
+			type: 'shell',
+			label: label,
+			command: 'dotnet build ' + project.projectFilePath + runCodeAnalysis + buildArguments,
+			problemMatcher: constants.problemMatcher
+		};
 
-			// Find the task with the specified label
-			const label = codeAnalysis ? constants.buildWithCodeAnalysisTaskName : constants.BuildTaskName;
-			const task = tasks.find((t: any) => t.label === label);
-
-			if (!task) {
-				void vscode.window.showErrorMessage(constants.buildTasksNotFound);
-				return undefined;
-			}
-
-			// Create a new task definition with the label and command
-			const taskDefinition: vscode.TaskDefinition = {
-				type: task.type,
-				label: task.label,
-				command: task.command + buildArguments,
-				problemMatcher: task.problemMatcher
-			};
-
-			// Create a new task with the definition and shell executable
-			vscodeTask = new vscode.Task(
-				taskDefinition,
-				vscode.TaskScope.Workspace,
-				taskDefinition.label,
-				taskDefinition.type,
-				new vscode.ShellExecution(taskDefinition.command, { cwd: project.projectFolderPath }),
-				taskDefinition.problemMatcher
-			);
-		}
+		// Create a new task with the definition and shell executable
+		vscodeTask = new vscode.Task(
+			taskDefinition,
+			vscode.TaskScope.Workspace,
+			taskDefinition.label,
+			taskDefinition.type,
+			new vscode.ShellExecution(taskDefinition.command, { cwd: project.projectFolderPath }),
+			taskDefinition.problemMatcher
+		);
 
 		return vscodeTask;
 	}

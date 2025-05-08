@@ -7,12 +7,20 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
 
+/**
+ * Extends to vscode.TaskDefinition to add the filePath and fileDisplayName properties.
+ * This is used to identify the task and provide the file path and display name for the task.
+ */
 interface SqlprojTaskDefinition extends vscode.TaskDefinition {
 	filePath: string;
 	fileDisplayName: string;
 	runCodeAnalysis?: boolean;
 }
 
+/**
+ * This class implements the vscode.TaskProvider interface to provide tasks for SQL database projects.
+ * It creates tasks for building SQL database projects and running code analysis on them.
+ */
 export class SqlDatabaseProjectsTaskProvider implements vscode.TaskProvider {
 	static SqlDatabaseProjectType = 'sqlproj-build';
 	private sqlTasks: Thenable<vscode.Task[]> | undefined = undefined;
@@ -47,7 +55,7 @@ export class SqlDatabaseProjectsTaskProvider implements vscode.TaskProvider {
 	 * This method is used to create the tasks for the provider.
 	 * @returns A promise that resolves to an array of tasks
 	 */
-	private async createTasks(): Promise<vscode.Task[]> {
+	public async createTasks(): Promise<vscode.Task[]> {
 		const tasks: vscode.Task[] = [];
 		const workspaceFolders = vscode.workspace.workspaceFolders;
 		if (workspaceFolders === undefined) {
@@ -55,52 +63,49 @@ export class SqlDatabaseProjectsTaskProvider implements vscode.TaskProvider {
 		}
 
 		// Get all the .sqlproj files in the workspace folders
+		let sqlProjUris: vscode.Uri[] = [];
 		for (const workspaceFolder of workspaceFolders) {
 			const folderPath = workspaceFolder.uri.fsPath;
 			if (!folderPath) {
 				continue;
 			}
-			const sqlProjUris = await vscode.workspace.findFiles(new vscode.RelativePattern(folderPath, '**/*.sqlproj'));
+			const sqlProjPaths = await vscode.workspace.findFiles(new vscode.RelativePattern(folderPath, '**/*.sqlproj'));
+			sqlProjPaths.map(uri => sqlProjUris.push(uri));
+		}
 
+		if (sqlProjUris.length !== 0) {
 			for (const sqlProjUri of sqlProjUris) {
-				const projectDir = path.dirname(sqlProjUri.fsPath);
-				const tasksJsonPath = path.join(projectDir, '.vscode', 'tasks.json');
+				const taskDefinition: SqlprojTaskDefinition = {
+					type: SqlDatabaseProjectsTaskProvider.SqlDatabaseProjectType,
+					filePath: sqlProjUri.fsPath,
+					fileDisplayName: path.basename(sqlProjUri.fsPath),
+				};
 
-				// Try to read .vscode/tasks.json
-				const tasksJsonUri = vscode.Uri.file(tasksJsonPath);
-				const tasksJsonContent = await vscode.workspace.fs.readFile(tasksJsonUri);
-				const tasksJson = JSON.parse(tasksJsonContent.toString());
+				// Create a Build task
+				let task = this.getTask(taskDefinition);
+				tasks.push(task);
 
-				if (Array.isArray(tasksJson.tasks)) {
-					for (const taskConfig of tasksJson.tasks) {
-						const taskDefinition: SqlprojTaskDefinition = {
-							type: SqlDatabaseProjectsTaskProvider.SqlDatabaseProjectType,
-							filePath: tasksJsonPath,
-							fileDisplayName: path.basename(sqlProjUri.fsPath),
-						};
-
-						// Create a Build task
-						const task = this.getTask(taskDefinition, taskConfig.label === constants.buildWithCodeAnalysisTaskName ? true : false);
-						tasks.push(task);
-					}
-				}
+				// Create a Build with Code Analysis task
+				task = this.getTask(taskDefinition, true);
+				tasks.push(task);
 			}
 		}
 		return tasks;
 	}
 
 	/**
-	 * This method is used to create the task for the provider.
-	 * Here we create a build task for the sqlproj file using the vscode.Task, alternatively we can get the same info from tasks.json file.
+	 * This method is used to create the task for the provider. Here we create a build task for the sqlproj file using the vscode.Task.
+	 * Alternatively we can get the same info from tasks.json file, but the existing projects might not have the tasks.json file.
 	 * @param definition The task definition
 	 * @param runCodeAnalysis Whether to run code analysis or not
 	 * @returns The task object
 	 */
-	private getTask(definition: SqlprojTaskDefinition, runCodeAnalysis: boolean = false): vscode.Task {
+	public getTask(definition: SqlprojTaskDefinition, runCodeAnalysis: boolean = false): vscode.Task {
 		// unless runCodeAnalysis is false, run code analysis with /p:RunSqlCodeAnalysis=true on end of the command
 		definition.runCodeAnalysis = runCodeAnalysis;
-		const shellExecutable = runCodeAnalysis ? `dotnet build ${definition.filePath} /p:RunSqlCodeAnalysis=true` : `dotnet build ${definition.filePath}`;
-		const taskName = runCodeAnalysis ? `${definition.fileDisplayName} - Build with Code Analysis` : `${definition.fileDisplayName} - Build`;
+		const shellExecutable = runCodeAnalysis ? `${constants.dotnetBuild} ${definition.filePath} ${constants.runCodeAnalysisParam}` : `${constants.dotnetBuild} ${definition.filePath}`;
+		const taskName = runCodeAnalysis ? `${definition.fileDisplayName} - ${constants.buildWithCodeAnalysisTaskName}`
+			: `${definition.fileDisplayName}  - ${constants.BuildTaskName}`;
 
 		// Create a new task with the definition and shell executable
 		const task = new vscode.Task(
