@@ -103,7 +103,8 @@ export class SqlDatabaseProjectsTaskProvider implements vscode.TaskProvider {
 	public getTask(definition: SqlprojTaskDefinition, runCodeAnalysis: boolean = false): vscode.Task {
 		// unless runCodeAnalysis is false, run code analysis with /p:RunSqlCodeAnalysis=true on end of the command
 		definition.runCodeAnalysis = runCodeAnalysis;
-		const shellExecutable = runCodeAnalysis ? `${constants.dotnetBuild} ${definition.filePath} ${constants.runCodeAnalysisParam}` : `${constants.dotnetBuild} ${definition.filePath}`;
+		const shellExecutable = runCodeAnalysis ? `${constants.dotnetBuild} ${definition.filePath} ${constants.runCodeAnalysisParam}`
+			: `${constants.dotnetBuild} ${definition.filePath}`;
 		const taskName = runCodeAnalysis ? `${definition.fileDisplayName} - ${constants.buildWithCodeAnalysisTaskName}`
 			: `${definition.fileDisplayName}  - ${constants.BuildTaskName}`;
 

@@ -210,7 +210,7 @@ export class ProjectsController {
 
 		utils.throwIfFailed(result);
 
-		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
+		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId, creationParams.configureDefaultBuild ?? false);
 
 		return newProjFilePath;
 	}
@@ -220,10 +220,10 @@ export class ProjectsController {
 	 * @param newProjFilePath path to project to add template files to
 	 * @param projectTypeId project type id
 	 */
-	private async addTemplateFiles(newProjFilePath: string, projectTypeId: string): Promise<void> {
+	private async addTemplateFiles(newProjFilePath: string, projectTypeId: string, configureDefaultBuild: boolean): Promise<void> {
 		const project = await Project.openProject(newProjFilePath);
 		if (projectTypeId === constants.emptySqlDatabaseProjectTypeId || newProjFilePath === '') {
-			await this.addTasksJsonFile(project, newProjFilePath);
+			await this.addTasksJsonFile(project, newProjFilePath, configureDefaultBuild);
 			return;
 		}
 
@@ -237,19 +237,7 @@ export class ProjectsController {
 			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStreamingJob), 'EdgeStreamingJob.sql', new Map([['OBJECT_NAME', 'EdgeStreamingJob']]));
 		}
 
-		await this.addTasksJsonFile(project, newProjFilePath);
-	}
-
-	/**
-	 * Confirms with the user if they want to append build tasks to the project
-	 * @returns true if the user wants to append build tasks, false otherwise
-	*/
-	public async configureDefaultBuildTask(): Promise<boolean> {
-		const action = await vscode.window.showQuickPick(
-			[constants.yesString, constants.noString],
-			{ title: constants.confirmCreateProjectWithBuildTaskDialogName, ignoreFocusOut: false });
-
-		return action === constants.yesString;
+		await this.addTasksJsonFile(project, newProjFilePath, configureDefaultBuild);
 	}
 
 	/**
@@ -257,14 +245,9 @@ export class ProjectsController {
 	 * @param project project to add the tasks.json file to
 	 * @param newProjFilePath path to the project file
 	 */
-	private async addTasksJsonFile(project: ISqlProject, newProjFilePath: string): Promise<void> {
+	private async addTasksJsonFile(project: ISqlProject, newProjFilePath: string, configureDefaultBuild: boolean): Promise<void> {
 		const projectPath = utils.getNonQuotedPath(newProjFilePath);
-		let macros = new Map([['SQL_PROJECT_PATH', projectPath]])
-
-		// Prompt the user if they want to configure the default build tasks to the project
-		if (await this.configureDefaultBuildTask()) {
-			macros.set('ConfigureDefaultBuild', true.toString());
-		}
+		const macros = new Map([['SQL_PROJECT_PATH', projectPath], ['ConfigureDefaultBuild', configureDefaultBuild.toString()]]);
 		await this.addFileToProjectFromTemplate(project, templates.get(ItemType.tasks), '.vscode/tasks.json', macros);
 	}
 
@@ -389,13 +372,14 @@ export class ProjectsController {
 	private async createVsCodeTask(project: Project, codeAnalysis: boolean, buildArguments: string): Promise<vscode.Task> {
 		let vscodeTask: vscode.Task | undefined = undefined;
 		const label = codeAnalysis ? constants.buildWithCodeAnalysisTaskName : constants.BuildTaskName;
-		const runCodeAnalysis = codeAnalysis ? constants.runCodeAnalysisParam : '';
+		const command = codeAnalysis ? `${constants.dotnetBuild} ${project.projectFilePath} ${constants.runCodeAnalysisParam} ${buildArguments}` :
+			`${constants.dotnetBuild} ${project.projectFilePath} ${buildArguments}`;
 
 		// Create a new task definition with the label and command
 		const taskDefinition: vscode.TaskDefinition = {
 			type: 'shell',
 			label: label,
-			command: 'dotnet build ' + project.projectFilePath + runCodeAnalysis + buildArguments,
+			command: command,
 			problemMatcher: constants.problemMatcher
 		};
 
@@ -1506,7 +1490,8 @@ export class ProjectsController {
 				newProjName: projectInfo.projectName,
 				folderUri: vscode.Uri.file(projectInfo.outputFolder),
 				projectTypeId: constants.emptySqlDatabaseProjectTypeId,
-				sdkStyle: !!options?.isSDKStyle
+				sdkStyle: !!options?.isSDKStyle,
+				configureDefaultBuild: true //TODO: sai
 			});
 
 			const project = await Project.openProject(newProjFilePath);
@@ -1670,7 +1655,8 @@ export class ProjectsController {
 				folderUri: vscode.Uri.file(newProjFolderUri),
 				projectTypeId: model.sdkStyle ? constants.emptySqlDatabaseSdkProjectTypeId : constants.emptySqlDatabaseProjectTypeId,
 				sdkStyle: model.sdkStyle,
-				targetPlatform: targetPlatform
+				targetPlatform: targetPlatform,
+				configureDefaultBuild: true //TODO: sai
 			});
 
 			model.filePath = path.dirname(newProjFilePath);
@@ -2017,4 +2003,5 @@ export interface NewProjectParams {
 	sdkStyle: boolean;
 	projectGuid?: string;
 	targetPlatform?: SqlTargetPlatform;
+	configureDefaultBuild?: boolean;
 }

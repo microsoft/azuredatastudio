@@ -322,7 +322,7 @@ export const artifactReference = localize('artifactReference', "Artifact Referen
 export const packageReference = localize('packageReference', "Package Reference");
 export const referenceTypeRadioButtonsGroupTitle = localize('referenceTypeRadioButtonsGroupTitle', "Reference Type");
 export const problemMatcher = '$sqlproj-problem-matcher';
-export const dotnetBuild = 'dotnet build ';
+export const dotnetBuild = 'dotnet build';
 export const runCodeAnalysisParam = '/p:RunSqlCodeAnalysis=true';
 
 //#endregion

@@ -18,10 +18,10 @@ describe('BuildHelper: Build Helper tests', function (): void {
 		const resultArg = buildHelper.constructBuildArguments('dummy\\project path\\more space in path', 'dummy\\dll path', ProjectType.LegacyStyle);
 
 		if (os.platform() === 'win32') {
-			should(resultArg).equal(' build "dummy\\\\project path\\\\more space in path" /p:NetCoreBuild=true /p:NETCoreTargetsPath="dummy\\\\dll path" /p:SystemDacpacsLocation="dummy\\\\dll path"');
+			should(resultArg).equal('/p:NetCoreBuild=true /p:NETCoreTargetsPath="dummy\\\\dll path" /p:SystemDacpacsLocation="dummy\\\\dll path"');
 		}
 		else {
-			should(resultArg).equal(' build "dummy/project path/more space in path" /p:NetCoreBuild=true /p:NETCoreTargetsPath="dummy/dll path" /p:SystemDacpacsLocation="dummy/dll path"');
+			should(resultArg).equal('/p:NetCoreBuild=true /p:NETCoreTargetsPath="dummy/dll path" /p:SystemDacpacsLocation="dummy/dll path"');
 		}
 	});
 
@@ -31,10 +31,10 @@ describe('BuildHelper: Build Helper tests', function (): void {
 		const resultArg = buildHelper.constructBuildArguments('dummy\\project path\\more space in path', 'dummy\\dll path', ProjectType.SdkStyle);
 
 		if (os.platform() === 'win32') {
-			should(resultArg).equal(' build "dummy\\\\project path\\\\more space in path" /p:NetCoreBuild=true /p:SystemDacpacsLocation="dummy\\\\dll path"');
+			should(resultArg).equal('/p:NetCoreBuild=true /p:SystemDacpacsLocation="dummy\\\\dll path"');
 		}
 		else {
-			should(resultArg).equal(' build "dummy/project path/more space in path" /p:NetCoreBuild=true /p:SystemDacpacsLocation="dummy/dll path"');
+			should(resultArg).equal('/p:NetCoreBuild=true /p:SystemDacpacsLocation="dummy/dll path"');
 		}
 	});
 
