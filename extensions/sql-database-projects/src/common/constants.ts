@@ -30,6 +30,7 @@ export const problemMatcher = '$sqlproj-problem-matcher';
 export const sqlProjTaskType = 'sqlproj-build'
 export const dotnetBuild = 'dotnet build';
 export const runCodeAnalysisParam = '/p:RunSqlCodeAnalysis=true';
+export const runWithVerbose = 'v:detailed	';
 
 //#endregion
 
