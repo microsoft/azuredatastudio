@@ -26,6 +26,10 @@ export const msdb = 'msdb';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 export const sqlProjectSdk = 'Microsoft.Build.Sql';
+export const problemMatcher = '$sqlproj-problem-matcher';
+export const sqlProjTaskType = 'sqlproj-build'
+export const dotnetBuild = 'dotnet build';
+export const runCodeAnalysisParam = '/p:RunSqlCodeAnalysis=true';
 
 //#endregion
 
@@ -321,9 +325,7 @@ export const unhandledExcludeType = (itemType: string): string => { return local
 export const artifactReference = localize('artifactReference', "Artifact Reference");
 export const packageReference = localize('packageReference', "Package Reference");
 export const referenceTypeRadioButtonsGroupTitle = localize('referenceTypeRadioButtonsGroupTitle', "Reference Type");
-export const problemMatcher = '$sqlproj-problem-matcher';
-export const dotnetBuild = 'dotnet build';
-export const runCodeAnalysisParam = '/p:RunSqlCodeAnalysis=true';
+
 
 //#endregion
 
@@ -350,9 +352,8 @@ export const SdkLearnMorePlaceholder = localize('sdkLearnMorePlaceholder', "Clic
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
 export const confirmCreateProjectWithBuildTaskDialogName = localize('configureSqlProjDefaultBuild', "Do you want to configure SQL project build as the default build configuration for this folder?");
-export const BuildTaskName = localize('buildTaskName', "Build");
+export const buildTaskName = localize('buildTaskName', "Build");
 export const buildWithCodeAnalysisTaskName = localize('buildWithCodeAnalysisTaskName', "Build with Code Analysis");
-export const buildTasksNotFound = localize('buildTasksNotFound', "Build tasks for the SQL project could not be located");
 
 //#endregion
 

@@ -6,16 +6,22 @@
 import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import * as should from 'should';
-import { SqlDatabaseProjectsTaskProvider } from '../../tasks/SqlDatabaseProjectsTaskProvider';
+import { SqlDatabaseProjectTaskProvider } from '../../tasks/SqlDatabaseProjectTaskProvider';
 
 describe('Sql Database Projects Task Provider', function (): void {
 	let sandbox: sinon.SinonSandbox;
-	let taskProvider: SqlDatabaseProjectsTaskProvider;
+	let taskProvider: SqlDatabaseProjectTaskProvider;
+	const workspaceFolder: vscode.WorkspaceFolder = {
+			uri: vscode.Uri.file('/SqlProjFolder'),
+			name: 'SqlProjFolder',
+			index: 0
+		};
 
 	beforeEach(() => {
 		sandbox = sinon.createSandbox();
-		taskProvider = new SqlDatabaseProjectsTaskProvider();
+		taskProvider = new SqlDatabaseProjectTaskProvider([workspaceFolder]);
 	});
+
 
 	afterEach(() => {
 		sandbox.restore();
@@ -23,13 +29,7 @@ describe('Sql Database Projects Task Provider', function (): void {
 	});
 
 	it('Should create build and buildWithCodeAnalysis tasks for .sqlproj files', async function (): Promise<void> {
-		const workspaceFolder: vscode.WorkspaceFolder = {
-			uri: vscode.Uri.file('/SqlProjfolder'),
-			name: 'SqlProjfolder',
-			index: 0
-		};
-
-		const sqlProjUri = vscode.Uri.file('/SqlProjfolder/MyProject/MyProject.sqlproj');
+		const sqlProjUri = vscode.Uri.file('/SqlProjFolder/MyProject/MyProject.sqlproj');
 
 		sandbox.stub(vscode.workspace, 'workspaceFolders').value([workspaceFolder]);
 		sandbox.stub(vscode.workspace, 'findFiles').resolves([sqlProjUri]);

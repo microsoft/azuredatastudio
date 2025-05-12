@@ -21,18 +21,53 @@ interface SqlprojTaskDefinition extends vscode.TaskDefinition {
  * This class implements the vscode.TaskProvider interface to provide tasks for SQL database projects.
  * It creates tasks for building SQL database projects and running code analysis on them.
  */
-export class SqlDatabaseProjectsTaskProvider implements vscode.TaskProvider {
-	static SqlDatabaseProjectType = 'sqlproj-build';
+export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
+	private watchers: vscode.FileSystemWatcher[] = [];
 	private sqlTasks: Thenable<vscode.Task[]> | undefined = undefined;
+	static SqlDatabaseProjectType = 'sqlproj-build';
 	static SqlprojProblemMatcher: string = "$sqlproj-problem-matcher";
 
 	/**
+	 * This method is used to create a file system watcher for the .sqlproj files in the workspace.
+	 * It is used to watch for changes to the .sqlproj files and update the tasks accordingly.
+	 * @param workspaceRoots The workspace roots to watch for .sqlproj files
+	 * @returns A file system watcher for the .sqlproj files
+	 * @throws Error if the workspace root is not a valid path
+	 * @throws Error if the file system watcher cannot be created
+	 * @throws Error if the file system watcher is not supported
+	 * */
+	constructor(workspaceRoots: readonly vscode.WorkspaceFolder[] | undefined) {
+		if (!workspaceRoots) {
+			return;
+		}
+
+		for (const root of workspaceRoots) {
+			const pattern = path.join(root.uri.fsPath, '**', '*.sqlproj');
+			const watcher = vscode.workspace.createFileSystemWatcher(pattern);
+			watcher.onDidChange(() => this.sqlTasks = undefined);
+			watcher.onDidCreate(() => this.sqlTasks = undefined);
+			watcher.onDidDelete(() => this.sqlTasks = undefined);
+			this.watchers.push(watcher);
+		}
+	}
+
+	/**
+	 * This method is used to dispose of the file system watcher.
+	 * It is called when the task provider is disposed.
+	 */
+	public dispose() {
+		this.watchers?.forEach(watcher => watcher.dispose());
+	}
+
+	/**
 	 * This method is called when the task provider is registered.
-	 * It is used to create the tasks for the provider.
+	 * It is used to provide the tasks for the provider.
 	 * @returns The task type for this provider
 	 */
 	public provideTasks(): Thenable<vscode.Task[]> | undefined {
-		this.sqlTasks = this.createTasks();
+		if (!this.sqlTasks) {
+			this.sqlTasks = this.createTasks();
+		}
 		return this.sqlTasks;
 	}
 
@@ -41,7 +76,7 @@ export class SqlDatabaseProjectsTaskProvider implements vscode.TaskProvider {
 	 * It is used to resolve the task and return the task object.
 	 */
 	public resolveTask(task: vscode.Task): vscode.Task | undefined {
-		if (task.definition.type === SqlDatabaseProjectsTaskProvider.SqlDatabaseProjectType) {
+		if (task.definition.type === SqlDatabaseProjectTaskProvider.SqlDatabaseProjectType) {
 			const definition: SqlprojTaskDefinition = <any>task.definition
 			if (!definition.filePath || !definition.fileDisplayName) {
 				return undefined;
@@ -70,13 +105,16 @@ export class SqlDatabaseProjectsTaskProvider implements vscode.TaskProvider {
 				continue;
 			}
 			const sqlProjPaths = await vscode.workspace.findFiles(new vscode.RelativePattern(folderPath, '**/*.sqlproj'));
-			sqlProjPaths.map(uri => sqlProjUris.push(uri));
+			for (const uri of sqlProjPaths) {
+				sqlProjUris.push(uri);
+			}
+
 		}
 
 		if (sqlProjUris.length !== 0) {
 			for (const sqlProjUri of sqlProjUris) {
 				const taskDefinition: SqlprojTaskDefinition = {
-					type: SqlDatabaseProjectsTaskProvider.SqlDatabaseProjectType,
+					type: SqlDatabaseProjectTaskProvider.SqlDatabaseProjectType,
 					filePath: sqlProjUri.fsPath,
 					fileDisplayName: path.basename(sqlProjUri.fsPath),
 				};
@@ -101,21 +139,27 @@ export class SqlDatabaseProjectsTaskProvider implements vscode.TaskProvider {
 	 * @returns The task object
 	 */
 	public getTask(definition: SqlprojTaskDefinition, runCodeAnalysis: boolean = false): vscode.Task {
-		// unless runCodeAnalysis is false, run code analysis with /p:RunSqlCodeAnalysis=true on end of the command
+		// Set the runCodeAnalysis flag in the definition
 		definition.runCodeAnalysis = runCodeAnalysis;
-		const shellExecutable = runCodeAnalysis ? `${constants.dotnetBuild} ${definition.filePath} ${constants.runCodeAnalysisParam}`
-			: `${constants.dotnetBuild} ${definition.filePath}`;
-		const taskName = runCodeAnalysis ? `${definition.fileDisplayName} - ${constants.buildWithCodeAnalysisTaskName}`
-			: `${definition.fileDisplayName}  - ${constants.BuildTaskName}`;
 
-		// Create a new task with the definition and shell executable
+		// Construct the shell command
+		const shellCommand = runCodeAnalysis
+			? `${constants.dotnetBuild} ${definition.filePath} ${constants.runCodeAnalysisParam}`
+			: `${constants.dotnetBuild} ${definition.filePath}`;
+
+		// Construct the task name
+		const taskName = runCodeAnalysis
+			? `${definition.fileDisplayName} - ${constants.buildWithCodeAnalysisTaskName}`
+			: `${definition.fileDisplayName} - ${constants.buildTaskName}`;
+
+		// Create and return the task with the build group set in the constructor
 		const task = new vscode.Task(
 			definition,
 			vscode.TaskScope.Workspace,
 			taskName,
-			SqlDatabaseProjectsTaskProvider.SqlDatabaseProjectType,
-			new vscode.ShellExecution(shellExecutable),
-			SqlDatabaseProjectsTaskProvider.SqlprojProblemMatcher
+			SqlDatabaseProjectTaskProvider.SqlDatabaseProjectType,
+			new vscode.ShellExecution(shellCommand),
+			SqlDatabaseProjectTaskProvider.SqlprojProblemMatcher
 		);
 		task.group = vscode.TaskGroup.Build;
 		return task;

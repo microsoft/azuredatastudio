@@ -369,15 +369,25 @@ export class ProjectsController {
 		}
 	}
 
+	/**
+	 * Creates a VS Code task for building the project
+	 * @param project Project to be built
+	 * @param codeAnalysis Whether to run code analysis
+	 * @param buildArguments Arguments to pass to the build command
+	 * @returns A VS Code task for building the project
+	 * */
 	private async createVsCodeTask(project: Project, codeAnalysis: boolean, buildArguments: string): Promise<vscode.Task> {
 		let vscodeTask: vscode.Task | undefined = undefined;
-		const label = codeAnalysis ? constants.buildWithCodeAnalysisTaskName : constants.BuildTaskName;
-		const command = codeAnalysis ? `${constants.dotnetBuild} ${project.projectFilePath} ${constants.runCodeAnalysisParam} ${buildArguments}` :
-			`${constants.dotnetBuild} ${project.projectFilePath} ${buildArguments}`;
+		const label = codeAnalysis
+			? constants.buildWithCodeAnalysisTaskName
+			: constants.buildTaskName;
+		const command = codeAnalysis
+			? `${constants.dotnetBuild} ${project.projectFilePath} ${constants.runCodeAnalysisParam} ${buildArguments}`
+			: `${constants.dotnetBuild} ${project.projectFilePath} ${buildArguments}`;
 
 		// Create a new task definition with the label and command
 		const taskDefinition: vscode.TaskDefinition = {
-			type: 'shell',
+			type: constants.sqlProjTaskType,
 			label: label,
 			command: command,
 			problemMatcher: constants.problemMatcher

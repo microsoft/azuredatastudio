@@ -7,20 +7,25 @@ import * as vscode from 'vscode';
 import { getAzdataApi } from './common/utils';
 import MainController from './controllers/mainController';
 import { SqlDatabaseProjectProvider } from './projectProvider/projectProvider';
+import { SqlDatabaseProjectTaskProvider } from './tasks/SqlDatabaseProjectTaskProvider';
 import { TelemetryReporter } from './common/telemetry';
-import { SqlDatabaseProjectsTaskProvider } from './tasks/SqlDatabaseProjectsTaskProvider';
 
 let controllers: MainController[] = [];
 
 export function activate(context: vscode.ExtensionContext): Promise<SqlDatabaseProjectProvider> {
 	void vscode.commands.executeCommand('setContext', 'azdataAvailable', !!getAzdataApi());
-	const taskProvider = vscode.tasks.registerTaskProvider(SqlDatabaseProjectsTaskProvider.SqlDatabaseProjectType, new SqlDatabaseProjectsTaskProvider());
+
 	// Start the main controller
 	const mainController = new MainController(context);
 	controllers.push(mainController);
 	context.subscriptions.push(mainController);
 	context.subscriptions.push(TelemetryReporter);
+
+	// Register the Sql project task provider
+	const workspaceFolders = vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0 ? vscode.workspace.workspaceFolders : undefined;
+	const taskProvider = vscode.tasks.registerTaskProvider(SqlDatabaseProjectTaskProvider.SqlDatabaseProjectType, new SqlDatabaseProjectTaskProvider(workspaceFolders));
 	context.subscriptions.push(taskProvider);
+
 	return mainController.activate();
 }
 
