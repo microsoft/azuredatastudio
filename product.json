@@ -31,7 +31,7 @@
 	"licenseFileName": "LICENSE.txt",
 	"reportIssueUrl": "https://github.com/Microsoft/azuredatastudio/issues/new",
 	"requestFeatureUrl": "https://go.microsoft.com/fwlink/?linkid=2118021",
-	"privacyStatementUrl": "https://privacy.microsoft.com/privacystatement",
+	"privacyStatementUrl": "https://go.microsoft.com/fwlink/?LinkId=521839",
 	"telemetryOptOutUrl": "https://go.microsoft.com/fwlink/?linkid=2241254",
 	"urlProtocol": "azuredatastudio-oss",
 	"enableTelemetry": false,
