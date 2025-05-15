@@ -64,6 +64,7 @@ describe('ProjectsController', function (): void {
 					newProjName: 'TestProjectName',
 					folderUri: vscode.Uri.file(projFileDir),
 					projectTypeId: constants.emptySqlDatabaseProjectTypeId,
+					configureDefaultBuild: true,
 					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
 					targetPlatform: projTargetPlatform,
 					sdkStyle: false
@@ -82,6 +83,7 @@ describe('ProjectsController', function (): void {
 					newProjName: 'TestProjectName',
 					folderUri: vscode.Uri.file(projFileDir),
 					projectTypeId: constants.edgeSqlDatabaseProjectTypeId,
+					configureDefaultBuild: true,
 					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
 					sdkStyle: true
 				});

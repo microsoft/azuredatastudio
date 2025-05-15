@@ -56,6 +56,7 @@ export const TargetPlatform = localize('dataworkspace.targetPlatform', "Target P
 export const SdkStyleProject = localize('dataworkspace.sdkStyleProject', "SDK-style project");
 export const LearnMore = localize('dataworkspace.learnMore', "Learn More");
 export const YesRecommended = localize('dataworkspace.yesRecommended', "Yes (Recommended)");
+export const Yes = localize('dataworkspace.yes', "Yes");
 export const No = localize('dataworkspace.no', "No");
 export const SdkLearnMorePlaceholder = localize('dataworkspace.sdkLearnMorePlaceholder', "Click \"Learn More\" button for more information about SDK-style projects");
 export const Default = localize('dataworkspace.default', "Default");
@@ -69,6 +70,7 @@ export const reservedWindowsFilenameErrorMessage = localize('reservedWindowsFile
 export const reservedValueErrorMessage = localize('reservedValueErrorMessage', "Reserved file name. Choose another name and try again");
 export const trailingWhitespaceErrorMessage = localize('trailingWhitespaceErrorMessage', "File name cannot start or end with whitespace");
 export const tooLongFilenameErrorMessage = localize('tooLongFilenameErrorMessage', "File name cannot be over 255 characters");
+export const confirmCreateProjectWithBuildTaskDialogName = localize('confirmCreateProjectWithBuildTaskDialogName', "Do you want to configure SQL project build as the default build configuration for this folder?");
 
 //Open Existing Dialog
 export const OpenExistingDialogTitle = localize('dataworkspace.openExistingDialogTitle', "Open Existing Project");

@@ -109,24 +109,32 @@ export async function exists(path: string): Promise<boolean> {
  */
 export function getQuotedPath(filePath: string): string {
 	return (os.platform() === 'win32') ?
-		getQuotedWindowsPath(filePath) :
-		getQuotedNonWindowsPath(filePath);
+		'"' + getNonQuotedWindowsPath(filePath) + '"' :
+		'"' + getNonQuotedNonWindowsPath(filePath) + '"';
 }
 
 /**
- * ensure that path with spaces are handles correctly (return quoted path)
+ * get non quoted path to be used in any commandline argument
+ * @param filePath
  */
-function getQuotedWindowsPath(filePath: string): string {
-	filePath = filePath.split('\\').join('\\\\').split('"').join('');
-	return '"' + filePath + '"';
+export function getNonQuotedPath(filePath: string): string {
+	return (os.platform() === 'win32') ?
+		getNonQuotedWindowsPath(filePath) :
+		getNonQuotedNonWindowsPath(filePath);
 }
 
 /**
- * ensure that path with spaces are handles correctly (return quoted path)
+ * ensure that path with spaces are handles correctly (return non quoted path)
  */
-function getQuotedNonWindowsPath(filePath: string): string {
-	filePath = filePath.split('\\').join('/').split('"').join('');
-	return '"' + filePath + '"';
+function getNonQuotedWindowsPath(filePath: string): string {
+	return filePath.split('\\').join('\\\\').split('"').join('');
+}
+
+/**
+ * ensure that path with spaces are handles correctly (return non quoted path)
+ */
+function getNonQuotedNonWindowsPath(filePath: string): string {
+	return filePath.split('\\').join('/').split('"').join('');
 }
 
 /**

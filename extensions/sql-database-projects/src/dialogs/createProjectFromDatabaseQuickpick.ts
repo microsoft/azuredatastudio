@@ -163,6 +163,17 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 		return;
 	}
 
+	// 8. Configure Sql project default build or not
+	const configureDefaultBuild = await vscode.window.showQuickPick(
+		[constants.yesString, constants.noString],
+		{ title: constants.confirmCreateProjectWithBuildTaskDialogName, ignoreFocusOut: false }
+	);
+
+	if (!configureDefaultBuild) {
+		// User cancelled
+		return;
+	}
+
 	const model = {
 		connectionUri: connectionUri,
 		database: selectedDatabase,
@@ -171,10 +182,11 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 		version: '1.0.0.0',
 		extractTarget: mapExtractTargetEnum(folderStructure),
 		sdkStyle: sdkStyle,
-		includePermissions: includePermissions
+		includePermissions: includePermissions,
+		configureDefaultBuild: configureDefaultBuild === constants.yesString,
 	} as ImportDataModel;
 
-	// 8. Create the project using the callback
+	// 9. Create the project using the callback
 	if (createProjectFromDatabaseCallback) {
 		await createProjectFromDatabaseCallback(model, connectionProfile, connectionProfile.server);
 	}

@@ -38,6 +38,7 @@ describe('Publish Database Dialog', () => {
 			newProjName: 'TestProjectName',
 			folderUri: vscode.Uri.file(projFileDir),
 			projectTypeId: emptySqlDatabaseProjectTypeId,
+			configureDefaultBuild: true,
 			projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
 			sdkStyle: false
 		});
@@ -56,6 +57,7 @@ describe('Publish Database Dialog', () => {
 			newProjName: 'TestProjectName',
 			folderUri: vscode.Uri.file(projFileDir),
 			projectTypeId: emptySqlDatabaseProjectTypeId,
+			configureDefaultBuild: true,
 			projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
 			sdkStyle: false
 		});
