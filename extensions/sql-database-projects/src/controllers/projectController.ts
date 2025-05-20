@@ -22,7 +22,7 @@ import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewPro
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ImportDataModel } from '../models/api/import';
-import { DotNetError } from '../tools/netcoreTool';
+import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
 import { readPublishProfile, promptForSavingProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
@@ -75,6 +75,7 @@ interface FileWatcherStatus {
  * Controller for managing lifecycle of projects
  */
 export class ProjectsController {
+	private netCoreTool: NetCoreTool;
 	private buildHelper: BuildHelper;
 	private buildInfo: DashboardData[] = [];
 	private publishInfo: PublishData[] = [];
@@ -87,6 +88,7 @@ export class ProjectsController {
 	private fileWatchers = new Map<string, FileWatcherStatus>();
 
 	constructor(private _outputChannel: vscode.OutputChannel) {
+		this.netCoreTool = new NetCoreTool(this._outputChannel);
 		this.buildHelper = new BuildHelper();
 		this.azureSqlClient = new AzureSqlClient();
 		this.deployService = new DeployService(this.azureSqlClient, this._outputChannel);
@@ -330,8 +332,11 @@ export class ProjectsController {
 		}
 
 		try {
-			// If vscodeTask is defined, run it, otherwise run the dotnet command directly
-			await vscode.tasks.executeTask(vscodeTask);
+			// Check if the doetnet core is installed and if not, prompt the user to install it
+			if (await this.netCoreTool.findOrInstallNetCore()) {
+				// If vscodeTask is defined, run it, otherwise run the dotnet command directly
+				await vscode.tasks.executeTask(vscodeTask);
+			}
 
 			// If the build was successful, we will get the path to the built dacpac
 			const timeToBuild = new Date().getTime() - startTime.getTime();
