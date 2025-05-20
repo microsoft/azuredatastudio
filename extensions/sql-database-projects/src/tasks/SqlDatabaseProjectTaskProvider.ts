@@ -144,8 +144,8 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 
 		// Construct the shell command
 		const shellCommand = runCodeAnalysis
-			? `${constants.dotnetBuild} ${definition.filePath} ${constants.runCodeAnalysisParam} -${constants.runWithVerbose}`
-			: `${constants.dotnetBuild} ${definition.filePath} -${constants.runWithVerbose}`;
+			? `${constants.dotnetBuild} ${definition.filePath} ${constants.runCodeAnalysisParam}`
+			: `${constants.dotnetBuild} ${definition.filePath}`;
 
 		// Construct the task name
 		const taskName = runCodeAnalysis
