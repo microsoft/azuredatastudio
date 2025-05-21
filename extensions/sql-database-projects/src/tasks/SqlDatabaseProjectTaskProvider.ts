@@ -12,7 +12,6 @@ import * as constants from '../common/constants';
  * This is used to identify the task and provide the file path and display name for the task.
  */
 interface SqlprojTaskDefinition extends vscode.TaskDefinition {
-	filePath: string;
 	fileDisplayName: string;
 	runCodeAnalysis?: boolean;
 }
@@ -115,7 +114,6 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 			for (const sqlProjUri of sqlProjUris) {
 				const taskDefinition: SqlprojTaskDefinition = {
 					type: SqlDatabaseProjectTaskProvider.SqlDatabaseProjectType,
-					filePath: sqlProjUri.fsPath,
 					fileDisplayName: path.basename(sqlProjUri.fsPath),
 				};
 
@@ -144,8 +142,8 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 
 		// Construct the shell command
 		const shellCommand = runCodeAnalysis
-			? `${constants.dotnetBuild} ${definition.filePath} ${constants.runCodeAnalysisParam}`
-			: `${constants.dotnetBuild} ${definition.filePath}`;
+			? `${constants.dotnetBuild}  ${constants.runCodeAnalysisParam}`
+			: `${constants.dotnetBuild}`;
 
 		// Construct the task name
 		const taskName = runCodeAnalysis

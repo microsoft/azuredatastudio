@@ -187,15 +187,15 @@ export class BuildHelper {
 		// since SDK style projects don't to specify the targets path, just where the system dacpacs are
 		if (utils.getAzdataApi()) {
 			if (sqlProjStyle === mssql.ProjectType.SdkStyle) {
-				return `/p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath}`;
+				return `/p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath} ${constants.detailedVerbose}`;
 			} else {
-				return `/p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath}`;
+				return `/p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath} ${constants.detailedVerbose}`;
 			}
 		} else {
 			if (sqlProjStyle === vscodeMssql.ProjectType.SdkStyle) {
-				return `/p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath}`;
+				return `/p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath} ${constants.detailedVerbose}`;
 			} else {
-				return `/p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath}`;
+				return `/p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath} ${constants.detailedVerbose}`;
 			}
 		}
 	}
