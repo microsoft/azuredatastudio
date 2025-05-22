@@ -23,8 +23,6 @@ interface SqlprojTaskDefinition extends vscode.TaskDefinition {
 export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 	private watchers: vscode.FileSystemWatcher[] = [];
 	private sqlTasks: Thenable<vscode.Task[]> | undefined = undefined;
-	static SqlDatabaseProjectType = 'sqlproj-build';
-	static SqlprojProblemMatcher: string = "$sqlproj-problem-matcher";
 
 	/**
 	 * This method is used to create a file system watcher for the .sqlproj files in the workspace.
@@ -75,7 +73,7 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 	 * It is used to resolve the task and return the task object.
 	 */
 	public resolveTask(task: vscode.Task): vscode.Task | undefined {
-		if (task.definition.type === SqlDatabaseProjectTaskProvider.SqlDatabaseProjectType) {
+		if (task.definition.type === constants.sqlProjTaskType) {
 			const definition: SqlprojTaskDefinition = <any>task.definition
 			if (!definition.filePath || !definition.fileDisplayName) {
 				return undefined;
@@ -113,7 +111,7 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 		if (sqlProjUris.length !== 0) {
 			for (const sqlProjUri of sqlProjUris) {
 				const taskDefinition: SqlprojTaskDefinition = {
-					type: SqlDatabaseProjectTaskProvider.SqlDatabaseProjectType,
+					type: constants.sqlProjTaskType,
 					fileDisplayName: path.basename(sqlProjUri.fsPath),
 				};
 
@@ -155,9 +153,9 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 			definition,
 			vscode.TaskScope.Workspace,
 			taskName,
-			SqlDatabaseProjectTaskProvider.SqlDatabaseProjectType,
+			constants.sqlProjTaskType,
 			new vscode.ShellExecution(shellCommand),
-			SqlDatabaseProjectTaskProvider.SqlprojProblemMatcher
+			constants.problemMatcher
 		);
 		task.group = vscode.TaskGroup.Build;
 		return task;
