@@ -108,12 +108,12 @@ export interface IShellIntegrationConfigInjection {
  * enabled.
  */
 export async function getShellIntegrationInjection(
-       shellLaunchConfig: IShellLaunchConfig,
-       options: ITerminalProcessOptions,
-       env: ITerminalEnvironment | undefined,
-       logService: ILogService,
-       productService: IProductService,
-       skipStickyBit: boolean = false
+	shellLaunchConfig: IShellLaunchConfig,
+	options: ITerminalProcessOptions,
+	env: ITerminalEnvironment | undefined,
+	logService: ILogService,
+	productService: IProductService,
+	skipStickyBit: boolean = false
 ): Promise<IShellIntegrationConfigInjection | undefined> {
 	// Shell integration arg injection is disabled when:
 	// - The global setting is disabled
@@ -225,18 +225,18 @@ export async function getShellIntegrationInjection(
 			} catch {
 				username = 'unknown';
 			}
-                       const realTmpDir = realpathSync(os.tmpdir());
-                       const zdotdir = path.join(realTmpDir, `${username}-${productService.applicationName}-zsh`);
-                       if (!skipStickyBit) {
-                               try {
-                                       const chmodAsync = promisify(chmod);
-                                       await chmodAsync(zdotdir, 0o1700);
-                               } catch (err) {
-                                       logService.error(`Failed to set sticky bit on ${zdotdir}: ${err}`);
-                                       return undefined;
-                               }
-                       }
-                       envMixin['ZDOTDIR'] = zdotdir;
+			const realTmpDir = realpathSync(os.tmpdir());
+			const zdotdir = path.join(realTmpDir, `${username}-${productService.applicationName}-zsh`);
+			if (!skipStickyBit) {
+				try {
+					const chmodAsync = promisify(chmod);
+					await chmodAsync(zdotdir, 0o1700);
+				} catch (err) {
+					logService.error(`Failed to set sticky bit on ${zdotdir}: ${err}`);
+					return undefined;
+				}
+			}
+			envMixin['ZDOTDIR'] = zdotdir;
 			const userZdotdir = env?.ZDOTDIR ?? os.homedir() ?? `~`;
 			envMixin['USER_ZDOTDIR'] = userZdotdir;
 			const filesToCopy: IShellIntegrationConfigInjection['filesToCopy'] = [];
