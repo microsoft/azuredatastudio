@@ -3,6 +3,7 @@
 #   Licensed under the MIT License. See License.txt in the project root for license information.
 # ---------------------------------------------------------------------------------------------
 builtin autoload -Uz add-zsh-hook
+echo "$(ls -ld "$ZDOTDIR")"
 
 # Prevent the script recursing when setting up
 if [ -n "$VSCODE_SHELL_INTEGRATION" ]; then
