@@ -18,6 +18,8 @@ import { IShellLaunchConfig, ITerminalEnvironment, ITerminalProcessOptions } fro
 import { EnvironmentVariableMutatorType } from 'vs/platform/terminal/common/environmentVariable';
 import { deserializeEnvironmentVariableCollections } from 'vs/platform/terminal/common/environmentVariableShared';
 import { MergedEnvironmentVariableCollection } from 'vs/platform/terminal/common/environmentVariableCollection';
+import { chmod, realpathSync } from 'fs';
+import { promisify } from 'util';
 
 export function getWindowsBuildNumber(): number {
 	const osVersion = (/(\d+)\.(\d+)\.(\d+)/g).exec(os.release());
@@ -105,13 +107,14 @@ export interface IShellIntegrationConfigInjection {
  * that creates the process to ensure accuracy. Returns undefined if shell integration cannot be
  * enabled.
  */
-export function getShellIntegrationInjection(
-	shellLaunchConfig: IShellLaunchConfig,
-	options: ITerminalProcessOptions,
-	env: ITerminalEnvironment | undefined,
-	logService: ILogService,
-	productService: IProductService
-): IShellIntegrationConfigInjection | undefined {
+export async function getShellIntegrationInjection(
+       shellLaunchConfig: IShellLaunchConfig,
+       options: ITerminalProcessOptions,
+       env: ITerminalEnvironment | undefined,
+       logService: ILogService,
+       productService: IProductService,
+       skipStickyBit: boolean = false
+): Promise<IShellIntegrationConfigInjection | undefined> {
 	// Shell integration arg injection is disabled when:
 	// - The global setting is disabled
 	// - There is no executable (not sure what script to run)
@@ -222,8 +225,18 @@ export function getShellIntegrationInjection(
 			} catch {
 				username = 'unknown';
 			}
-			const zdotdir = path.join(os.tmpdir(), `${username}-${productService.applicationName}-zsh`);
-			envMixin['ZDOTDIR'] = zdotdir;
+                       const realTmpDir = realpathSync(os.tmpdir());
+                       const zdotdir = path.join(realTmpDir, `${username}-${productService.applicationName}-zsh`);
+                       if (!skipStickyBit) {
+                               try {
+                                       const chmodAsync = promisify(chmod);
+                                       await chmodAsync(zdotdir, 0o1700);
+                               } catch (err) {
+                                       logService.error(`Failed to set sticky bit on ${zdotdir}: ${err}`);
+                                       return undefined;
+                               }
+                       }
+                       envMixin['ZDOTDIR'] = zdotdir;
 			const userZdotdir = env?.ZDOTDIR ?? os.homedir() ?? `~`;
 			envMixin['USER_ZDOTDIR'] = userZdotdir;
 			const filesToCopy: IShellIntegrationConfigInjection['filesToCopy'] = [];
