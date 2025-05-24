@@ -542,6 +542,28 @@
       }
     }
   ],
+  "taskDefinitions": [
+    {
+      "type": "sqlproj-build",
+      "required": [
+        "filePath"
+      ],
+      "properties": {
+        "filePath": {
+          "type": "string",
+          "description": "The path to the .sqlproj file."
+        },
+        "fileDisplayName": {
+          "type": "string",
+          "description": "The display name of the .sqlproj file."
+        },
+        "runCodeAnalysis": {
+          "type": "boolean",
+          "description": "Run code analysis on the SQLProj file. Optional, default is true."
+        }
+      }
+    }
+  ],
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^3.0.1",
     "@xmldom/xmldom": "0.8.4",
