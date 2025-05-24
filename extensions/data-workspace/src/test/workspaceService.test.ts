@@ -323,4 +323,38 @@ suite('WorkspaceService', function (): void {
 		should.strictEqual(updateWorkspaceFoldersStub.calledOnce, true, 'updateWorkspaceFolders should have been called');
 		onWorkspaceProjectsChangedDisposable.dispose();
 	});
+
+	test('createProject passes all property', async () => {
+		this.timeout(30000);
+		// Create a new instance of WorkspaceService
+		const service = new WorkspaceService();
+
+		// Stub the createProject method so we can verify how it's called
+		const createProjectStub = sinon.stub(service, 'createProject').resolves();
+
+		// Define test parameters
+		const name = 'TestProject';
+		const location = vscode.Uri.file('/tmp/TestProject');
+		const projectTypeId = 'sqlproj';
+		const projectTargetVersion = 'SqlAzureV12';
+		const sdkStyleProject = true;
+		const configureDefaultBuild = true;
+
+		// Call the method under test with all parameters, including configureDefaultBuild
+		await service.createProject(name, location, projectTypeId, projectTargetVersion, sdkStyleProject, configureDefaultBuild);
+
+		// Assert that createProject was called exactly once
+		should.strictEqual(createProjectStub.calledOnce, true, 'createProject should have been called once');
+
+		// Get the arguments with which createProject was called
+		const callArgs = createProjectStub.getCall(0).args;
+
+		// Assert each argument matches what we passed in
+		should.strictEqual(callArgs[0], name, 'name should match');
+		should.strictEqual(callArgs[1], location, 'location should match');
+		should.strictEqual(callArgs[2], projectTypeId, 'projectTypeId should match');
+		should.strictEqual(callArgs[3], projectTargetVersion, 'projectTargetVersion should match');
+		should.strictEqual(callArgs[4], sdkStyleProject, 'sdkStyleProject should match');
+		should.strictEqual(callArgs[5], configureDefaultBuild, 'configureDefaultBuild should be true');
+	});
 });

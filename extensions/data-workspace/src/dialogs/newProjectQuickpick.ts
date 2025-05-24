@@ -175,7 +175,17 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 		}
 	}
 
-	await workspaceService.createProject(projectName, vscode.Uri.file(projectLocation), projectType.id, targetPlatform, sdkStyle);
+	// 8. Configure Sql project default build or not
+	let configureDefaultBuild = await vscode.window.showQuickPick(
+		[constants.Yes, constants.No],
+		{ title: constants.confirmCreateProjectWithBuildTaskDialogName, ignoreFocusOut: true }
+	);
+
+	if (!configureDefaultBuild) {
+		// User cancelled
+		return;
+	}
+	await workspaceService.createProject(projectName, vscode.Uri.file(projectLocation), projectType.id, targetPlatform, sdkStyle, configureDefaultBuild === constants.Yes);
 
 	// Add info message with 'learn more' button if project type has a link
 	// for user to learn more about the project type
