@@ -73,11 +73,10 @@ export interface IWorkspaceService {
 	 * @param name The name of the project
 	 * @param location The location of the project
 	 * @param projectTypeId The project type id
-	 * @param configureDefaultBuild Whether or not to configure default build
 	 * @param projectTargetPlatform The target platform of the project
 	 * @param sdkStyleProject Whether or not the project is SDK-style
 	 */
-	createProject(name: string, location: vscode.Uri, projectTypeId: string, projectTargetPlatform?: string, sdkStyleProject?: boolean, configureDefaultBuild?: boolean): Promise<vscode.Uri>;
+	createProject(name: string, location: vscode.Uri, projectTypeId: string, projectTargetPlatform?: string, sdkStyleProject?: boolean): Promise<vscode.Uri>;
 
 	/**
 	 * Clones git repository and adds projects to workspace
