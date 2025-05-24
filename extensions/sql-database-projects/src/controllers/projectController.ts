@@ -1503,7 +1503,7 @@ export class ProjectsController {
 				folderUri: vscode.Uri.file(projectInfo.outputFolder),
 				projectTypeId: constants.emptySqlDatabaseProjectTypeId,
 				sdkStyle: !!options?.isSDKStyle,
-				configureDefaultBuild: true //TODO: sai
+				configureDefaultBuild: true
 			});
 
 			const project = await Project.openProject(newProjFilePath);
