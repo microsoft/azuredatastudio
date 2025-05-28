@@ -99,8 +99,9 @@ declare module 'dataworkspace' {
 		 * @param projectTypeId the identifier of the selected project type
 		 * @param projectTargetPlatform the target platform of the project
 		 * @param sdkStyleProject whether or not a project is SDK-style
+		 * @param configureDefaultBuild whether or not to configure default build
 		 */
-		createProject(name: string, location: vscode.Uri, projectTypeId: string, projectTargetPlatform?: string, sdkStyleProject?: boolean): Promise<vscode.Uri>;
+		createProject(name: string, location: vscode.Uri, projectTypeId: string, projectTargetPlatform?: string, sdkStyleProject?: boolean, configureDefaultBuild?: boolean): Promise<vscode.Uri>;
 
 		/**
 		 * Gets the project data corresponding to the project file, to be placed in the dashboard container
@@ -189,6 +190,11 @@ declare module 'dataworkspace' {
 		 * Location where clicking on the Learn More to know more about project type will go
 		 */
 		readonly learnMoreUrl?: string
+
+		/**
+		 * Whether or not the project has a default build configuration
+		 */
+		readonly configureDefaultBuild?: boolean;
 	}
 
 	/**
