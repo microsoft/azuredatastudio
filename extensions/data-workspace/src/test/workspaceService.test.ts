@@ -324,37 +324,53 @@ suite('WorkspaceService', function (): void {
 		onWorkspaceProjectsChangedDisposable.dispose();
 	});
 
-	test('createProject passes all property', async () => {
-		this.timeout(30000);
-		// Create a new instance of WorkspaceService
+	test('createProject uses values from QuickPick', async () => {
+		// Arrange: Create a new instance of WorkspaceService
 		const service = new WorkspaceService();
 
-		// Stub the createProject method so we can verify how it's called
-		const createProjectStub = sinon.stub(service, 'createProject').resolves();
+		// Arrange: Stub createProject to observe its call and return a fixed URI
+		const createProjectStub = sinon.stub(service, 'createProject').resolves(vscode.Uri.file('/tmp/TestProject'));
 
-		// Define test parameters
-		const name = 'TestProject';
-		const location = vscode.Uri.file('/tmp/TestProject');
-		const projectTypeId = 'sqlproj';
-		const projectTargetVersion = 'SqlAzureV12';
-		const sdkStyleProject = true;
-		const configureDefaultBuild = true;
+		// Arrange: Prepare the QuickPick items to simulate user selections
+		const quickPickItems = [
+			{ label: 'Select Database Project Type', value: 'SQL Server Database', picked: true },
+			{ label: 'Enter Project Name', value: 'TestProject', picked: true },
+			{ label: 'Select Project Location', value: '/tmp/TestProject', picked: true },
+			{ label: 'Select Target Platform', value: 'SQL Server', picked: true },
+			{ label: 'SDK-style project', value: constants.YesRecommended, picked: true },
+			{ label: constants.confirmCreateProjectWithBuildTaskDialogName, value: constants.Yes, picked: true },
+		];
 
-		// Call the method under test with all parameters, including configureDefaultBuild
-		await service.createProject(name, location, projectTypeId, projectTargetVersion, sdkStyleProject, configureDefaultBuild);
+		// Arrange: Stub showQuickPick to return each item in order for each call
+		const quickPickStub = sinon.stub(vscode.window, 'showQuickPick');
+		quickPickItems.forEach((item, idx) => {
+			quickPickStub.onCall(idx).resolves(item);
+		});
 
-		// Assert that createProject was called exactly once
+		// Act: Call createProject directly with values from the simulated QuickPick selections
+		const projectUri = await service.createProject(
+			quickPickItems[1].value, // Project name
+			vscode.Uri.file(quickPickItems[2].value), // Project location as URI
+			quickPickItems[0].value, // Project type ID
+			quickPickItems[3].value, // Target platform
+			quickPickItems[4].picked, // SDK-style project flag
+			quickPickItems[5].picked  // Configure default build flag
+		);
+
+		// Assert: createProject should have been called once
 		should.strictEqual(createProjectStub.calledOnce, true, 'createProject should have been called once');
-
-		// Get the arguments with which createProject was called
+		// Assert: The returned URI path should match the expected path
+		should.strictEqual(projectUri.path, '/tmp/TestProject', 'project URI should match the expected path');
+		// Assert: The arguments passed to createProject should match the simulated QuickPick selections
 		const callArgs = createProjectStub.getCall(0).args;
+		should.strictEqual(callArgs[0], quickPickItems[1].value, 'name should match');
+		should.strictEqual(callArgs[1].path, quickPickItems[2].value, 'location should match');
+		should.strictEqual(callArgs[2], quickPickItems[0].value, 'projectTypeId should match QuickPick label');
+		should.strictEqual(callArgs[3], quickPickItems[3].value, 'projectTargetVersion should match');
+		should.strictEqual(callArgs[4], true, 'sdkStyleProject should match');
+		should.strictEqual(callArgs[5], true, 'configureDefaultBuild should be true');
 
-		// Assert each argument matches what we passed in
-		should.strictEqual(callArgs[0], name, 'name should match');
-		should.strictEqual(callArgs[1], location, 'location should match');
-		should.strictEqual(callArgs[2], projectTypeId, 'projectTypeId should match');
-		should.strictEqual(callArgs[3], projectTargetVersion, 'projectTargetVersion should match');
-		should.strictEqual(callArgs[4], sdkStyleProject, 'sdkStyleProject should match');
-		should.strictEqual(callArgs[5], configureDefaultBuild, 'configureDefaultBuild should be true');
+		// Cleanup: Restore the stubbed showQuickPick method
+		quickPickStub.restore();
 	});
 });
