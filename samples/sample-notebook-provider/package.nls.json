@@ -1,4 +1,0 @@
-{
-	"extension-display-name": "Sample Notebook provider extension for Azure Data Studio",
-	"extension-description": "Demonstrates contributing a custom Notebook provider which allows users to contribute their own custom Notebooks."
-}
