@@ -38,7 +38,6 @@ describe('Sql Database Projects Task Provider', function (): void {
 	afterEach(() => {
 		// Restore the Sinon sandbox and any stubs after each test
 		sandbox.restore();
-		sinon.restore();
 	});
 
 	it('Should create build and buildWithCodeAnalysis tasks for .sqlproj files with correct properties', async function (): Promise<void> {
