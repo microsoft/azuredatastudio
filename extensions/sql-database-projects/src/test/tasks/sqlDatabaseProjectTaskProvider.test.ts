@@ -42,7 +42,6 @@ describe('Sql Database Projects Task Provider', function (): void {
 
 	it('Should create build and buildWithCodeAnalysis tasks for .sqlproj files with correct properties', async function (): Promise<void> {
 		stubWorkspaceAndFiles();
-		this.timeout(30000); // Set timeout to 30 seconds for this test
 
 		// Act: create tasks using the provider
 		const tasks = await taskProvider.createTasks();
