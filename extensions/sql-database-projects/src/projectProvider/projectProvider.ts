@@ -86,10 +86,10 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * @param projectTypeId the ID of the project/template
 	 * @param targetPlatform the target platform of the project
 	 * @param sdkStyle whether project is sdk-style. Default is false
+	 * @param configureDefaultBuild whether to configure default build. Default is false
 	 * @returns Uri of the newly created project file
 	 */
-	public async createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform?: sqldbproj.SqlTargetPlatform, sdkStyle: boolean = false): Promise<vscode.Uri> {
-
+	public async createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform?: sqldbproj.SqlTargetPlatform, sdkStyle: boolean = false, configureDefaultBuild: boolean = false): Promise<vscode.Uri> {
 		if (!targetPlatform) {
 			const projectType = this.supportedProjectTypes.find(x => x.id === projectTypeId);
 			if (projectType && projectType.defaultTargetPlatform) {
@@ -100,6 +100,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 			newProjName: name,
 			folderUri: location,
 			projectTypeId: projectTypeId,
+			configureDefaultBuild: configureDefaultBuild,
 			targetPlatform: targetPlatform,
 			sdkStyle: sdkStyle
 		});

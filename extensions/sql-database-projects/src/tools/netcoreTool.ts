@@ -200,13 +200,7 @@ export class NetCoreTool extends ShellExecutionHelper {
 			this._outputChannel.appendLine(`\t[ ${options.commandTitle} ]`);
 		}
 
-		if (!(await this.findOrInstallNetCore(skipVersionSupportedCheck))) {
-			if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
-				throw new DotNetError(DotnetInstallationConfirmation);
-			} else {
-				throw new DotNetError(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!));
-			}
-		}
+		await this.verifyNetCoreInstallation(skipVersionSupportedCheck);
 
 		const dotnetPath = utils.getQuotedPath(path.join(this.netcoreInstallLocation, dotnet));
 		const command = dotnetPath + ' ' + options.argument;
@@ -216,6 +210,21 @@ export class NetCoreTool extends ShellExecutionHelper {
 		} catch (error) {
 			this._outputChannel.append(localize('sqlDatabaseProject.RunCommand.ErroredOut', "\t>>> {0}   … errored out: {1}", command, utils.getErrorMessage(error))); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
 			throw error;
+		}
+	}
+
+	/**
+	 * Assesses whether the .NET Core installation is present and supported.
+	 * If not, it will prompt the user to install or update .NET Core.
+	 * @param skipVersionSupportedCheck
+	 */
+	public async verifyNetCoreInstallation(skipVersionSupportedCheck = false): Promise<void> {
+		if (!(await this.findOrInstallNetCore(skipVersionSupportedCheck))) {
+			if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
+				throw new DotNetError(DotnetInstallationConfirmation);
+			} else {
+				throw new DotNetError(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!));
+			}
 		}
 	}
 }
