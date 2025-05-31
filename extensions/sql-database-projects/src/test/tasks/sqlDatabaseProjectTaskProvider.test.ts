@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import * as should from 'should';
+import * as path from 'path';
 import { SqlDatabaseProjectTaskProvider } from '../../tasks/sqlDatabaseProjectTaskProvider';
 
 describe('Sql Database Projects Task Provider', function (): void {
@@ -19,13 +20,17 @@ describe('Sql Database Projects Task Provider', function (): void {
 		index: 0
 	};
 
-	// Define a mock .sqlproj file URI for testing
-	const sqlProjUri = vscode.Uri.file('/SqlProjFolder/MyProject/MyProject.sqlproj');
+	// Define mock .sqlproj file URIs for testing
+	const sqlProjUris = [
+		vscode.Uri.file('/SqlProjFolder/ProjectA/ProjectA.sqlproj'),
+		vscode.Uri.file('/SqlProjFolder/ProjectB/ProjectB.sqlproj'),
+		vscode.Uri.file('/SqlProjFolder/ProjectC/ProjectC.sqlproj')
+	];
 
 	// Helper to stub VS Code workspace APIs for consistent test environment
-	function stubWorkspaceAndFiles() {
+	function stubWorkspaceAndFiles(sqlProjUri: vscode.Uri[]) {
 		sandbox.stub(vscode.workspace, 'workspaceFolders').value([workspaceFolder]);
-		sandbox.stub(vscode.workspace, 'findFiles').resolves([sqlProjUri]);
+		sandbox.stub(vscode.workspace, 'findFiles').resolves(sqlProjUri);
 	}
 
 	beforeEach(() => {
@@ -40,8 +45,9 @@ describe('Sql Database Projects Task Provider', function (): void {
 		sandbox.restore();
 	});
 
-	it('Should create build and buildWithCodeAnalysis tasks for .sqlproj files with correct properties', async function (): Promise<void> {
-		stubWorkspaceAndFiles();
+	it('Should create build and buildWithCodeAnalysis tasks for .sqlproj file with correct properties', async function (): Promise<void> {
+		// Define mock .sqlproj file URIs for testing
+		stubWorkspaceAndFiles([sqlProjUris[0]]);
 
 		// Act: create tasks using the provider
 		const tasks = await taskProvider.createTasks();
@@ -51,8 +57,8 @@ describe('Sql Database Projects Task Provider', function (): void {
 		should(tasks).be.Array().and.have.length(2);
 
 		// Find the build and buildWithCodeAnalysis tasks by name
-		const buildTask = tasks.find(t => t.name === 'MyProject.sqlproj - Build');
-		const buildWithCodeAnalysisTask = tasks.find(t => t.name === 'MyProject.sqlproj - Build with Code Analysis');
+		const buildTask = tasks.find(t => t.name === 'ProjectA.sqlproj - Build');
+		const buildWithCodeAnalysisTask = tasks.find(t => t.name === 'ProjectA.sqlproj - Build with Code Analysis');
 
 		// Assert: both tasks should exist
 		should(buildTask).not.be.undefined();
@@ -82,4 +88,64 @@ describe('Sql Database Projects Task Provider', function (): void {
 			should(buildTask.execution.commandLine).containEql('dotnet build');
 		}
 	});
+
+	it('Should not create any tasks when no .sqlproj files are present in the workspace', async function (): Promise<void> {
+		// Define mock .sqlproj file URIs for testing
+		stubWorkspaceAndFiles([]);
+
+		// Act: Attempt to create tasks using the provider
+		const tasks = await taskProvider.createTasks();
+
+		// Assert: tasks should be defined but empty
+		should(tasks).not.be.undefined();
+		should(tasks).be.Array().and.have.length(0);
+	});
+
+	it('Should create build and buildWithCodeAnalysis tasks for multiple .sqlproj files with correct properties', async function (): Promise<void> {
+		// Define mock .sqlproj file URIs for testing
+		stubWorkspaceAndFiles(sqlProjUris);
+
+		// Act: create tasks using the provider
+		const tasks = await taskProvider.createTasks();
+
+		// Assert: tasks should be defined and have the expected length (2 per project)
+		should(tasks).not.be.undefined();
+		should(tasks).be.Array().and.have.length(sqlProjUris.length * 2);
+
+		for (const uri of sqlProjUris) {
+			const projectName = path.basename(uri.fsPath);
+			const buildTask = tasks.find(t => t.name === `${projectName} - Build`);
+			const buildWithCodeAnalysisTask = tasks.find(t => t.name === `${projectName} - Build with Code Analysis`);
+
+			// Assert: both tasks should exist
+			should(buildTask).not.be.undefined();
+			should(buildWithCodeAnalysisTask).not.be.undefined();
+
+			// Assert: task names should contain expected substrings
+			should(buildTask?.name).containEql('Build');
+			should(buildWithCodeAnalysisTask?.name).containEql('Build with Code Analysis');
+
+			// Assert: task definitions should have the correct type
+			should(buildTask?.definition.type).equal('sqlproj-build');
+			should(buildWithCodeAnalysisTask?.definition.type).equal('sqlproj-build');
+
+			// Assert: problemMatchers should be arrays and contain the expected matcher
+			should(buildTask?.problemMatchers).be.Array();
+			should(buildWithCodeAnalysisTask?.problemMatchers).be.Array();
+			should(buildTask?.problemMatchers).containEql('$sqlproj-problem-matcher');
+			should(buildWithCodeAnalysisTask?.problemMatchers).containEql('$sqlproj-problem-matcher');
+
+			// Assert: build task should have a group with label 'Build'
+			should(buildTask?.group).not.be.undefined();
+			should(buildTask?.group).have.property('label', 'Build');
+
+			// Assert: build task execution should be defined and use 'dotnet build'
+			should(buildTask?.execution).not.be.undefined();
+			if (buildTask?.execution instanceof vscode.ShellExecution) {
+				should(buildTask.execution.commandLine).containEql('dotnet build');
+			}
+		}
+	});
+
+
 });

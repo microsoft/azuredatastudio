@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext): Promise<SqlDatabaseP
 	context.subscriptions.push(TelemetryReporter);
 
 	// Register the Sql project task provider
-	const workspaceFolders = vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0 ? vscode.workspace.workspaceFolders : undefined;
+	const workspaceFolders = vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders?.length > 0 ? vscode.workspace.workspaceFolders : undefined;
 	const taskProvider = vscode.tasks.registerTaskProvider(constants.sqlProjTaskType, new SqlDatabaseProjectTaskProvider(workspaceFolders));
 	context.subscriptions.push(taskProvider);
 

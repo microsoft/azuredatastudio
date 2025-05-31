@@ -8,8 +8,8 @@ import * as path from 'path';
 import * as constants from '../common/constants';
 
 /**
- * Extends to vscode.TaskDefinition to add the filePath and fileDisplayName properties.
- * This is used to identify the task and provide the file path and display name for the task.
+ * Extends to vscode.TaskDefinition to add the fileDisplayName and runCodeAnalysis properties.
+ * This is used to identify the task and provide the file display name and runcode analysis for the task.
  */
 interface SqlprojTaskDefinition extends vscode.TaskDefinition {
 	fileDisplayName: string;
@@ -25,14 +25,11 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 	private sqlTasks: Thenable<vscode.Task[]> | undefined = undefined;
 
 	/**
-	 * This method is used to create a file system watcher for the .sqlproj files in the workspace.
-	 * It is used to watch for changes to the .sqlproj files and update the tasks accordingly.
-	 * @param workspaceRoots The workspace roots to watch for .sqlproj files
-	 * @returns A file system watcher for the .sqlproj files
-	 * @throws Error if the workspace root is not a valid path
-	 * @throws Error if the file system watcher cannot be created
-	 * @throws Error if the file system watcher is not supported
-	 * */
+	 * Constructor for setting up file system watchers on .sqlproj files within the provided workspace folders.
+	 * @param workspaceRoots - An array of workspace folders to watch. If undefined, no watchers are created.
+	 * For each workspace folder, this sets up a file system watcher that listens for changes, creations,
+	 * or deletions of `.sqlproj` files. When any of these events occur, the `sqlTasks` cache is invalidated.
+	 */
 	constructor(workspaceRoots: readonly vscode.WorkspaceFolder[] | undefined) {
 		if (!workspaceRoots) {
 			return;
@@ -74,14 +71,15 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 	 */
 	public resolveTask(task: vscode.Task): vscode.Task | undefined {
 		if (task.definition.type === constants.sqlProjTaskType) {
-			const definition: SqlprojTaskDefinition = <any>task.definition
-			if (!definition.filePath || !definition.fileDisplayName) {
-				return undefined;
+			const definition = task.definition as vscode.TaskDefinition;
+			if (typeof (definition as any).fileDisplayName === 'string') {
+				return this.getTask(definition as SqlprojTaskDefinition);
 			}
-			return this.getTask(definition);
 		}
+
 		return undefined;
 	}
+
 
 	/**
 	 * This method is used to create the tasks for the provider.
@@ -105,7 +103,6 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 			for (const uri of sqlProjPaths) {
 				sqlProjUris.push(uri);
 			}
-
 		}
 
 		if (sqlProjUris.length !== 0) {
