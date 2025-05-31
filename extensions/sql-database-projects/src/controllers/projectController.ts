@@ -330,10 +330,10 @@ export class ProjectsController {
 
 		try {
 			// Check if the doetnet core is installed and if not, prompt the user to install it
-			if (await this.netCoreTool.findOrInstallNetCore()) {
-				// If vscodeTask is defined, run it, otherwise run the dotnet command directly
-				await vscode.tasks.executeTask(vscodeTask);
-			}
+			// If the user does not have .NET Core installed, we will throw an error and stops building the project
+			await this.netCoreTool.verifyNetCoreInstallation()
+			// If vscodeTask is defined, run it, otherwise run the dotnet command directly
+			await vscode.tasks.executeTask(vscodeTask);
 
 			// If the build was successful, we will get the path to the built dacpac
 			const timeToBuild = new Date().getTime() - startTime.getTime();

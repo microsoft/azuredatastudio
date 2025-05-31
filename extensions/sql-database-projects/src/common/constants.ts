@@ -27,7 +27,7 @@ export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.S
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 export const sqlProjectSdk = 'Microsoft.Build.Sql';
 export const problemMatcher = '$sqlproj-problem-matcher';
-export const sqlProjTaskType = 'sqlproj-build'
+export const sqlProjTaskType = 'sqlproj-build';
 export const dotnetBuild = 'dotnet build';
 export const runCodeAnalysisParam = '/p:RunSqlCodeAnalysis=true';
 export const detailedVerbose = '-v:detailed';
