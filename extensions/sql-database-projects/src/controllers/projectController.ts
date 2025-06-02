@@ -1668,7 +1668,7 @@ export class ProjectsController {
 				projectTypeId: model.sdkStyle ? constants.emptySqlDatabaseSdkProjectTypeId : constants.emptySqlDatabaseProjectTypeId,
 				sdkStyle: model.sdkStyle,
 				targetPlatform: targetPlatform,
-				configureDefaultBuild: true //TODO: sai
+				configureDefaultBuild: true
 			});
 
 			model.filePath = path.dirname(newProjFilePath);
