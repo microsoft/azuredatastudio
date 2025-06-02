@@ -4,7 +4,7 @@
 
 /extensions/arc/ @swells
 /extensions/azcli/ @swells
-/extensions/azurecore/ @cssuh
+/extensions/azurecore/ @kburtram @aasimkhan30 @caohai @laurenastrid1 @lewis-sanchez @benjin
 /extensions/dacpac/ @kisantia
 /extensions/import @aasimkhan30
 /extensions/machine-learning @llali
