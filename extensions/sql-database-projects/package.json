@@ -477,7 +477,7 @@
         },
         {
           "command": "sqlDatabaseProjects.createProjectFromDatabase",
-          "when": "!azdataAvailable && view == objectExplorer && viewItem =~ /^(disconnectedServer|Server|Database)$/",
+          "when": "!azdataAvailable && view == objectExplorer && viewItem =~ /\\btype=(disconnectedServer|Server|Database)\\b/",
           "group": "sqldbproj@1"
         },
         {
