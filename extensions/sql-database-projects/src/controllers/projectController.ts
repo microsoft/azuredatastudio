@@ -221,6 +221,8 @@ export class ProjectsController {
 	 * Adds the template files for the provided project type
 	 * @param newProjFilePath path to project to add template files to
 	 * @param projectTypeId project type id
+	 * @param configureDefaultBuild whether to configure the default build task in tasks.json
+	 *
 	 */
 	private async addTemplateFiles(newProjFilePath: string, projectTypeId: string, configureDefaultBuild: boolean): Promise<void> {
 		const project = await Project.openProject(newProjFilePath);
@@ -245,6 +247,7 @@ export class ProjectsController {
 	/**
 	 * Adds a tasks.json file to the project
 	 * @param project project to add the tasks.json file to
+	 * @param configureDefaultBuild whether to configure the default build task in tasks.json
 	 */
 	private async addTasksJsonFile(project: ISqlProject, configureDefaultBuild: boolean): Promise<void> {
 		await this.addFileToProjectFromTemplate(project, templates.get(ItemType.tasks), '.vscode/tasks.json', new Map([['ConfigureDefaultBuild', configureDefaultBuild.toString()]]));
