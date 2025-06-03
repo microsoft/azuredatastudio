@@ -15,6 +15,7 @@ let controllers: MainController[] = [];
 
 export function activate(context: vscode.ExtensionContext): Promise<SqlDatabaseProjectProvider> {
 	void vscode.commands.executeCommand('setContext', 'azdataAvailable', !!getAzdataApi());
+
 	// Start the main controller
 	const mainController = new MainController(context);
 	controllers.push(mainController);

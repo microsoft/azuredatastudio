@@ -16,6 +16,8 @@
     "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.updateProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.generateProjectFromOpenApiSpec",
+    "onCommand:sqlDatabaseProjects.build",
+    "onCommand:sqlDatabaseProjects.buildWithCodeAnalysis",
     "workspaceContains:**/*.sqlproj",
     "onView:dataworkspace.views.main"
   ],
@@ -129,6 +131,11 @@
       {
         "command": "sqlDatabaseProjects.build",
         "title": "%sqlDatabaseProjects.build%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.buildWithCodeAnalysis",
+        "title": "%sqlDatabaseProjects.buildWithCodeAnalysis%",
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
@@ -283,6 +290,10 @@
           "when": "false"
         },
         {
+          "command": "sqlDatabaseProjects.buildWithCodeAnalysis",
+          "when": "false"
+        },
+        {
           "command": "sqlDatabaseProjects.publish",
           "when": "false"
         },
@@ -361,19 +372,24 @@
           "group": "1_dbProjectsFirst@1"
         },
         {
-          "command": "sqlDatabaseProjects.publish",
+          "command": "sqlDatabaseProjects.buildWithCodeAnalysis",
           "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "1_dbProjectsFirst@2"
         },
         {
+          "command": "sqlDatabaseProjects.publish",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
+          "group": "1_dbProjectsFirst@3"
+        },
+        {
           "command": "sqlDatabaseProjects.schemaCompare",
           "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && azdataAvailable",
-          "group": "1_dbProjectsFirst@3"
+          "group": "1_dbProjectsFirst@4"
         },
         {
           "command": "sqlDatabaseProjects.updateProjectFromDatabase",
           "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && azdataAvailable",
-          "group": "1_dbProjectsFirst@4"
+          "group": "1_dbProjectsFirst@5"
         },
         {
           "command": "sqlDatabaseProjects.newItem",
@@ -524,7 +540,45 @@
           "when": "connectionProvider == 'MSSQL' && mssql:engineedition != 11"
         }
       ]
-    }
+    },
+    "problemMatchers": [
+      {
+        "name": "sqlproj-problem-matcher",
+        "owner": "sqlproj-builder",
+        "fileLocation": "absolute",
+        "pattern": {
+          "regexp": "^(.*\\.sql)\\((\\d+),(\\d+),(\\d+),(\\d+)\\):\\s+\\w+\\s+(warning|error)\\s+(\\w+):\\s+(.*?)?$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 6,
+          "code": 7,
+          "message": 8
+        }
+      }
+    ],
+    "taskDefinitions": [
+      {
+        "type": "sqlproj-build",
+        "required": [
+          "filePath"
+        ],
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "The path to the .sqlproj file."
+          },
+          "fileDisplayName": {
+            "type": "string",
+            "description": "The display name of the .sqlproj file."
+          },
+          "runCodeAnalysis": {
+            "type": "boolean",
+            "description": "Run code analysis on the SQLProj file. Optional, default is true."
+          }
+        }
+      }
+    ]
   },
   "problemMatchers": [
     {
