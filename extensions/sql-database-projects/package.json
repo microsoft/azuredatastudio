@@ -9,7 +9,7 @@
     "vscode": "^1.30.1",
     "azdata": ">=1.47.0"
   },
-	"license": "SEE LICENSE IN LICENSE.txt",
+  "license": "SEE LICENSE IN LICENSE.txt",
   "icon": "images/sqlDatabaseProjects.png",
   "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
   "activationEvents": [
@@ -26,11 +26,11 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
-	"extensionDependencies": [
+  "extensionDependencies": [
     "Microsoft.mssql",
     "Microsoft.schema-compare",
     "Microsoft.data-workspace"
-	],
+  ],
   "capabilities": {
     "virtualWorkspaces": false,
     "untrustedWorkspaces": {
@@ -506,7 +506,6 @@
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.sqlcmdVariablesRoot"
         }
       ],
-
       "objectExplorer/item/context": [
         {
           "command": "sqlDatabaseProjects.createProjectFromDatabase",
@@ -544,19 +543,19 @@
     },
     "problemMatchers": [
       {
-				"name": "sqlproj-problem-matcher",
-				"owner": "sqlproj-builder",
-				"fileLocation": "absolute",
-				"pattern": {
-					"regexp": "^(.*\\.sql)\\((\\d+),(\\d+),(\\d+),(\\d+)\\):\\s+\\w+\\s+(warning|error)\\s+(\\w+):\\s+(.*?)?$",
-					"file": 1,
-					"line": 2,
-					"column": 3,
-					"severity": 6,
-					"code": 7,
-					"message": 8
-				}
-			}
+        "name": "sqlproj-problem-matcher",
+        "owner": "sqlproj-builder",
+        "fileLocation": "absolute",
+        "pattern": {
+          "regexp": "^(.*\\.sql)\\((\\d+),(\\d+),(\\d+),(\\d+)\\):\\s+\\w+\\s+(warning|error)\\s+(\\w+):\\s+(.*?)?$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 6,
+          "code": 7,
+          "message": 8
+        }
+      }
     ],
     "taskDefinitions": [
       {
@@ -573,10 +572,10 @@
             "type": "string",
             "description": "The display name of the .sqlproj file."
           },
-					"runCodeAnalysis": {
-						"type": "boolean",
-						"description": "Run code analysis on the SQLProj file. Optional, default is true."
-					}
+          "runCodeAnalysis": {
+            "type": "boolean",
+            "description": "Run code analysis on the SQLProj file. Optional, default is true."
+          }
         }
       }
     ]

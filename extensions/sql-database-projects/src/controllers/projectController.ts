@@ -279,12 +279,14 @@ export class ProjectsController {
 	/**
 	 * Builds a project, producing a dacpac
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 * @param codeAnalysis whether to run code analysis
 	 * @returns path of the built dacpac
 	 */
 	public async buildProject(treeNode: dataworkspace.WorkspaceTreeItem, codeAnalysis?: boolean): Promise<string>;
 	/**
 	 * Builds a project, producing a dacpac
 	 * @param project Project to be built
+	 * @param codeAnalysis whether to run code analysis
 	 * @returns path of the built dacpac
 	 */
 	public async buildProject(project: Project, codeAnalysis?: boolean): Promise<string>;
@@ -329,7 +331,7 @@ export class ProjectsController {
 		}
 
 		try {
-			// Check if the doetnet core is installed and if not, prompt the user to install it
+			// Check if the dotnet core is installed and if not, prompt the user to install it
 			// If the user does not have .NET Core installed, we will throw an error and stops building the project
 			await this.netCoreTool.verifyNetCoreInstallation()
 			// If vscodeTask is defined, run it, otherwise run the dotnet command directly
