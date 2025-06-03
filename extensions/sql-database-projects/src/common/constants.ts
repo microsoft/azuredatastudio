@@ -26,6 +26,10 @@ export const msdb = 'msdb';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 export const sqlProjectSdk = 'Microsoft.Build.Sql';
+export const problemMatcher = '$sqlproj-problem-matcher';
+export const sqlProjTaskType = 'sqlproj-build'
+export const dotnetBuild = 'dotnet build';
+export const runCodeAnalysisParam = '/p:RunSqlCodeAnalysis=true';
 
 //#endregion
 
@@ -346,6 +350,8 @@ export const YesRecommended = localize('yesRecommended', "Yes (Recommended)");
 export const SdkLearnMorePlaceholder = localize('sdkLearnMorePlaceholder', "Click \"Learn More\" button for more information about SDK-style projects");
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
+export const buildTaskName = localize('buildTaskName', "Build");
+export const buildWithCodeAnalysisTaskName = localize('buildWithCodeAnalysisTaskName', "Build with Code Analysis");
 
 //#endregion
 
