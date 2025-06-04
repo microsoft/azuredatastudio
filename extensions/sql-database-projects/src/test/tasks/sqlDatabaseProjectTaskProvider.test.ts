@@ -36,8 +36,8 @@ describe('Sql Database Projects Task Provider', function (): void {
 	beforeEach(() => {
 		// Create a new Sinon sandbox before each test
 		sandbox = sinon.createSandbox();
-		// Instantiate the task provider with the mock workspace folder
-		taskProvider = new SqlDatabaseProjectTaskProvider([workspaceFolder]);
+		// Instantiate the task provider
+		taskProvider = new SqlDatabaseProjectTaskProvider();
 	});
 
 	afterEach(() => {
@@ -86,10 +86,13 @@ describe('Sql Database Projects Task Provider', function (): void {
 		should(buildTask?.group).not.be.undefined();
 		should(buildTask?.group).have.property('label', 'Build');
 
-		// Assert: build task execution should be defined and use 'dotnet build'
+		// Assert: build task execution should be defined and use 'dotnet' command with 'build' argument
 		should(buildTask?.execution).not.be.undefined();
 		if (buildTask?.execution instanceof vscode.ShellExecution) {
-			should(buildTask.execution.commandLine).containEql('dotnet build');
+			should(buildTask.execution.command).equal('dotnet');
+			should(buildTask.execution.args).not.be.undefined();
+			should(buildTask.execution.args).be.Array();
+			should(buildTask.execution.args[0]).equal('build');
 		}
 	});
 
@@ -147,13 +150,14 @@ describe('Sql Database Projects Task Provider', function (): void {
 			should(buildTask?.group).not.be.undefined();
 			should(buildTask?.group).have.property('label', 'Build');
 
-			// Assert: build task execution should be defined and use 'dotnet build'
+			// Assert: build task execution should be defined and use 'dotnet' command with 'build' argument
 			should(buildTask?.execution).not.be.undefined();
 			if (buildTask?.execution instanceof vscode.ShellExecution) {
-				should(buildTask.execution.commandLine).containEql('dotnet build');
+				should(buildTask.execution.command).equal('dotnet');
+				should(buildTask.execution.args).not.be.undefined();
+				should(buildTask.execution.args).be.Array();
+				should(buildTask.execution.args[0]).equal('build');
 			}
 		}
 	});
-
-
 });

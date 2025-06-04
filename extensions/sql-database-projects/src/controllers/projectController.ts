@@ -317,7 +317,7 @@ export class ProjectsController {
 		}
 
 		// Load tasks from tasks.json and create a new vscode.task if it exist
-		const buildArgs = this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath, project.sqlProjStyle);
+		const buildArgs = this.buildHelper.constructBuildArguments(this.buildHelper.extensionBuildDirPath, project.sqlProjStyle);
 		const vscodeTask: vscode.Task = await this.createVsCodeTask(project, codeAnalysis, buildArgs);
 
 		try {
@@ -388,15 +388,24 @@ export class ProjectsController {
 		const label = codeAnalysis
 			? constants.buildWithCodeAnalysisTaskName
 			: constants.buildTaskName;
-		const command = codeAnalysis
-			? `${constants.dotnetBuild} ${project.projectFilePath} ${constants.runCodeAnalysisParam} ${buildArguments}`
-			: `${constants.dotnetBuild} ${project.projectFilePath} ${buildArguments}`;
+
+		// Create an array of arguments instead of a single command string
+		const args: string[] = [constants.build, project.projectFilePath];
+
+		if (codeAnalysis) {
+			args.push(constants.runCodeAnalysisParam);
+		}
+
+		// Parse buildArguments and add them as separate array elements
+		const additionalArgs = buildArguments.trim().split(/\s+/);
+		args.push(...additionalArgs);
 
 		// Create a new task definition with the label and command
 		const taskDefinition: vscode.TaskDefinition = {
 			type: constants.sqlProjTaskType,
 			label: label,
-			command: command,
+			command: constants.dotnet,
+			args: args,
 			problemMatcher: constants.problemMatcher
 		};
 
@@ -406,7 +415,7 @@ export class ProjectsController {
 			vscode.TaskScope.Workspace,
 			taskDefinition.label,
 			taskDefinition.type,
-			new vscode.ShellExecution(taskDefinition.command, { cwd: project.projectFolderPath }),
+			new vscode.ShellExecution(constants.dotnet, args, { cwd: project.projectFolderPath }),
 			taskDefinition.problemMatcher
 		);
 

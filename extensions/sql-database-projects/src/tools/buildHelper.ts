@@ -178,8 +178,7 @@ export class BuildHelper {
 		return this.extensionBuildDir;
 	}
 
-	public constructBuildArguments(projectPath: string, buildDirPath: string, sqlProjStyle: ProjectType): string {
-		projectPath = utils.getQuotedPath(projectPath);
+	public constructBuildArguments(buildDirPath: string, sqlProjStyle: ProjectType): string {
 		buildDirPath = utils.getQuotedPath(buildDirPath);
 
 		// Right now SystemDacpacsLocation and NETCoreTargetsPath get set to the same thing, but separating them out for if we move
