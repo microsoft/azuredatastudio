@@ -64,6 +64,7 @@ describe('ProjectsController', function (): void {
 					newProjName: 'TestProjectName',
 					folderUri: vscode.Uri.file(projFileDir),
 					projectTypeId: constants.emptySqlDatabaseProjectTypeId,
+					configureDefaultBuild: true,
 					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
 					targetPlatform: projTargetPlatform,
 					sdkStyle: false
@@ -82,6 +83,7 @@ describe('ProjectsController', function (): void {
 					newProjName: 'TestProjectName',
 					folderUri: vscode.Uri.file(projFileDir),
 					projectTypeId: constants.edgeSqlDatabaseProjectTypeId,
+					configureDefaultBuild: true,
 					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
 					sdkStyle: true
 				});
@@ -207,6 +209,41 @@ describe('ProjectsController', function (): void {
 					// reload project
 					project = await Project.openProject(project.projectFilePath);
 					await verifyFolderAdded(constants.reservedProjectFolders[i], projController, project, <BaseProjectTreeItem>node);
+				}
+			});
+
+			it('Should create .vscode/tasks.json with isDefault=true when configureDefaultBuild is true', async function (): Promise<void> {
+				const projController = new ProjectsController(testContext.outputChannel);
+				const projFileDir = await testUtils.generateTestFolderPath(this.test);
+
+				// Act: create a new project with configureDefaultBuild: true
+				const projFilePath = await projController.createNewProject({
+					newProjName: 'TestProjectWithTasks',
+					folderUri: vscode.Uri.file(projFileDir),
+					projectTypeId: constants.emptySqlDatabaseProjectTypeId,
+					configureDefaultBuild: true,
+					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
+					targetPlatform: SqlTargetPlatform.sqlAzure,
+					sdkStyle: false
+				});
+
+				const project = await Project.openProject(projFilePath);
+				// Path to the expected tasks.json file
+				const tasksJsonPath = path.join(projFileDir, project.projectFileName, '.vscode', 'tasks.json');
+
+				// Assert: tasks.json exists
+				const exists = await utils.exists(tasksJsonPath);
+				should(exists).be.true('.vscode/tasks.json should be created when configureDefaultBuild is true');
+
+				// If exists, check if isDefault is true in any build task
+				if (exists) {
+					const tasksJsonContent = await fs.readFile(tasksJsonPath, 'utf-8');
+					const tasksJson = JSON.parse(tasksJsonContent);
+
+					should(tasksJson.tasks).be.Array().and.have.length(1);
+					const task = tasksJson.tasks[0];
+					should(task.group).not.be.undefined();
+					should(task.group.isDefault).equal('true', 'The build task should have isDefault: true');
 				}
 			});
 
