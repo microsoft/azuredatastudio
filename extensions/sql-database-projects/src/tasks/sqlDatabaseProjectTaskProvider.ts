@@ -67,7 +67,7 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 	}
 
 	/**
-	 * This method is used to invalidate the tasks cache.
+	 * Invalidates the tasks cache, ensuring tasks are rebuilt when needed.
 	 */
 	private invalidateTasks() {
 		this.sqlTasks = undefined;
