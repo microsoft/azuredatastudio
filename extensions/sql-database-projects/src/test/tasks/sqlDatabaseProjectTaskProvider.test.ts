@@ -72,6 +72,10 @@ describe('Sql Database Projects Task Provider', function (): void {
 		should(buildTask?.definition.type).equal('sqlproj-build');
 		should(buildWithCodeAnalysisTask?.definition.type).equal('sqlproj-build');
 
+		// Assert: tasks should have the correct workspace folder scope
+		should(buildTask?.scope).equal(workspaceFolder);
+		should(buildWithCodeAnalysisTask?.scope).equal(workspaceFolder);
+
 		// Assert: problemMatchers should be arrays and contain the expected matcher
 		should(buildTask?.problemMatchers).be.Array();
 		should(buildWithCodeAnalysisTask?.problemMatchers).be.Array();
@@ -128,6 +132,10 @@ describe('Sql Database Projects Task Provider', function (): void {
 			// Assert: task definitions should have the correct type
 			should(buildTask?.definition.type).equal('sqlproj-build');
 			should(buildWithCodeAnalysisTask?.definition.type).equal('sqlproj-build');
+
+			// Assert: tasks should have the correct workspace folder scope
+			should(buildTask?.scope).equal(workspaceFolder);
+			should(buildWithCodeAnalysisTask?.scope).equal(workspaceFolder);
 
 			// Assert: problemMatchers should be arrays and contain the expected matcher
 			should(buildTask?.problemMatchers).be.Array();

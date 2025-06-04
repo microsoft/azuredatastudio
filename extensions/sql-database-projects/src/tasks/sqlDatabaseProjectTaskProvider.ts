@@ -8,12 +8,13 @@ import * as path from 'path';
 import * as constants from '../common/constants';
 
 /**
- * Extends to vscode.TaskDefinition to add the fileDisplayName and runCodeAnalysis properties.
- * This is used to identify the task and provide the file display name and runcode analysis for the task.
+ * Extends to vscode.TaskDefinition to add task definition properties.
+ * This is used to identify the task and provide the file display name, workspace folder and runcode analysis for the task.
  */
 interface SqlprojTaskDefinition extends vscode.TaskDefinition {
 	fileDisplayName: string;
 	runCodeAnalysis?: boolean;
+	workspaceFolder?: vscode.WorkspaceFolder;
 }
 
 /**
@@ -93,7 +94,6 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 		}
 
 		// Get all the .sqlproj files in the workspace folders
-		let sqlProjUris: vscode.Uri[] = [];
 		for (const workspaceFolder of workspaceFolders) {
 			const folderPath = workspaceFolder.uri.fsPath;
 			if (!folderPath) {
@@ -101,15 +101,10 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 			}
 			const sqlProjPaths = await vscode.workspace.findFiles(new vscode.RelativePattern(folderPath, '**/*.sqlproj'));
 			for (const uri of sqlProjPaths) {
-				sqlProjUris.push(uri);
-			}
-		}
-
-		if (sqlProjUris.length !== 0) {
-			for (const sqlProjUri of sqlProjUris) {
 				const taskDefinition: SqlprojTaskDefinition = {
 					type: constants.sqlProjTaskType,
-					fileDisplayName: path.basename(sqlProjUri.fsPath),
+					fileDisplayName: path.basename(uri.fsPath),
+					workspaceFolder: workspaceFolder
 				};
 
 				// Create a Build task
@@ -137,7 +132,7 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 
 		// Construct the shell command
 		const shellCommand = runCodeAnalysis
-			? `${constants.dotnetBuild}  ${constants.runCodeAnalysisParam}`
+			? `${constants.dotnetBuild} ${constants.runCodeAnalysisParam}`
 			: `${constants.dotnetBuild}`;
 
 		// Construct the task name
@@ -148,7 +143,7 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 		// Create and return the task with the build group set in the constructor
 		const task = new vscode.Task(
 			definition,
-			vscode.TaskScope.Workspace,
+			definition.workspaceFolder ?? vscode.TaskScope.Workspace,
 			taskName,
 			constants.sqlProjTaskType,
 			new vscode.ShellExecution(shellCommand),
