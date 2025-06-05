@@ -24,7 +24,7 @@ describe('Sql Database Projects Task Provider', function (): void {
 	const sqlProjUris = [
 		vscode.Uri.file('/SqlProjFolder/ProjectA/ProjectA.sqlproj'),
 		vscode.Uri.file('/SqlProjFolder/ProjectB/ProjectB.sqlproj'),
-		vscode.Uri.file('/SqlProjFolder/ProjectC/ProjectC.sqlproj')
+		vscode.Uri.file('/SqlProjFolder/Project C/ProjectC.sqlproj')
 	];
 
 	// Helper to stub VS Code workspace APIs for consistent test environment

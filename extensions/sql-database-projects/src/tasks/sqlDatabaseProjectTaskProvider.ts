@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
+import * as utils from '../common/utils';
 
 /**
  * Extends to vscode.TaskDefinition to add task definition properties.
@@ -148,7 +149,7 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 				// Create a task definition for the .sqlproj file
 				const taskDefinition: SqlprojTaskDefinition = {
 					type: constants.sqlProjTaskType,
-					filePath: uri.fsPath,
+					filePath: utils.getNonQuotedPath(uri.fsPath),
 					fileDisplayName: path.basename(uri.fsPath),
 					workspaceFolder: workspaceFolder
 				};

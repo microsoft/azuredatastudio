@@ -178,25 +178,28 @@ export class BuildHelper {
 		return this.extensionBuildDir;
 	}
 
-	public constructBuildArguments(buildDirPath: string, sqlProjStyle: ProjectType): string {
+	public constructBuildArguments(buildDirPath: string, sqlProjStyle: ProjectType): string[] {
 		buildDirPath = utils.getQuotedPath(buildDirPath);
+		const args: string[] = [
+			'/p:NetCoreBuild=true',
+			`/p:SystemDacpacsLocation=${buildDirPath}`
+		];
 
-		// Right now SystemDacpacsLocation and NETCoreTargetsPath get set to the same thing, but separating them out for if we move
-		// the system dacpacs somewhere else and also so that the variable name makes more sense if building from the commandline,
-		// since SDK style projects don't to specify the targets path, just where the system dacpacs are
+		// Adding NETCoreTargetsPath only for non-SDK style projects
 		if (utils.getAzdataApi()) {
-			if (sqlProjStyle === mssql.ProjectType.SdkStyle) {
-				return `/p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath} ${constants.detailedVerbose}`;
-			} else {
-				return `/p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath} ${constants.detailedVerbose}`;
+			if (sqlProjStyle !== mssql.ProjectType.SdkStyle) {
+				args.push(`/p:NETCoreTargetsPath=${buildDirPath}`);
 			}
 		} else {
-			if (sqlProjStyle === vscodeMssql.ProjectType.SdkStyle) {
-				return `/p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath} ${constants.detailedVerbose}`;
-			} else {
-				return `/p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath} ${constants.detailedVerbose}`;
+			if (sqlProjStyle !== vscodeMssql.ProjectType.SdkStyle) {
+				args.push(`/p:NETCoreTargetsPath=${buildDirPath}`);
 			}
 		}
+
+		// Adding verbose flag
+		args.push(constants.detailedVerbose);
+
+		return args;
 	}
 }
 
