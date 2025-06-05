@@ -317,7 +317,7 @@ export class ProjectsController {
 		}
 
 		// Load tasks from tasks.json and create a new vscode.task if it exist
-		const buildArgs = this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath, project.sqlProjStyle);
+		const buildArgs: string[] = this.buildHelper.constructBuildArguments(this.buildHelper.extensionBuildDirPath, project.sqlProjStyle);
 		const vscodeTask: vscode.Task = await this.createVsCodeTask(project, codeAnalysis, buildArgs);
 
 		try {
@@ -383,20 +383,28 @@ export class ProjectsController {
 	 * @param buildArguments Arguments to pass to the build command
 	 * @returns A VS Code task for building the project
 	 * */
-	private async createVsCodeTask(project: Project, codeAnalysis: boolean, buildArguments: string): Promise<vscode.Task> {
+	private async createVsCodeTask(project: Project, codeAnalysis: boolean, buildArguments: string[]): Promise<vscode.Task> {
 		let vscodeTask: vscode.Task | undefined = undefined;
 		const label = codeAnalysis
 			? constants.buildWithCodeAnalysisTaskName
 			: constants.buildTaskName;
-		const command = codeAnalysis
-			? `${constants.dotnetBuild} ${project.projectFilePath} ${constants.runCodeAnalysisParam} ${buildArguments}`
-			: `${constants.dotnetBuild} ${project.projectFilePath} ${buildArguments}`;
 
-		// Create a new task definition with the label and command
+		// Create an array of arguments instead of a single command string
+		const args: string[] = [constants.build, utils.getNonQuotedPath(project.projectFilePath)];
+
+		if (codeAnalysis) {
+			args.push(constants.runCodeAnalysisParam);
+		}
+
+		// Adding build arguments to the args
+		args.push(...buildArguments);
+
+		// Task definition with required args
 		const taskDefinition: vscode.TaskDefinition = {
 			type: constants.sqlProjTaskType,
 			label: label,
-			command: command,
+			command: constants.dotnet,
+			args: args,
 			problemMatcher: constants.problemMatcher
 		};
 
@@ -406,7 +414,7 @@ export class ProjectsController {
 			vscode.TaskScope.Workspace,
 			taskDefinition.label,
 			taskDefinition.type,
-			new vscode.ShellExecution(taskDefinition.command, { cwd: project.projectFolderPath }),
+			new vscode.ShellExecution(taskDefinition.command, args, { cwd: project.projectFolderPath }),
 			taskDefinition.problemMatcher
 		);
 

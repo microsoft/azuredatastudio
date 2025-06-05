@@ -6,13 +6,15 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
+import * as utils from '../common/utils';
 
 /**
  * Extends to vscode.TaskDefinition to add task definition properties.
- * This is used to identify the task and provide the file display name, workspace folder and runcode analysis for the task.
+ * This is used to identify the task and provide the fileDisplayName, filePath, workspaceFolder and runCodeAnalysis for the task.
  */
 interface SqlprojTaskDefinition extends vscode.TaskDefinition {
 	fileDisplayName: string;
+	filePath: string;
 	runCodeAnalysis?: boolean;
 	workspaceFolder?: vscode.WorkspaceFolder;
 }
@@ -24,26 +26,59 @@ interface SqlprojTaskDefinition extends vscode.TaskDefinition {
 export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 	private watchers: vscode.FileSystemWatcher[] = [];
 	private sqlTasks: Thenable<vscode.Task[]> | undefined = undefined;
+	private _onDidChangeTasks = new vscode.EventEmitter<void>();
+	private workspaceFoldersListener: vscode.Disposable | undefined;
 
 	/**
-	 * Constructor for setting up file system watchers on .sqlproj files within the provided workspace folders.
-	 * @param workspaceRoots - An array of workspace folders to watch. If undefined, no watchers are created.
+	 * Event that fires when the tasks change (e.g., when .sqlproj files are created, modified, or deleted)
+	 */
+	public readonly onDidChangeTasks: vscode.Event<void> = this._onDidChangeTasks.event;
+
+	/**
+	 * Constructor for setting up file system watchers on .sqlproj files within the workspace folders.
 	 * For each workspace folder, this sets up a file system watcher that listens for changes, creations,
 	 * or deletions of `.sqlproj` files. When any of these events occur, the `sqlTasks` cache is invalidated.
 	 */
-	constructor(workspaceRoots: readonly vscode.WorkspaceFolder[] | undefined) {
-		if (!workspaceRoots) {
+	constructor() {
+		// Watch for workspace folder changes
+		this.workspaceFoldersListener = vscode.workspace.onDidChangeWorkspaceFolders(() => {
+			this.invalidateTasks();
+			this.setupWatchers();
+		});
+
+		this.setupWatchers();
+	}
+
+	/**
+	 * Sets up file system watchers for all `.sqlproj` files in the workspace folders.
+	 * @returns An event that fires when the tasks change.
+	 */
+	private setupWatchers() {
+		// Dispose existing watchers
+		this.watchers.forEach(watcher => watcher.dispose());
+		this.watchers = [];
+
+		const workspaceFolders = vscode.workspace.workspaceFolders;
+		if (!workspaceFolders) {
 			return;
 		}
 
-		for (const root of workspaceRoots) {
+		for (const root of workspaceFolders) {
 			const pattern = path.join(root.uri.fsPath, '**', '*.sqlproj');
 			const watcher = vscode.workspace.createFileSystemWatcher(pattern);
-			watcher.onDidChange(() => this.sqlTasks = undefined);
-			watcher.onDidCreate(() => this.sqlTasks = undefined);
-			watcher.onDidDelete(() => this.sqlTasks = undefined);
+			watcher.onDidChange(() => this.invalidateTasks());
+			watcher.onDidCreate(() => this.invalidateTasks());
+			watcher.onDidDelete(() => this.invalidateTasks());
 			this.watchers.push(watcher);
 		}
+	}
+
+	/**
+	 * Invalidates the tasks cache, ensuring tasks are rebuilt when needed.
+	 */
+	private invalidateTasks() {
+		this.sqlTasks = undefined;
+		this._onDidChangeTasks.fire();
 	}
 
 	/**
@@ -52,6 +87,8 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 	 */
 	public dispose() {
 		this.watchers?.forEach(watcher => watcher.dispose());
+		this.workspaceFoldersListener?.dispose();
+		this._onDidChangeTasks.dispose();
 	}
 
 	/**
@@ -81,9 +118,13 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 		return undefined;
 	}
 
-
 	/**
 	 * This method is used to create the tasks for the provider.
+	 * What we do here is to find all the .sqlproj files in the workspace folders and create a task for each of them.
+	 * For each .sqlproj file, we create two tasks: one for building the project and another for building with code analysis.
+	 * This way, we can run the build and code analysis tasks directly from the command palette or the task runner.
+	 * If there are no workspace folders, it returns an empty array.
+	 * This method also ensures that we do not create duplicate tasks for the same .sqlproj file.
 	 * @returns A promise that resolves to an array of tasks
 	 */
 	public async createTasks(): Promise<vscode.Task[]> {
@@ -93,6 +134,9 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 			return tasks; // No workspace folders
 		}
 
+		// Keep track of already processed .sqlproj files to avoid duplicates
+		const processedFiles = new Set<string>();
+
 		// Get all the .sqlproj files in the workspace folders
 		for (const workspaceFolder of workspaceFolders) {
 			const folderPath = workspaceFolder.uri.fsPath;
@@ -101,8 +145,18 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 			}
 			const sqlProjPaths = await vscode.workspace.findFiles(new vscode.RelativePattern(folderPath, '**/*.sqlproj'));
 			for (const uri of sqlProjPaths) {
+				// Skip if we've already processed this file
+				if (processedFiles.has(uri.fsPath)) {
+					continue;
+				}
+
+				// Add the file to the processed set to avoid duplicates
+				processedFiles.add(uri.fsPath);
+
+				// Create a task definition for the .sqlproj file
 				const taskDefinition: SqlprojTaskDefinition = {
 					type: constants.sqlProjTaskType,
+					filePath: utils.getNonQuotedPath(uri.fsPath),
 					fileDisplayName: path.basename(uri.fsPath),
 					workspaceFolder: workspaceFolder
 				};
@@ -130,23 +184,33 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 		// Set the runCodeAnalysis flag in the definition
 		definition.runCodeAnalysis = runCodeAnalysis;
 
-		// Construct the shell command
-		const shellCommand = runCodeAnalysis
-			? `${constants.dotnetBuild} ${constants.runCodeAnalysisParam}`
-			: `${constants.dotnetBuild}`;
-
 		// Construct the task name
 		const taskName = runCodeAnalysis
 			? `${definition.fileDisplayName} - ${constants.buildWithCodeAnalysisTaskName}`
 			: `${definition.fileDisplayName} - ${constants.buildTaskName}`;
 
-		// Create and return the task with the build group set in the constructor
+		// Build the argument list instead of a single shell command string
+		const args: string[] = [
+			constants.build,
+			definition.filePath, // vscode shell execution handles the quotes around the file path
+		];
+
+		if (runCodeAnalysis) {
+			args.push(constants.runCodeAnalysisParam);
+		}
+
+		// Create the ShellExecution with command and args
+		const shellExec = new vscode.ShellExecution(constants.dotnet, args, {
+			cwd: definition.workspaceFolder?.uri.fsPath
+		});
+
+		// Create and return the task
 		const task = new vscode.Task(
 			definition,
 			definition.workspaceFolder ?? vscode.TaskScope.Workspace,
 			taskName,
 			constants.sqlProjTaskType,
-			new vscode.ShellExecution(shellCommand),
+			shellExec,
 			constants.problemMatcher
 		);
 		task.group = vscode.TaskGroup.Build;

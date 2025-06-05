@@ -178,26 +178,32 @@ export class BuildHelper {
 		return this.extensionBuildDir;
 	}
 
-	public constructBuildArguments(projectPath: string, buildDirPath: string, sqlProjStyle: ProjectType): string {
-		projectPath = utils.getQuotedPath(projectPath);
+	/**
+	 * Constructs the build arguments for building a sqlproj file
+	 * @param buildDirPath The path to the build directory where the dlls and targets are located
+	 * @param sqlProjStyle The type of the sqlproj project (LegacyStyle or SdkStyle)
+	 * @returns An array of arguments to be used for building the sqlproj file
+	 */
+	public constructBuildArguments(buildDirPath: string, sqlProjStyle: ProjectType): string[] {
 		buildDirPath = utils.getQuotedPath(buildDirPath);
+		const args: string[] = [
+			'/p:NetCoreBuild=true',
+			`/p:SystemDacpacsLocation=${buildDirPath}`
+		];
 
-		// Right now SystemDacpacsLocation and NETCoreTargetsPath get set to the same thing, but separating them out for if we move
-		// the system dacpacs somewhere else and also so that the variable name makes more sense if building from the commandline,
-		// since SDK style projects don't to specify the targets path, just where the system dacpacs are
-		if (utils.getAzdataApi()) {
-			if (sqlProjStyle === mssql.ProjectType.SdkStyle) {
-				return `/p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath} ${constants.detailedVerbose}`;
-			} else {
-				return `/p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath} ${constants.detailedVerbose}`;
-			}
-		} else {
-			if (sqlProjStyle === vscodeMssql.ProjectType.SdkStyle) {
-				return `/p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath} ${constants.detailedVerbose}`;
-			} else {
-				return `/p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath} ${constants.detailedVerbose}`;
-			}
+		// Adding NETCoreTargetsPath only for non-SDK style projects
+		const isSdkStyle = utils.getAzdataApi()
+			? sqlProjStyle === mssql.ProjectType.SdkStyle
+			: sqlProjStyle === vscodeMssql.ProjectType.SdkStyle;
+
+		if (!isSdkStyle) {
+			args.push(`/p:NETCoreTargetsPath=${buildDirPath}`);
 		}
+
+		// Adding verbose flag
+		args.push(constants.detailedVerbose);
+
+		return args;
 	}
 }
 
