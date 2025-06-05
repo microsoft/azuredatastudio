@@ -178,6 +178,12 @@ export class BuildHelper {
 		return this.extensionBuildDir;
 	}
 
+	/**
+	 * Constructs the build arguments for building a sqlproj file
+	 * @param buildDirPath The path to the build directory where the dlls and targets are located
+	 * @param sqlProjStyle The type of the sqlproj project (LegacyStyle or SdkStyle)
+	 * @returns An array of arguments to be used for building the sqlproj file
+	 */
 	public constructBuildArguments(buildDirPath: string, sqlProjStyle: ProjectType): string[] {
 		buildDirPath = utils.getQuotedPath(buildDirPath);
 		const args: string[] = [
@@ -186,14 +192,12 @@ export class BuildHelper {
 		];
 
 		// Adding NETCoreTargetsPath only for non-SDK style projects
-		if (utils.getAzdataApi()) {
-			if (sqlProjStyle !== mssql.ProjectType.SdkStyle) {
-				args.push(`/p:NETCoreTargetsPath=${buildDirPath}`);
-			}
-		} else {
-			if (sqlProjStyle !== vscodeMssql.ProjectType.SdkStyle) {
-				args.push(`/p:NETCoreTargetsPath=${buildDirPath}`);
-			}
+		const isSdkStyle = utils.getAzdataApi()
+			? sqlProjStyle === mssql.ProjectType.SdkStyle
+			: sqlProjStyle === vscodeMssql.ProjectType.SdkStyle;
+
+		if (!isSdkStyle) {
+			args.push(`/p:NETCoreTargetsPath=${buildDirPath}`);
 		}
 
 		// Adding verbose flag

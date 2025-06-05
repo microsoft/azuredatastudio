@@ -27,6 +27,12 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 	private watchers: vscode.FileSystemWatcher[] = [];
 	private sqlTasks: Thenable<vscode.Task[]> | undefined = undefined;
 	private _onDidChangeTasks = new vscode.EventEmitter<void>();
+	private workspaceFoldersListener: vscode.Disposable | undefined;
+
+	/**
+	 * Event that fires when the tasks change (e.g., when .sqlproj files are created, modified, or deleted)
+	 */
+	public readonly onDidChangeTasks: vscode.Event<void> = this._onDidChangeTasks.event;
 
 	/**
 	 * Constructor for setting up file system watchers on .sqlproj files within the workspace folders.
@@ -35,7 +41,7 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 	 */
 	constructor() {
 		// Watch for workspace folder changes
-		vscode.workspace.onDidChangeWorkspaceFolders(() => {
+		this.workspaceFoldersListener = vscode.workspace.onDidChangeWorkspaceFolders(() => {
 			this.invalidateTasks();
 			this.setupWatchers();
 		});
@@ -81,6 +87,7 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 	 */
 	public dispose() {
 		this.watchers?.forEach(watcher => watcher.dispose());
+		this.workspaceFoldersListener?.dispose();
 		this._onDidChangeTasks.dispose();
 	}
 
