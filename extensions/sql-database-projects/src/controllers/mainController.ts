@@ -61,7 +61,8 @@ export default class MainController implements vscode.Disposable {
 		// init commands
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.properties', async (node: WorkspaceTreeItem) => { return vscode.window.showErrorMessage(`Properties not yet implemented: ${node.element.uri.path}`); })); // TODO
 
-		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.build', async (node: WorkspaceTreeItem) => { return this.projectsController.buildProject(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.build', async (node: WorkspaceTreeItem) => { return this.projectsController.buildProject(node, false); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.buildWithCodeAnalysis', async (node: WorkspaceTreeItem) => { return this.projectsController.buildProject(node, true); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.publish', async (node: WorkspaceTreeItem) => { return this.projectsController.publishProject(node); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.schemaCompare', async (node: WorkspaceTreeItem) => { return this.projectsController.schemaCompare(node); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.schemaComparePublishProjectChanges', async (operationId: string, projectFilePath: string, folderStructure: mssql.ExtractTarget): Promise<mssql.SchemaComparePublishProjectResult> => { return await this.projectsController.schemaComparePublishProjectChanges(operationId, projectFilePath, folderStructure); }));

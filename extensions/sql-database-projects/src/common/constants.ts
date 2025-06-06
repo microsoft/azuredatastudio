@@ -26,6 +26,12 @@ export const msdb = 'msdb';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 export const sqlProjectSdk = 'Microsoft.Build.Sql';
+export const problemMatcher = '$sqlproj-problem-matcher';
+export const sqlProjTaskType = 'sqlproj-build';
+export const dotnet = 'dotnet';
+export const build = 'build';
+export const runCodeAnalysisParam = '/p:RunSqlCodeAnalysis=true';
+export const detailedVerbose = '-v:detailed';
 
 //#endregion
 
@@ -322,6 +328,7 @@ export const artifactReference = localize('artifactReference', "Artifact Referen
 export const packageReference = localize('packageReference', "Package Reference");
 export const referenceTypeRadioButtonsGroupTitle = localize('referenceTypeRadioButtonsGroupTitle', "Reference Type");
 
+
 //#endregion
 
 //#region Create Project From Database dialog strings
@@ -346,6 +353,9 @@ export const YesRecommended = localize('yesRecommended', "Yes (Recommended)");
 export const SdkLearnMorePlaceholder = localize('sdkLearnMorePlaceholder', "Click \"Learn More\" button for more information about SDK-style projects");
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
+export const confirmCreateProjectWithBuildTaskDialogName = localize('configureSqlProjDefaultBuild', "Do you want to configure SQL project build as the default build configuration for this folder?");
+export const buildTaskName = localize('buildTaskName', "Build");
+export const buildWithCodeAnalysisTaskName = localize('buildWithCodeAnalysisTaskName', "Build with Code Analysis");
 
 //#endregion
 
@@ -457,6 +467,7 @@ export const externalStreamingJobFriendlyName = localize('externalStreamingJobFr
 export const preDeployScriptFriendlyName = localize('preDeployScriptFriendlyName', "Script.PreDeployment");
 export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyName', "Script.PostDeployment");
 export const publishProfileFriendlyName = localize('publishProfileFriendlyName', "Publish Profile");
+export const tasksJsonFriendlyName = localize('tasksJsonFriendlyName', "Tasks.json");
 
 //#endregion
 

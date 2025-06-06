@@ -11,7 +11,7 @@
 /extensions/notebook @azure-data-studio-notebook-devs
 /extensions/schema-compare/ @kisantia
 /extensions/sql-bindings/ @vasubhog @Charles-Gagnon @chlafreniere @MaddyDev
-/extensions/sql-database-projects/ @Benjin @kisantia
+/extensions/sql-database-projects/ @ssreerama @chlafreniere @llali @zijchen
 /extensions/sql-migration @akshika898 @JyotikaGargg @shilpimitra @Shiwani-K @radheyshah
 /extensions/mssql/config.json @kburtram
 

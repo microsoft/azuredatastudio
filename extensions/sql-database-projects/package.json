@@ -2,20 +2,22 @@
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "Enables users to develop and publish database schemas for MSSQL Databases",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
     "vscode": "^1.30.1",
     "azdata": ">=1.47.0"
   },
-	"license": "SEE LICENSE IN LICENSE.txt",
+  "license": "SEE LICENSE IN LICENSE.txt",
   "icon": "images/sqlDatabaseProjects.png",
   "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
   "activationEvents": [
     "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.updateProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.generateProjectFromOpenApiSpec",
+    "onCommand:sqlDatabaseProjects.build",
+    "onCommand:sqlDatabaseProjects.buildWithCodeAnalysis",
     "workspaceContains:**/*.sqlproj",
     "onView:dataworkspace.views.main"
   ],
@@ -129,6 +131,11 @@
       {
         "command": "sqlDatabaseProjects.build",
         "title": "%sqlDatabaseProjects.build%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.buildWithCodeAnalysis",
+        "title": "%sqlDatabaseProjects.buildWithCodeAnalysis%",
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
@@ -283,6 +290,10 @@
           "when": "false"
         },
         {
+          "command": "sqlDatabaseProjects.buildWithCodeAnalysis",
+          "when": "false"
+        },
+        {
           "command": "sqlDatabaseProjects.publish",
           "when": "false"
         },
@@ -361,19 +372,24 @@
           "group": "1_dbProjectsFirst@1"
         },
         {
-          "command": "sqlDatabaseProjects.publish",
+          "command": "sqlDatabaseProjects.buildWithCodeAnalysis",
           "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "1_dbProjectsFirst@2"
         },
         {
+          "command": "sqlDatabaseProjects.publish",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
+          "group": "1_dbProjectsFirst@3"
+        },
+        {
           "command": "sqlDatabaseProjects.schemaCompare",
           "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && azdataAvailable",
-          "group": "1_dbProjectsFirst@3"
+          "group": "1_dbProjectsFirst@4"
         },
         {
           "command": "sqlDatabaseProjects.updateProjectFromDatabase",
           "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && azdataAvailable",
-          "group": "1_dbProjectsFirst@4"
+          "group": "1_dbProjectsFirst@5"
         },
         {
           "command": "sqlDatabaseProjects.newItem",
@@ -477,7 +493,7 @@
         },
         {
           "command": "sqlDatabaseProjects.createProjectFromDatabase",
-          "when": "!azdataAvailable && view == objectExplorer && viewItem =~ /^(disconnectedServer|Server|Database)$/",
+          "when": "!azdataAvailable && view == objectExplorer && viewItem =~ /\\btype=(disconnectedServer|Server|Database)\\b/",
           "group": "sqldbproj@1"
         },
         {
@@ -524,8 +540,84 @@
           "when": "connectionProvider == 'MSSQL' && mssql:engineedition != 11"
         }
       ]
-    }
+    },
+    "problemMatchers": [
+      {
+        "name": "sqlproj-problem-matcher",
+        "owner": "sqlproj-builder",
+        "fileLocation": "absolute",
+        "pattern": {
+          "regexp": "^(.*\\.sql)\\((\\d+),(\\d+),(\\d+),(\\d+)\\):\\s+\\w+\\s+(warning|error)\\s+(\\w+):\\s+(.*?)?$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 6,
+          "code": 7,
+          "message": 8
+        }
+      }
+    ],
+    "taskDefinitions": [
+      {
+        "type": "sqlproj-build",
+        "required": [
+          "filePath"
+        ],
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "The path to the .sqlproj file."
+          },
+          "fileDisplayName": {
+            "type": "string",
+            "description": "The display name of the .sqlproj file."
+          },
+          "runCodeAnalysis": {
+            "type": "boolean",
+            "description": "Run code analysis on the SQLProj file. Optional, default is true."
+          }
+        }
+      }
+    ]
   },
+  "problemMatchers": [
+    {
+      "name": "sqlproj-problem-matcher",
+      "owner": "sqlproj-builder",
+      "fileLocation": "absolute",
+      "pattern": {
+        "regexp": "^(.*\\.sql)\\((\\d+),(\\d+),(\\d+),(\\d+)\\):\\s+\\w+\\s+(warning|error)\\s+(\\w+):\\s+(.*?)?$",
+        "file": 1,
+        "line": 2,
+        "column": 3,
+        "severity": 6,
+        "code": 7,
+        "message": 8
+      }
+    }
+  ],
+  "taskDefinitions": [
+    {
+      "type": "sqlproj-build",
+      "required": [
+        "filePath"
+      ],
+      "properties": {
+        "filePath": {
+          "type": "string",
+          "description": "The path to the .sqlproj file."
+        },
+        "fileDisplayName": {
+          "type": "string",
+          "description": "The display name of the .sqlproj file."
+        },
+        "runCodeAnalysis": {
+          "type": "boolean",
+          "description": "Run code analysis on the SQLProj file. Optional, default is true."
+        }
+      }
+    }
+  ],
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^3.0.1",
     "@xmldom/xmldom": "0.8.4",
