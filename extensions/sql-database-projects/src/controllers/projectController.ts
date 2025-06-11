@@ -316,7 +316,7 @@ export class ProjectsController {
 			}
 		}
 
-		// Load tasks from tasks.json and create a new vscode.task if it exist
+		// Get the build arguments from buildhelper method and create a new vscode.task
 		const buildArgs: string[] = this.buildHelper.constructBuildArguments(this.buildHelper.extensionBuildDirPath, project.sqlProjStyle);
 		const vscodeTask: vscode.Task = await this.createVsCodeTask(project, codeAnalysis, buildArgs);
 
