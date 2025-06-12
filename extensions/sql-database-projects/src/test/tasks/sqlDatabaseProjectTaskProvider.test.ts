@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import * as should from 'should';
 import * as path from 'path';
+import * as vscodeMssql from 'vscode-mssql';
 import { SqlDatabaseProjectTaskProvider } from '../../tasks/sqlDatabaseProjectTaskProvider';
 
 describe('Sql Database Projects Task Provider', function (): void {
@@ -33,6 +34,19 @@ describe('Sql Database Projects Task Provider', function (): void {
 		sandbox.stub(vscode.workspace, 'findFiles').resolves(sqlProjUri);
 	}
 
+	// Helper to create and stub a mock project
+	function stubProjectOpenWithStyle(projectStyle: vscodeMssql.ProjectType) {
+		const mockProject = {
+			sqlProjStyle: projectStyle,
+			readProjFile: sandbox.stub().resolves()
+		};
+
+		const projectModule = require('../../models/project');
+		sandbox.stub(projectModule.Project, 'openProject').resolves(mockProject);
+
+		return mockProject;
+	}
+
 	beforeEach(() => {
 		// Create a new Sinon sandbox before each test
 		sandbox = sinon.createSandbox();
@@ -45,9 +59,12 @@ describe('Sql Database Projects Task Provider', function (): void {
 		sandbox.restore();
 	});
 
-	it('Should create build and buildWithCodeAnalysis tasks for .sqlproj file with correct properties', async function (): Promise<void> {
+	it('Should create build and buildWithCodeAnalysis tasks for .sqlproj file with correct properties for SDK style project', async function (): Promise<void> {
 		// Define mock .sqlproj file URIs for testing
 		stubWorkspaceAndFiles([sqlProjUris[0]]);
+
+		// Stub the project as SDK style
+		stubProjectOpenWithStyle(vscodeMssql.ProjectType.SdkStyle);
 
 		// Act: create tasks using the provider
 		const tasks = await taskProvider.createTasks();
@@ -93,12 +110,22 @@ describe('Sql Database Projects Task Provider', function (): void {
 			should(buildTask.execution.args).not.be.undefined();
 			should(buildTask.execution.args).be.Array();
 			should(buildTask.execution.args[0]).equal('build');
+
+			const argsString = buildTask.execution.args.join(' ');
+			should(argsString).containEql('/p:NetCoreBuild=true');
+			should(argsString).containEql('/p:SystemDacpacsLocation=');
+			should(argsString).not.containEql('/p:NETCoreTargetsPath='); // This should NOT be present for SDK projects
+			should(argsString).containEql('-v:detailed');
+
 		}
 	});
 
 	it('Should not create any tasks when no .sqlproj files are present in the workspace', async function (): Promise<void> {
 		// Define mock .sqlproj file URIs for testing
 		stubWorkspaceAndFiles([]);
+
+		// Stub the project as SDK style
+		stubProjectOpenWithStyle(vscodeMssql.ProjectType.SdkStyle);
 
 		// Act: Attempt to create tasks using the provider
 		const tasks = await taskProvider.createTasks();
@@ -111,6 +138,9 @@ describe('Sql Database Projects Task Provider', function (): void {
 	it('Should create build and buildWithCodeAnalysis tasks for multiple .sqlproj files with correct properties', async function (): Promise<void> {
 		// Define mock .sqlproj file URIs for testing
 		stubWorkspaceAndFiles(sqlProjUris);
+
+		// Stub the project as SDK style
+		stubProjectOpenWithStyle(vscodeMssql.ProjectType.SdkStyle);
 
 		// Act: create tasks using the provider
 		const tasks = await taskProvider.createTasks();
@@ -158,6 +188,45 @@ describe('Sql Database Projects Task Provider', function (): void {
 				should(buildTask.execution.args).be.Array();
 				should(buildTask.execution.args[0]).equal('build');
 			}
+		}
+	});
+
+	it('Should create tasks with correct build arguments for legacy-style project', async function (): Promise<void> {
+		// Define mock .sqlproj file URIs for testing
+		stubWorkspaceAndFiles([sqlProjUris[0]]);
+
+		// Stub the project as SDK style
+		stubProjectOpenWithStyle(vscodeMssql.ProjectType.LegacyStyle);
+
+		// Act: create tasks using the provider
+		const tasks = await taskProvider.createTasks();
+
+		// Assert: tasks should be defined and have the expected length
+		should(tasks).not.be.undefined();
+		should(tasks).be.Array().and.have.length(2);
+
+		// Find the build task
+		const buildTask = tasks.find(t => t.name === 'ProjectA.sqlproj - Build');
+
+		// Assert: build task should exist
+		should(buildTask).not.be.undefined();
+
+		// Assert: build task execution should contain legacy-style arguments
+		should(buildTask?.execution).not.be.undefined();
+		if (buildTask?.execution instanceof vscode.ShellExecution) {
+			should(buildTask.execution.command).equal('dotnet');
+			should(buildTask.execution.args).not.be.undefined();
+			should(buildTask.execution.args).be.Array();
+
+			// Verify it contains build command
+			should(buildTask.execution.args[0]).equal('build');
+
+			// Verify it contains legacy-style build arguments
+			const argsString = buildTask.execution.args.join(' ');
+			should(argsString).containEql('/p:NetCoreBuild=true');
+			should(argsString).containEql('/p:SystemDacpacsLocation=');
+			should(argsString).containEql('/p:NETCoreTargetsPath='); // This is only for legacy projects
+			should(argsString).containEql('-v:detailed');
 		}
 	});
 });
