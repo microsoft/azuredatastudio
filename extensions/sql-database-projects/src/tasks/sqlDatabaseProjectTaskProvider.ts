@@ -7,6 +7,10 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
+import { Project } from '../models/project';
+import { ProjectType } from '../common/typeHelper';
+import { BuildHelper } from '../tools/buildHelper';
+
 
 /**
  * Extends to vscode.TaskDefinition to add task definition properties.
@@ -15,6 +19,7 @@ import * as utils from '../common/utils';
 interface SqlprojTaskDefinition extends vscode.TaskDefinition {
 	fileDisplayName: string;
 	filePath: string;
+	projectStyle: ProjectType;
 	runCodeAnalysis?: boolean;
 	workspaceFolder?: vscode.WorkspaceFolder;
 }
@@ -28,6 +33,7 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 	private sqlTasks: Thenable<vscode.Task[]> | undefined = undefined;
 	private _onDidChangeTasks = new vscode.EventEmitter<void>();
 	private workspaceFoldersListener: vscode.Disposable | undefined;
+	private buildHelper: BuildHelper;
 
 	/**
 	 * Event that fires when the tasks change (e.g., when .sqlproj files are created, modified, or deleted)
@@ -40,6 +46,7 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 	 * or deletions of `.sqlproj` files. When any of these events occur, the `sqlTasks` cache is invalidated.
 	 */
 	constructor() {
+		this.buildHelper = new BuildHelper();
 		// Watch for workspace folder changes
 		this.workspaceFoldersListener = vscode.workspace.onDidChangeWorkspaceFolders(() => {
 			this.invalidateTasks();
@@ -153,12 +160,16 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 				// Add the file to the processed set to avoid duplicates
 				processedFiles.add(uri.fsPath);
 
+				// Determine project style once
+				const project = await Project.openProject(uri.fsPath);
+
 				// Create a task definition for the .sqlproj file
 				const taskDefinition: SqlprojTaskDefinition = {
 					type: constants.sqlProjTaskType,
 					filePath: utils.getNonQuotedPath(uri.fsPath),
 					fileDisplayName: path.basename(uri.fsPath),
-					workspaceFolder: workspaceFolder
+					workspaceFolder: workspaceFolder,
+					projectStyle: project.sqlProjStyle
 				};
 
 				// Create a Build task
@@ -184,6 +195,9 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 		// Set the runCodeAnalysis flag in the definition
 		definition.runCodeAnalysis = runCodeAnalysis;
 
+		// Get the build arguments for the task
+		const buildArgs: string[] = this.buildHelper.constructBuildArguments(this.buildHelper.extensionBuildDirPath, definition.projectStyle);
+
 		// Construct the task name
 		const taskName = runCodeAnalysis
 			? `${definition.fileDisplayName} - ${constants.buildWithCodeAnalysisTaskName}`
@@ -193,6 +207,7 @@ export class SqlDatabaseProjectTaskProvider implements vscode.TaskProvider {
 		const args: string[] = [
 			constants.build,
 			definition.filePath, // vscode shell execution handles the quotes around the file path
+			...buildArgs
 		];
 
 		if (runCodeAnalysis) {
