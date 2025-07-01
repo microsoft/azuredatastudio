@@ -103,6 +103,9 @@ export class BuildHelper {
 
 		const fullNugetName = `${nugetName}.${nugetVersion}`;
 		const fullNugetPath = path.join(this.extensionBuildDir, `${fullNugetName}.nupkg`);
+		console.log("FullNugetName: " + fullNugetName);
+		console.log("ExtensionBuildDir: " + this.extensionBuildDir);
+		console.log("FullNugetPath: " + fullNugetPath);
 
 		// check if the correct nuget version has been previously downloaded before checking if the files exist.
 		// TODO: handle when multiple nugets are in the BuildDirectory and a user wants to switch back to an older one - probably should
