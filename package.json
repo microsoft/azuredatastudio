@@ -280,6 +280,7 @@
     "elliptic": "^6.5.3",
     "nwmatcher": "^1.4.4",
     "gridstack/node-sass": "^7.0.0",
-    "node-sass": "^7.0.0"
+    "node-sass": "^7.0.0",
+    "tar-fs": "^2.1.2"
   }
 }
