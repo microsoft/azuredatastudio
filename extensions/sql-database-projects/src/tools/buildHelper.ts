@@ -111,6 +111,7 @@ export class BuildHelper {
 		// TODO: handle when multiple nugets are in the BuildDirectory and a user wants to switch back to an older one - probably should
 		// remove other versions of this nuget when a new one is downloaded
 		if (await utils.exists(fullNugetPath)) {
+			console.log("Nuget path found: " + fullNugetPath);
 			// if it does exist, make sure all the necessary files are also in the BuildDirectory
 			for (const fileName of expectedFiles) {
 				if (!await (utils.exists(path.join(this.extensionBuildDir, fileName)))) {
@@ -119,6 +120,7 @@ export class BuildHelper {
 				}
 			}
 		} else {
+			console.log("Nuget path not found: " + fullNugetPath);
 			// if the nuget isn't there, it needs to be downloaded and the build dlls extracted
 			missingNuget = true;
 		}
