@@ -101,8 +101,8 @@ export class BuildHelper {
 	public async ensureNugetAndFilesPresence(nugetName: string, nugetVersion: string, expectedFiles: string[], nugetFolderWithExpectedfiles: string, outputChannel: vscode.OutputChannel): Promise<boolean> {
 		let missingNuget = false;
 
-		const fullNugetName = `${nugetName}.${nugetVersion}`;
-		const fullNugetPath = path.join(this.extensionBuildDir, `${fullNugetName}.nupkg`);
+		const fullNugetName = `${nugetName}.${nugetVersion}`.toLowerCase();
+		const fullNugetPath = path.join(this.extensionBuildDir, `${fullNugetName.toLowerCase()}.nupkg`);
 		console.log("FullNugetName: " + fullNugetName);
 		console.log("ExtensionBuildDir: " + this.extensionBuildDir);
 		console.log("FullNugetPath: " + fullNugetPath);
