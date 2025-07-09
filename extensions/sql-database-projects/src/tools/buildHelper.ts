@@ -110,11 +110,19 @@ export class BuildHelper {
 		// check if the correct nuget version has been previously downloaded before checking if the files exist.
 		// TODO: handle when multiple nugets are in the BuildDirectory and a user wants to switch back to an older one - probably should
 		// remove other versions of this nuget when a new one is downloaded
-		if (await utils.exists(fullNugetPath)) {
+		const nugetExists = await utils.exists(fullNugetPath);
+		console.log("Nuget exists: " + nugetExists);
+		if (nugetExists) {
 			console.log("Nuget path found: " + fullNugetPath);
 			// if it does exist, make sure all the necessary files are also in the BuildDirectory
 			for (const fileName of expectedFiles) {
-				if (!await (utils.exists(path.join(this.extensionBuildDir, fileName)))) {
+				console.log("Checking for file: " + fileName);
+				const filePath = path.join(this.extensionBuildDir, fileName);
+				console.log("File path: " + filePath);
+				const fileExists = await utils.exists(filePath);
+				console.log("File Exists: " + fileExists);
+				if (!fileExists) {
+					console.log("File not found: " + fileName + " - " + filePath)
 					missingNuget = true;
 					break;
 				}
