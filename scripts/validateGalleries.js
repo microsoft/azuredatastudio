@@ -210,12 +210,14 @@ async function validateExtension(galleryFilePath, extensionJson) {
 
     // Check active extensions to make sure they're in insiders if they exist in stable. We don't want to have an extension only be in stable, they
     // should always be released in insiders first (or at the same time).
+    /* We are no longer publishing insiders builds so disable checks for now
     if (galleryFilePath === STABLE_GALLERY_PATH && !deprecatedExtension.includes(extensionName)) {
         const insidersExtensionJson = findExtension(INSIDERS_GALLERY_JSON, extensionName);
         if (!insidersExtensionJson) {
             throw new Error(`${galleryFilePath} - Extension ${extensionName} exists in the stable gallery but not in the insiders gallery. An extension must always be in both if it's in the stable gallery.`);
         }
     }
+    */
 }
 
 /**
@@ -435,10 +437,19 @@ const allowedHosts = [
 // The set of "trusted" publishers that we allow direct VSIX installs for in the gallery
 const allowedPublishersForVSIXAssets = [
     'microsoft',
+    'ms-vscode',
     'msrvida',
     'jocapc',
     'mongodb',
     'github'
+]
+
+// Extensions that have some ongoing issue with the link (such as hitting download rate limits). We just skip them for now
+// and leave it up to the extension owners to fix if they want
+const fileValidationExtensionsToSkip = [
+    'vscode-wakatime',
+    'sql-search',
+    'pieces-azure-data-studio'
 ]
 
 /**
@@ -458,8 +469,8 @@ async function validateExtensionFile(galleryFilePath, extensionName, extensionJs
     if (!extensionFileJson.source) {
         throw new Error(`${galleryFilePath} - ${extensionName} - No source\n${JSON.stringify(extensionFileJson)}`)
     }
-    // Waka-time link is hitting rate limit for the download link so just ignore this one for now.
-    if (extensionName === 'vscode-wakatime' && extensionFileJson.assetType === MICROSOFT_SQLOPS_DOWNLOADPAGE) {
+
+    if (fileValidationExtensionsToSkip.includes(extensionName) && extensionFileJson.assetType === MICROSOFT_SQLOPS_DOWNLOADPAGE) {
         return;
     }
     if (hostedAssetTypes.has(extensionFileJson.assetType) && !allowedHosts.find(host => extensionFileJson.source.startsWith(host))) {
@@ -469,7 +480,7 @@ async function validateExtensionFile(galleryFilePath, extensionName, extensionJs
     // Validate the source URL
     if (extensionFileJson.assetType === MICROSOFT_VISUALSTUDIO_SERVICES_VSIXPACKAGE) {
         if (!allowedPublishersForVSIXAssets.includes(extensionJson.publisher.publisherId.toLowerCase())) {
-            throw new Error(`${galleryFilePath} - ${extensionName} - ${MICROSOFT_VISUALSTUDIO_SERVICES_VSIXPACKAGE} assets are only allowed for trusted (Microsoft or 1st party) extensions. External extensions must use the ${MICROSOFT_SQLOPS_DOWNLOADPAGE} asset type. This should be a URL to either a download page, or a direct download link to the VSIX`);
+            throw new Error(`${galleryFilePath} - ${extensionJson.publisher.publisherId}.${extensionName} - ${MICROSOFT_VISUALSTUDIO_SERVICES_VSIXPACKAGE} assets are only allowed for trusted (Microsoft or 1st party) extensions. External extensions must use the ${MICROSOFT_SQLOPS_DOWNLOADPAGE} asset type. This should be a URL to either a download page, or a direct download link to the VSIX`);
         }
         const downloadVsixPath = path.join(DOWNLOADED_EXT_DIR, path.basename(galleryFilePath, '.json'), `${extensionName}.vsix`);
         // Download VSIX into temp download location
@@ -670,6 +681,7 @@ const validationPromises = [
     validateExtensionGallery(STABLE_GALLERY_PATH, STABLE_GALLERY_JSON),
 ]
 
+/* We are no longer publishing insiders builds so disable checks for now
 // argv[2] is the target branch name
 // RC1 branch only needs to check the stable gallery since the insiders gallery won't be updated there.
 const isRC1 = process.argv[2] === 'extensions/rc1';
@@ -677,4 +689,5 @@ const isRC1 = process.argv[2] === 'extensions/rc1';
 if (!isRC1) {
     validationPromises.push(validateExtensionGallery(INSIDERS_GALLERY_PATH, INSIDERS_GALLERY_JSON));
 }
+*/
 await Promise.all(validationPromises);
