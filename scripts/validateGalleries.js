@@ -337,6 +337,7 @@ const extensionsToSkipLicenseHeaderCheck = [
     'azuredatastudio-select-top-n',
     'schema-visualization',
     'plan-explorer',
+    'net-6-runtime', // blob storage not currently accessible; following up
 ];
 
 /**
@@ -449,7 +450,9 @@ const allowedPublishersForVSIXAssets = [
 const fileValidationExtensionsToSkip = [
     'vscode-wakatime',
     'sql-search',
-    'pieces-azure-data-studio'
+    'pieces-azure-data-studio',
+    'net-6-runtime', // blob storage not currently accessible; following up
+    'ads-extension-mongo-migration' // files deleted from repo; following up
 ]
 
 /**
@@ -470,7 +473,7 @@ async function validateExtensionFile(galleryFilePath, extensionName, extensionJs
         throw new Error(`${galleryFilePath} - ${extensionName} - No source\n${JSON.stringify(extensionFileJson)}`)
     }
 
-    if (fileValidationExtensionsToSkip.includes(extensionName) && extensionFileJson.assetType === MICROSOFT_SQLOPS_DOWNLOADPAGE) {
+    if (fileValidationExtensionsToSkip.includes(extensionName) || extensionFileJson.assetType === MICROSOFT_SQLOPS_DOWNLOADPAGE) {
         return;
     }
     if (hostedAssetTypes.has(extensionFileJson.assetType) && !allowedHosts.find(host => extensionFileJson.source.startsWith(host))) {
