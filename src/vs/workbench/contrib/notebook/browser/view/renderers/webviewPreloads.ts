@@ -2186,8 +2186,13 @@ async function webviewPreloads(ctx: PreloadContext) {
 			if (!el) {
 				return;
 			}
-			const trustedHtml = ttPolicy?.createHTML(html) ?? html;
-			el.innerHTML = trustedHtml as string;
+			const trustedHtml = ttPolicy?.createHTML(html);
+			if (trustedHtml) {
+				el.innerHTML = trustedHtml as unknown as string;
+			} else {
+				// Fallback: use textContent to safely insert content without HTML execution
+				el.textContent = html;
+			}
 			const root = el.getRootNode();
 			if (root instanceof ShadowRoot) {
 				if (!root.adoptedStyleSheets.includes(tokenizationStyle)) {
@@ -2665,8 +2670,13 @@ async function webviewPreloads(ctx: PreloadContext) {
 
 			this._content = { preferredRendererId, preloadErrors };
 			if (content.type === 0 /* RenderOutputType.Html */) {
-				const trustedHtml = ttPolicy?.createHTML(content.htmlContent) ?? content.htmlContent; // CodeQL [SM03712] The content comes from renderer extensions, not from direct user input.
-				this.element.innerHTML = trustedHtml as string;
+				const trustedHtml = ttPolicy?.createHTML(content.htmlContent);
+				if (trustedHtml) {
+					this.element.innerHTML = trustedHtml as unknown as string;
+				} else {
+					// Fallback: use textContent to safely insert content without HTML execution
+					this.element.textContent = content.htmlContent;
+				}
 			} else if (preloadErrors.some(e => e instanceof Error)) {
 				const errors = preloadErrors.filter((e): e is Error => e instanceof Error);
 				showRenderError(`Error loading preloads`, this.element, errors);
