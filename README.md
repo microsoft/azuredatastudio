@@ -13,34 +13,11 @@ Azure Data Studio is a data management and development tool with connectivity to
 
 ## **Download the latest Azure Data Studio release**
 
-|Platform |Type             |Download |
-| --------|-----------------|----------------------- |
-|Windows  |User Installer   |[64 bit][win-user]&emsp;[ARM][win-user-arm64] |
-|         |System Installer |[64 bit][win-system]&emsp;[ARM][win-system-arm64] |
-|         |.zip             |[64 bit][win-zip]&emsp;[ARM][win-zip-arm64] |
-|Linux    |.tar.gz          |[64 bit][linux-zip] |
-|         |.deb             |[64 bit][linux-deb] |
-|         |.rpm             |[64 bit][linux-rpm] |
-|Mac      |.zip             |[Universal][osx-universal]&emsp;[Intel Chip][osx-zip]&emsp;[Apple Silicon][osx-arm64] |
-
-[win-user]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-user/stable
-[win-system]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64/stable
-[win-zip]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-archive/stable
-[win-user-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64-user/stable
-[win-system-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64/stable
-[win-zip-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64-archive/stable
-[linux-zip]: https://azuredatastudio-update.azurewebsites.net/latest/linux-x64/stable
-[linux-deb]: https://azuredatastudio-update.azurewebsites.net/latest/linux-deb-x64/stable
-[linux-rpm]: https://azuredatastudio-update.azurewebsites.net/latest/linux-rpm-x64/stable
-[osx-universal]: https://azuredatastudio-update.azurewebsites.net/latest/darwin-universal/stable
-[osx-zip]: https://azuredatastudio-update.azurewebsites.net/latest/darwin/stable
-[osx-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/darwin-arm64/stable
-
-Go to our [download page](https://aka.ms/getazuredatastudio) for more specific instructions.
-
 Please visit our [download page](https://aka.ms/getazuredatastudio) for more specific installation instructions.
 Check out the [change log](https://github.com/Microsoft/azuredatastudio/blob/main/CHANGELOG.md) or [release notes](https://learn.microsoft.com/sql/azure-data-studio/release-notes-azure-data-studio) for additional details of what's in the each release.
 The [Azure Data Studio documentation](https://learn.microsoft.com/sql/azure-data-studio) includes complete details on getting started, connection quickstarts, and feature tutorials.
+
+You can also find the latest release [here](https://github.com/microsoft/azuredatastudio/releases/latest).
 
 ## **Feature Highlights**
 
