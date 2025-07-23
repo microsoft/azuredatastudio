@@ -83,5 +83,8 @@
     "tree-sitter": "https://github.com/joaomoreno/node-tree-sitter/releases/download/v0.20.0/tree-sitter-0.20.0.tgz",
     "tree-sitter-typescript": "^0.20.1",
     "vscode-gulp-watch": "^5.0.3"
+  },
+  "resolutions": {
+    "tar-fs": "2.1.3"
   }
 }
