@@ -337,7 +337,6 @@ const extensionsToSkipLicenseHeaderCheck = [
     'azuredatastudio-select-top-n',
     'schema-visualization',
     'plan-explorer',
-    'net-6-runtime', // blob storage not currently accessible; following up
 ];
 
 /**
@@ -451,8 +450,6 @@ const fileValidationExtensionsToSkip = [
     'vscode-wakatime',
     'sql-search',
     'pieces-azure-data-studio',
-    'net-6-runtime', // blob storage not currently accessible; following up
-    'ads-extension-mongo-migration' // files deleted from repo; following up
 ]
 
 /**
