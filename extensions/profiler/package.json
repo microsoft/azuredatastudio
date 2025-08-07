@@ -94,7 +94,7 @@
     ]
   },
   "dependencies": {
-    "vscode-nls": "^4.1.2"
+    "vscode-nls": "4.1.2"
   },
   "devDependencies": {},
   "__metadata": {
@@ -103,3 +103,4 @@
     "publisherId": "Microsoft"
   }
 }
+
