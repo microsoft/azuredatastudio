@@ -67,14 +67,14 @@
     "perf": "node scripts/code-perf.js"
   },
   "dependencies": {
-    "@angular/animations": "~4.1.3",
-    "@angular/common": "~4.1.3",
-    "@angular/compiler": "~4.1.3",
-    "@angular/core": "~4.1.3",
-    "@angular/forms": "~4.1.3",
-    "@angular/platform-browser": "~4.1.3",
-    "@angular/platform-browser-dynamic": "~4.1.3",
-    "@angular/router": "~4.1.3",
+    "@angular/animations": "4.1.3",
+    "@angular/common": "4.1.3",
+    "@angular/compiler": "4.1.3",
+    "@angular/core": "4.1.3",
+    "@angular/forms": "4.1.3",
+    "@angular/platform-browser": "4.1.3",
+    "@angular/platform-browser-dynamic": "4.1.3",
+    "@angular/router": "4.1.3",
     "@microsoft/1ds-core-js": "3.2.13",
     "@microsoft/1ds-post-js": "3.2.13",
     "@parcel/watcher": "2.1.0",
@@ -283,3 +283,4 @@
     "tar-fs": "2.1.3"
   }
 }
+
