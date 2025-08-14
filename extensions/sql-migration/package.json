@@ -175,11 +175,11 @@
   },
   "dependencies": {
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#2.0.1",
-    "@microsoft/ads-service-downloader": "^1.2.1",
-    "@microsoft/ads-extension-telemetry": "^3.0.1",
-    "uuid": "^8.3.2",
-    "vscode-nls": "^4.1.2",
-    "@azure/storage-blob": "^12.23.0-beta.1"
+    "@microsoft/ads-service-downloader": "1.2.1",
+    "@microsoft/ads-extension-telemetry": "3.0.1",
+    "uuid": "8.3.2",
+    "vscode-nls": "4.1.2",
+    "@azure/storage-blob": "12.23.0-beta.1"
   },
   "__metadata": {
     "publisherDisplayName": "Microsoft",
@@ -187,6 +187,7 @@
     "id": "81"
   },
   "devDependencies": {
-    "@types/uuid": "^8.3.1"
+    "@types/uuid": "8.3.1"
   }
 }
+

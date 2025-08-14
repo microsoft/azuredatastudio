@@ -47,12 +47,13 @@
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"@types/jsdom": "^21.1.0",
-		"@types/vscode-notebook-renderer": "^1.60.0",
-		"jsdom": "^21.1.1"
+		"@types/jsdom": "21.1.0",
+		"@types/vscode-notebook-renderer": "1.60.0",
+		"jsdom": "21.1.1"
 	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/microsoft/vscode.git"
 	}
 }
+

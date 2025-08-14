@@ -385,9 +385,9 @@
 		"snippets": []
 	},
 	"dependencies": {
-		"fs-extra": "^8.1.0",
-		"openurl": "^1.1.1",
-		"vscode-nls": "^5.0.0"
+		"fs-extra": "8.1.0",
+		"openurl": "1.1.1",
+		"vscode-nls": "5.0.0"
 	},
 	"devDependencies": {
 		"@types/fs-extra": "8.1.0"
@@ -398,3 +398,4 @@
 		"publisherId": "Microsoft"
 	}
 }
+

@@ -8,7 +8,6 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import * as semver from 'semver';
-import { isNullOrUndefined } from 'util';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DoNotAskAgain, Install, DotnetInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, UpdateDotnetLocation } from '../common/constants';
@@ -87,7 +86,7 @@ export class NetCoreTool extends ShellExecutionHelper {
 	}
 
 	private get isNetCoreInstallationPresent(): boolean {
-		const netCoreInstallationPresent = (!isNullOrUndefined(this.netcoreInstallLocation) && fs.existsSync(this.netcoreInstallLocation));
+		const netCoreInstallationPresent = (!this.isNullOrUndefined(this.netcoreInstallLocation) && fs.existsSync(this.netcoreInstallLocation));
 		if (!netCoreInstallationPresent) {
 			this.netCoreInstallState = netCoreInstallState.netCoreNotPresent;
 		}
@@ -126,9 +125,13 @@ export class NetCoreTool extends ShellExecutionHelper {
 			this.getDotnetPathIfPresent(process.env['ProgramFiles']);
 	}
 
+	private isNullOrUndefined(value: string | undefined): boolean {
+		return value === null || value === undefined;
+	}
+
 	private getDotnetPathIfPresent(folderPath: string | undefined): string | undefined {
-		if (!isNullOrUndefined(folderPath) && fs.existsSync(path.join(folderPath, 'dotnet'))) {
-			return path.join(folderPath, 'dotnet');
+		if (!this.isNullOrUndefined(folderPath) && fs.existsSync(path.join(folderPath as string, 'dotnet'))) {
+			return path.join(folderPath as string, 'dotnet');
 		}
 		return undefined;
 	}
