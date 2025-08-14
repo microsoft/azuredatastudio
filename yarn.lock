@@ -1617,7 +1617,7 @@
   dependencies:
     "@sinonjs/commons" "^3.0.1"
 
-"@sinonjs/fake-timers@^7.1.0":
+"@sinonjs/fake-timers@^7.1.0", "@sinonjs/fake-timers@^7.1.2":
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/@sinonjs/fake-timers/-/fake-timers-7.1.2.tgz#2524eae70c4910edccf99b2f4e6efc5894aff7b5"
   integrity sha512-iQADsW4LBMISqZ6Ci1dupJL9pprqwcVFTcOsEmQOEhW+KLCVn/Y4Jrvg2k19fIHCp+iFprriYPTdRcQR8NbUPg==
@@ -2063,10 +2063,10 @@
   resolved "https://registry.yarnpkg.com/@types/shimmer/-/shimmer-1.2.0.tgz#9b706af96fa06416828842397a70dfbbf1c14ded"
   integrity sha512-UE7oxhQLLd9gub6JKIAhDq06T0F6FnztwMNRvYgjeQSBeMc1ZG/tA47EwfduvkuQS8apbkM/lpLpWsaCeYsXVg==
 
-"@types/sinon-test@2.4.2":
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/@types/sinon-test/-/sinon-test-2.4.2.tgz#f55bdf5486e7b7a4dd7257789fcc2b7b125c4164"
-  integrity sha512-3BX9mk5+o//Xzs5N4bFYxPT+QlPLrqbyNfDWkIGtk9pVIp2Nl8ctsIGXsY3F01DsCd1Zlin3FqAk6V5XqkCyJA==
+"@types/sinon-test@2.4.3":
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/@types/sinon-test/-/sinon-test-2.4.3.tgz#1859c9a79f4e6c8a57f9d58a1ec15d6c62ed159f"
+  integrity sha512-3annZNBEw/RsAM8ZsQh0Vn1FrGYCd1vBoGgvmFe/utWFU+eUIVrZ8UC12VTlBRq5/wvn8a9qKE7Qb6ERdMksNg==
   dependencies:
     "@types/sinon" "*"
 
@@ -11431,18 +11431,18 @@ simple-swizzle@^0.2.2:
   dependencies:
     is-arrayish "^0.3.1"
 
-sinon-test@3.1.3:
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/sinon-test/-/sinon-test-3.1.3.tgz#b261e0efd0b479891a243201387f957d7ca61daa"
-  integrity sha512-jBDvPVW2z8uAoiud3Nqc6+e8+WX6UTB1gPQuYXK00mSnp9m/JYyeLdBjLlqbnk1DVmsgRCAHSoXYPNLHp0t56Q==
+sinon-test@3.1.5:
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/sinon-test/-/sinon-test-3.1.5.tgz#433029111c2e6b1b1510988e309d3f643cd4f1d5"
+  integrity sha512-uKwKebXEX1yMQ9vz25Q/uDAFwoTsO/AQc+2b+6ndOUoxj7MZWoptz38lFw9QEgfxDPkN6NN0m+Kbah60tn0ZZA==
 
-sinon@11.1.1:
-  version "11.1.1"
-  resolved "https://registry.yarnpkg.com/sinon/-/sinon-11.1.1.tgz#99a295a8b6f0fadbbb7e004076f3ae54fc6eab91"
-  integrity sha512-ZSSmlkSyhUWbkF01Z9tEbxZLF/5tRC9eojCdFh33gtQaP7ITQVaMWQHGuFM7Cuf/KEfihuh1tTl3/ABju3AQMg==
+sinon@11.1.2:
+  version "11.1.2"
+  resolved "https://registry.yarnpkg.com/sinon/-/sinon-11.1.2.tgz#9e78850c747241d5c59d1614d8f9cbe8840e8674"
+  integrity sha512-59237HChms4kg7/sXhiRcUzdSkKuydDeTiamT/jesUVHshBgL8XAmhgFo0GfK6RruMDM/iRSij1EybmMog9cJw==
   dependencies:
     "@sinonjs/commons" "^1.8.3"
-    "@sinonjs/fake-timers" "^7.1.0"
+    "@sinonjs/fake-timers" "^7.1.2"
     "@sinonjs/samsam" "^6.0.2"
     diff "^5.0.0"
     nise "^5.1.0"
@@ -12662,10 +12662,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==
 
-typemoq@0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/typemoq/-/typemoq-0.3.2.tgz#0a4460e6608dabd34226b1067c9c517f20078159"
-  integrity sha512-FRs5zp4tWiyJvAxcPTOLta04n3isdY6hmd+3sTIY0FlOnPY2PYCcj0nLlCiakaV1RSm/sOCdW1jh95EBq5JZAw==
+typemoq@0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/typemoq/-/typemoq-0.3.3.tgz#c063a2767d2966670e325f4bb1cbba5d5bb06cd7"
+  integrity sha512-XdyTxHRVhaLR/eKiDLYNkMHC3CU+ovaXAU/uuOUhAJOUrhBXUE9T9WR2EwEmEuuw+AwAfXaRMPuvxDYD6G5ytA==
   dependencies:
     underscore "^1.7.0"
 
