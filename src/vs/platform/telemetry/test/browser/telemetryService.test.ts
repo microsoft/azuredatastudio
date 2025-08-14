@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
 import * as sinon from 'sinon';
-import * as sinonTest from 'sinon-test';
 import * as Errors from 'vs/base/common/errors';
 import { Emitter } from 'vs/base/common/event';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
@@ -14,8 +13,6 @@ import ErrorTelemetry from 'vs/platform/telemetry/browser/errorTelemetry';
 import { TelemetryConfiguration, TelemetryLevel } from 'vs/platform/telemetry/common/telemetry';
 import { ITelemetryServiceConfig, TelemetryService } from 'vs/platform/telemetry/common/telemetryService';
 import { ITelemetryAppender, NullAppender } from 'vs/platform/telemetry/common/telemetryUtils';
-
-const sinonTestFn = sinonTest(sinon);
 
 class TestTelemetryAppender implements ITelemetryAppender {
 
@@ -91,7 +88,7 @@ suite('TelemetryService', () => {
 
 	const TestProductService: IProductService = { _serviceBrand: undefined, ...product };
 
-	test('Disposing', sinonTestFn(function () {
+	test('Disposing', function () { // {{SQL CARBON EDIT}} - Remove sinonTestFn
 		const testAppender = new TestTelemetryAppender();
 		const service = new TelemetryService({ appenders: [testAppender] }, new TestConfigurationService(), TestProductService);
 
@@ -100,10 +97,10 @@ suite('TelemetryService', () => {
 
 		service.dispose();
 		assert.strictEqual(!testAppender.isDisposed, true);
-	}));
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
 	// event reporting
-	test('Simple event', sinonTestFn(function () {
+	test('Simple event', function () { // {{SQL CARBON EDIT}} - Remove sinonTestFn
 		const testAppender = new TestTelemetryAppender();
 		const service = new TelemetryService({ appenders: [testAppender] }, new TestConfigurationService(), TestProductService);
 
@@ -113,9 +110,9 @@ suite('TelemetryService', () => {
 		assert.notStrictEqual(testAppender.events[0].data, null);
 
 		service.dispose();
-	}));
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
-	test('Event with data', sinonTestFn(function () {
+	test('Event with data', function () { // {{SQL CARBON EDIT}} - Remove sinonTestFn
 		const testAppender = new TestTelemetryAppender();
 		const service = new TelemetryService({ appenders: [testAppender] }, new TestConfigurationService(), TestProductService);
 
@@ -137,7 +134,7 @@ suite('TelemetryService', () => {
 		assert.strictEqual(testAppender.events[0].data['complexProp'].value, 0);
 
 		service.dispose();
-	}));
+	});  // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
 	test('common properties added to *all* events, simple event', function () {
 		const testAppender = new TestTelemetryAppender();
@@ -207,7 +204,9 @@ suite('TelemetryService', () => {
 		}
 	}
 
-	test.skip('Error events', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	// {{SQL CARBON EDIT}} - Remove sinonTestFn
+	test.skip('Error events', async function () { // {{SQL CARBON EDIT}} skip test
+		const clock = sinon.useFakeTimers(); // {{SQL CARBON EDIT}} - use fake timers
 
 		let origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
@@ -225,7 +224,7 @@ suite('TelemetryService', () => {
 			}
 
 			Errors.onUnexpectedError(e);
-			this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+			clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT); // {{SQL CARBON EDIT}} - Remove this
 
 			assert.strictEqual(testAppender.getEventsCount(), 1);
 			assert.strictEqual(testAppender.events[0].eventName, 'UnhandledError');
@@ -235,10 +234,11 @@ suite('TelemetryService', () => {
 			service.dispose();
 		} finally {
 			Errors.setUnexpectedErrorHandler(origErrorHandler);
+			clock.restore(); // {{SQL CARBON EDIT}} - restore
 		}
-	}));
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
-	// 	test('Unhandled Promise Error events', sinonTestFn(function() {
+	// 	test('Unhandled Promise Error events', function() { // {{SQL CARBON EDIT}} - Remove sinonTestFn
 	//
 	// 		let origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 	// 		Errors.setUnexpectedErrorHandler(() => {});
@@ -255,7 +255,7 @@ suite('TelemetryService', () => {
 	// 			// prevent console output from failing the test
 	// 			this.stub(console, 'log');
 	// 			// allow for the promise to finish
-	// 			this.clock.tick(MainErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+	// 			clock.tick(MainErrorTelemetry.ERROR_FLUSH_TIMEOUT); // {{SQL CARBON EDIT}} = Remove this
 	//
 	// 			assert.strictEqual(testAppender.getEventsCount(), 1);
 	// 			assert.strictEqual(testAppender.events[0].eventName, 'UnhandledError');
@@ -265,9 +265,11 @@ suite('TelemetryService', () => {
 	// 		} finally {
 	// 			Errors.setUnexpectedErrorHandler(origErrorHandler);
 	// 		}
-	// 	}));
+	// 	}); // {{SQL CARBON EDIT}} - Remove extra parenthesis
 
-	test.skip('Handle global errors', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	// {{SQL CARBON EDIT}} - Remove sinonTestFn
+	test.skip('Handle global errors', async function () { // {{SQL CARBON EDIT}} skip test
+		const clock = sinon.useFakeTimers(); // {{SQL CARBON EDIT}} - use fake timers
 		const errorStub = sinon.stub();
 		window.onerror = errorStub;
 
@@ -277,7 +279,7 @@ suite('TelemetryService', () => {
 
 		const testError = new Error('test');
 		(<any>window.onerror)('Error Message', 'file.js', 2, 42, testError);
-		this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+		clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT); // {{SQL CARBON EDIT}} - Remove this
 
 		assert.strictEqual(errorStub.alwaysCalledWithExactly('Error Message', 'file.js', 2, 42, testError), true);
 		assert.strictEqual(errorStub.callCount, 1);
@@ -293,9 +295,12 @@ suite('TelemetryService', () => {
 		errorTelemetry.dispose();
 		service.dispose();
 		sinon.restore();
-	}));
+		clock.restore(); // {{SQL CARBON EDIT}} = restore
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
-	test.skip('Error Telemetry removes PII from filename with spaces', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	// {{SQL CARBON EDIT}} - Remove sinonTestFn
+	test.skip('Error Telemetry removes PII from filename with spaces', async function () { // {{SQL CARBON EDIT}} skip test
+		const clock = sinon.useFakeTimers(); // {{SQL CARBON EDIT}} - use fake timers
 		const errorStub = sinon.stub();
 		window.onerror = errorStub;
 		const settings = new ErrorTestingSettings();
@@ -307,7 +312,7 @@ suite('TelemetryService', () => {
 		const dangerousFilenameError: any = new Error('dangerousFilename');
 		dangerousFilenameError.stack = settings.stack;
 		(<any>window.onerror)('dangerousFilename', settings.dangerousPathWithImportantInfo.replace(settings.personalInfo, personInfoWithSpaces) + '/test.js', 2, 42, dangerousFilenameError);
-		this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+		clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT); // {{SQL CARBON EDIT}} - Remove this
 
 		assert.strictEqual(errorStub.callCount, 1);
 		assert.strictEqual(testAppender.events[0].data.file.indexOf(settings.dangerousPathWithImportantInfo.replace(settings.personalInfo, personInfoWithSpaces)), -1);
@@ -316,10 +321,12 @@ suite('TelemetryService', () => {
 		errorTelemetry.dispose();
 		service.dispose();
 		sinon.restore();
-	}));
+		clock.restore(); // {{SQL CARBON EDIT}} - restore
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
-	test.skip('Uncaught Error Telemetry removes PII from filename', sinonTestFn(function (this: any) { // {{SQL CARBON EDIT}} skip test
-		const clock = this.clock;
+	// {{SQL CARBON EDIT}} - Remove sinonTestFn
+	test.skip('Uncaught Error Telemetry removes PII from filename', function () { // {{SQL CARBON EDIT}} skip test
+		const clock = sinon.useFakeTimers();
 		const errorStub = sinon.stub();
 		window.onerror = errorStub;
 		const settings = new ErrorTestingSettings();
@@ -345,9 +352,11 @@ suite('TelemetryService', () => {
 		errorTelemetry.dispose();
 		service.dispose();
 		sinon.restore();
-	}));
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
-	test.skip('Unexpected Error Telemetry removes PII', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	// {{SQL CARBON EDIT}} - Remove sinonTestFn
+	test.skip('Unexpected Error Telemetry removes PII', async function () { // {{SQL CARBON EDIT}} skip test
+		const clock = sinon.useFakeTimers(); // {{SQL CARBON EDIT}} - use fake timers
 		const origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
 		try {
@@ -359,7 +368,7 @@ suite('TelemetryService', () => {
 			const dangerousPathWithoutImportantInfoError: any = new Error(settings.dangerousPathWithoutImportantInfo);
 			dangerousPathWithoutImportantInfoError.stack = settings.stack;
 			Errors.onUnexpectedError(dangerousPathWithoutImportantInfoError);
-			this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+			clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT); // {{SQL CARBON EDIT}} - Remove this
 
 			assert.strictEqual(testAppender.events[0].data.msg.indexOf(settings.personalInfo), -1);
 			assert.strictEqual(testAppender.events[0].data.msg.indexOf(settings.filePrefix), -1);
@@ -374,10 +383,13 @@ suite('TelemetryService', () => {
 		}
 		finally {
 			Errors.setUnexpectedErrorHandler(origErrorHandler);
+			clock.restore();// {{SQL CARBON EDIT}} - restore
 		}
-	}));
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
-	test.skip('Uncaught Error Telemetry removes PII', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	// {{SQL CARBON EDIT}} - Remove sinonTestFn
+	test.skip('Uncaught Error Telemetry removes PII', async function () { // {{SQL CARBON EDIT}} skip test
+		const clock = sinon.useFakeTimers(); // {{SQL CARBON EDIT}} - use fake timers
 		const errorStub = sinon.stub();
 		window.onerror = errorStub;
 		const settings = new ErrorTestingSettings();
@@ -388,7 +400,7 @@ suite('TelemetryService', () => {
 		const dangerousPathWithoutImportantInfoError: any = new Error('dangerousPathWithoutImportantInfo');
 		dangerousPathWithoutImportantInfoError.stack = settings.stack;
 		(<any>window.onerror)(settings.dangerousPathWithoutImportantInfo, 'test.js', 2, 42, dangerousPathWithoutImportantInfoError);
-		this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+		clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT); // {{SQL CARBON EDIT}} - remove this
 
 		assert.strictEqual(errorStub.callCount, 1);
 		// Test that no file information remains, esp. personal info
@@ -402,9 +414,11 @@ suite('TelemetryService', () => {
 		errorTelemetry.dispose();
 		service.dispose();
 		sinon.restore();
-	}));
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
-	test.skip('Unexpected Error Telemetry removes PII but preserves Code file path', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	// {{SQL CARBON EDIT}} - Remove sinonTestFn
+	test.skip('Unexpected Error Telemetry removes PII but preserves Code file path', async function () { // {{SQL CARBON EDIT}} skip test
+		const clock = sinon.useFakeTimers(); // {{SQL CARBON EDIT}} - use fake timers
 
 		const origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
@@ -420,7 +434,7 @@ suite('TelemetryService', () => {
 
 			// Test that important information remains but personal info does not
 			Errors.onUnexpectedError(dangerousPathWithImportantInfoError);
-			this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+			clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT); // {{SQL CARBON EDIT}} - remove this
 
 			assert.notStrictEqual(testAppender.events[0].data.msg.indexOf(settings.importantInfo), -1);
 			assert.strictEqual(testAppender.events[0].data.msg.indexOf(settings.personalInfo), -1);
@@ -437,9 +451,11 @@ suite('TelemetryService', () => {
 		finally {
 			Errors.setUnexpectedErrorHandler(origErrorHandler);
 		}
-	}));
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
-	test.skip('Uncaught Error Telemetry removes PII but preserves Code file path', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	// {{SQL CARBON EDIT}} - Remove sinonTestFn
+	test.skip('Uncaught Error Telemetry removes PII but preserves Code file path', async function () { // {{SQL CARBON EDIT}} skip test
+		const clock = sinon.useFakeTimers(); // {{SQL CARBON EDIT}} - use fake timers
 		const errorStub = sinon.stub();
 		window.onerror = errorStub;
 		const settings = new ErrorTestingSettings();
@@ -450,7 +466,7 @@ suite('TelemetryService', () => {
 		const dangerousPathWithImportantInfoError: any = new Error('dangerousPathWithImportantInfo');
 		dangerousPathWithImportantInfoError.stack = settings.stack;
 		(<any>window.onerror)(settings.dangerousPathWithImportantInfo, 'test.js', 2, 42, dangerousPathWithImportantInfoError);
-		this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+		clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT); // {{SQL CARBON EDIT}} - remove this
 
 		assert.strictEqual(errorStub.callCount, 1);
 		// Test that important information remains but personal info does not
@@ -470,9 +486,11 @@ suite('TelemetryService', () => {
 		errorTelemetry.dispose();
 		service.dispose();
 		sinon.restore();
-	}));
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
-	test.skip('Unexpected Error Telemetry removes PII but preserves Code file path with node modules', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	// {{SQL CARBON EDIT}} - Remove sinonTestFn
+	test.skip('Unexpected Error Telemetry removes PII but preserves Code file path with node modules', async function () { // {{SQL CARBON EDIT}} skip test
+		const clock = sinon.useFakeTimers(); // {{SQL CARBON EDIT}} - use fake timers
 
 		const origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
@@ -488,7 +506,7 @@ suite('TelemetryService', () => {
 
 
 			Errors.onUnexpectedError(dangerousPathWithImportantInfoError);
-			this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+			clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT); // {{SQL CARBON EDIT}} - Remove this
 
 			assert.notStrictEqual(testAppender.events[0].data.callstack.indexOf('(' + settings.nodeModuleAsarPathToRetain), -1);
 			assert.notStrictEqual(testAppender.events[0].data.callstack.indexOf('(' + settings.nodeModulePathToRetain), -1);
@@ -501,9 +519,11 @@ suite('TelemetryService', () => {
 		finally {
 			Errors.setUnexpectedErrorHandler(origErrorHandler);
 		}
-	}));
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
-	test.skip('Unexpected Error Telemetry removes PII but preserves Code file path when PIIPath is configured', sinonTestFn(function (this: any) {
+	// {{SQL CARBON EDIT}} - Remove sinonTestFn
+	test.skip('Unexpected Error Telemetry removes PII but preserves Code file path when PIIPath is configured', function () {
+		const clock = sinon.useFakeTimers(); // {{SQL CARBON EDIT}} - use fake timers
 
 		const origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
@@ -519,7 +539,7 @@ suite('TelemetryService', () => {
 
 			// Test that important information remains but personal info does not
 			Errors.onUnexpectedError(dangerousPathWithImportantInfoError);
-			this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+			clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT); // {{SQL CARBON EDIT}} - Remove this
 
 			assert.notStrictEqual(testAppender.events[0].data.msg.indexOf(settings.importantInfo), -1);
 			assert.strictEqual(testAppender.events[0].data.msg.indexOf(settings.personalInfo), -1);
@@ -536,9 +556,11 @@ suite('TelemetryService', () => {
 		finally {
 			Errors.setUnexpectedErrorHandler(origErrorHandler);
 		}
-	}));
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
-	test.skip('Uncaught Error Telemetry removes PII but preserves Code file path when PIIPath is configured', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	// {{SQL CARBON EDIT}} - Remove sinonTestFn
+	test.skip('Uncaught Error Telemetry removes PII but preserves Code file path when PIIPath is configured', async function () { // {{SQL CARBON EDIT}} skip test
+		const clock = sinon.useFakeTimers(); // {{SQL CARBON EDIT}} - use fake timers
 		const errorStub = sinon.stub();
 		window.onerror = errorStub;
 		const settings = new ErrorTestingSettings();
@@ -549,7 +571,7 @@ suite('TelemetryService', () => {
 		const dangerousPathWithImportantInfoError: any = new Error('dangerousPathWithImportantInfo');
 		dangerousPathWithImportantInfoError.stack = settings.stack;
 		(<any>window.onerror)(settings.dangerousPathWithImportantInfo, 'test.js', 2, 42, dangerousPathWithImportantInfoError);
-		this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+		clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT); // {{SQL CARBON EDIT}} - remove this
 
 		assert.strictEqual(errorStub.callCount, 1);
 		// Test that important information remains but personal info does not
@@ -565,9 +587,11 @@ suite('TelemetryService', () => {
 		errorTelemetry.dispose();
 		service.dispose();
 		sinon.restore();
-	}));
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
-	test.skip('Unexpected Error Telemetry removes PII but preserves Missing Model error message', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	// {{SQL CARBON EDIT}} - Remove sinonTestFn
+	test.skip('Unexpected Error Telemetry removes PII but preserves Missing Model error message', async function () { // {{SQL CARBON EDIT}} skip test
+		const clock = sinon.useFakeTimers(); // {{SQL CARBON EDIT}} - use fake timers
 
 		const origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
@@ -584,7 +608,7 @@ suite('TelemetryService', () => {
 			// Test that no file information remains, but this particular
 			// error message does (Received model events for missing model)
 			Errors.onUnexpectedError(missingModelError);
-			this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+			clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT); // {{SQL CARBON EDIT}} - Remove this
 
 			assert.notStrictEqual(testAppender.events[0].data.msg.indexOf(settings.missingModelPrefix), -1);
 			assert.strictEqual(testAppender.events[0].data.msg.indexOf(settings.personalInfo), -1);
@@ -600,9 +624,11 @@ suite('TelemetryService', () => {
 		} finally {
 			Errors.setUnexpectedErrorHandler(origErrorHandler);
 		}
-	}));
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
-	test.skip('Uncaught Error Telemetry removes PII but preserves Missing Model error message', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	// {{SQL CARBON EDIT}} - Remove sinonTestFn
+	test.skip('Uncaught Error Telemetry removes PII but preserves Missing Model error message', async function () { // {{SQL CARBON EDIT}} skip test
+		const clock = sinon.useFakeTimers(); // {{SQL CARBON EDIT}} - use fake timers
 		const errorStub = sinon.stub();
 		window.onerror = errorStub;
 		const settings = new ErrorTestingSettings();
@@ -613,7 +639,7 @@ suite('TelemetryService', () => {
 		const missingModelError: any = new Error('missingModelMessage');
 		missingModelError.stack = settings.stack;
 		(<any>window.onerror)(settings.missingModelMessage, 'test.js', 2, 42, missingModelError);
-		this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+		clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT); // {{SQL CARBON EDIT}} - remove this
 
 		assert.strictEqual(errorStub.callCount, 1);
 		// Test that no file information remains, but this particular
@@ -630,9 +656,11 @@ suite('TelemetryService', () => {
 		errorTelemetry.dispose();
 		service.dispose();
 		sinon.restore();
-	}));
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
-	test.skip('Unexpected Error Telemetry removes PII but preserves No Such File error message', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	// {{SQL CARBON EDIT}} - Remove sinonTestFn
+	test.skip('Unexpected Error Telemetry removes PII but preserves No Such File error message', async function () { // {{SQL CARBON EDIT}} skip test
+		const clock = sinon.useFakeTimers(); // {{SQL CARBON EDIT}} - use fake timers
 
 		const origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
@@ -649,7 +677,7 @@ suite('TelemetryService', () => {
 			// Test that no file information remains, but this particular
 			// error message does (ENOENT: no such file or directory)
 			Errors.onUnexpectedError(noSuchFileError);
-			this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+			clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT); // {{SQL CARBON EDIT}} - remove this
 
 			assert.notStrictEqual(testAppender.events[0].data.msg.indexOf(settings.noSuchFilePrefix), -1);
 			assert.strictEqual(testAppender.events[0].data.msg.indexOf(settings.personalInfo), -1);
@@ -665,9 +693,11 @@ suite('TelemetryService', () => {
 		} finally {
 			Errors.setUnexpectedErrorHandler(origErrorHandler);
 		}
-	}));
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
-	test.skip('Uncaught Error Telemetry removes PII but preserves No Such File error message', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	// {{SQL CARBON EDIT}} - Remove sinonTestFn
+	test.skip('Uncaught Error Telemetry removes PII but preserves No Such File error message', async function () { // {{SQL CARBON EDIT}} skip test
+		const clock = sinon.useFakeTimers(); // {{SQL CARBON EDIT}} - use fake timers
 		const origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
 		try {
@@ -680,7 +710,7 @@ suite('TelemetryService', () => {
 			const noSuchFileError: any = new Error('noSuchFileMessage');
 			noSuchFileError.stack = settings.stack;
 			(<any>window.onerror)(settings.noSuchFileMessage, 'test.js', 2, 42, noSuchFileError);
-			this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+			clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT); // {{SQL CARBON EDIT}} - remove this
 
 			assert.strictEqual(errorStub.callCount, 1);
 			// Test that no file information remains, but this particular
@@ -701,15 +731,16 @@ suite('TelemetryService', () => {
 		} finally {
 			Errors.setUnexpectedErrorHandler(origErrorHandler);
 		}
-	}));
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
-	test('Telemetry Service sends events when telemetry is on', sinonTestFn(function () {
+	// {{SQL CARBON EDIT}} - Remove sinonTestFn
+	test('Telemetry Service sends events when telemetry is on', function () {
 		const testAppender = new TestTelemetryAppender();
 		const service = new TelemetryService({ appenders: [testAppender] }, new TestConfigurationService(), TestProductService);
 		service.publicLog('testEvent');
 		assert.strictEqual(testAppender.getEventsCount(), 1);
 		service.dispose();
-	}));
+	}); // {{SQL CARBON EDIT}} - Remove extra closing parenthesis
 
 	test('Telemetry Service checks with config service', function () {
 
@@ -739,3 +770,4 @@ suite('TelemetryService', () => {
 		service.dispose();
 	});
 });
+
