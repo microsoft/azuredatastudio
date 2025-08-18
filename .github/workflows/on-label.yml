@@ -10,7 +10,7 @@ jobs:
     name: Process Label Action
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Process Label Action
         uses: hramos/label-actions@v2
         with:
