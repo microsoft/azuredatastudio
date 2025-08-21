@@ -282,9 +282,6 @@ jobs:
           ELECTRON_SKIP_BINARY_DOWNLOAD: 1
         run: yarn --frozen-lockfile --network-timeout 180000
 
-      - name: Download Playwright
-        run: yarn playwright-install
-
       - name: Run Hygiene Checks
         run: yarn gulp hygiene
 
