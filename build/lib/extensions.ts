@@ -240,7 +240,12 @@ export function fromMarketplace(_serviceUrl: string, { name: extensionName, vers
 	})
 		.pipe(vzip.src())
 		.pipe(filter('extension/**'))
-		.pipe(rename(p => p.dirname = p.dirname!.replace(/^extension\/?/, '')))
+		.pipe(rename(p => {
+			// No-op when dirname is not defined to prevent path join errors
+			if (typeof p.dirname === 'string') {
+				p.dirname = p.dirname.replace(/^extension\/?/, '');
+			}
+		}))
 		.pipe(packageJsonFilter)
 		.pipe(buffer())
 		.pipe(json({ __metadata: metadata }))
@@ -263,7 +268,12 @@ export function fromGithub({ name, version, repo, sha256, metadata }: IExtension
 		.pipe(buffer())
 		.pipe(vzip.src())
 		.pipe(filter('extension/**'))
-		.pipe(rename(p => p.dirname = p.dirname!.replace(/^extension\/?/, '')))
+		.pipe(rename(p => {
+			// No-op when dirname is not defined to prevent path join errors
+			if (typeof p.dirname === 'string') {
+				p.dirname = p.dirname.replace(/^extension\/?/, '');
+			}
+		}))
 		.pipe(packageJsonFilter)
 		.pipe(buffer())
 		.pipe(json({ __metadata: metadata }))
@@ -387,7 +397,12 @@ export function packageLocalExtensionsStream(forWeb: boolean, disableMangle: boo
 		es.merge(
 			...localExtensionsDescriptions.map(extension => {
 				return fromLocal(extension.path, forWeb, disableMangle)
-					.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
+					.pipe(rename(p => {
+						// No-op when dirname is not defined to prevent path join errors
+						if (typeof p.dirname === 'string') {
+							p.dirname = `extensions/${extension.name}/${p.dirname}`;
+						}
+					}));
 			})
 		)
 	);
@@ -422,7 +437,12 @@ export function packageMarketplaceExtensionsStream(forWeb: boolean): Stream {
 		es.merge(
 			...marketplaceExtensionsDescriptions
 				.map(extension => {
-					const src = getExtensionStream(extension).pipe(rename(p => p.dirname = `extensions/${p.dirname}`));
+					const src = getExtensionStream(extension).pipe(rename(p => {
+						// No-op when dirname is not defined to prevent path join errors
+						if (typeof p.dirname === 'string') {
+							p.dirname = `extensions/${p.dirname}`;
+						}
+					}));
 					return updateExtensionPackageJSON(src, (data: any) => {
 						delete data.scripts;
 						delete data.dependencies;
@@ -496,7 +516,12 @@ export function packageExternalExtensionsStream(): NodeJS.ReadWriteStream {
 
 	const builtExtensions = extenalExtensionDescriptions.map(extension => {
 		return fromLocal(extension.path, false, true)
-			.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
+			.pipe(rename(p => {
+				// No-op when dirname is not defined to prevent path join errors
+				if (typeof p.dirname === 'string') {
+					p.dirname = `extensions/${extension.name}/${p.dirname}`;
+				}
+			}));
 	});
 
 	return es.merge(builtExtensions);
@@ -519,7 +544,12 @@ export function packageRebuildExtensionsStream(): NodeJS.ReadWriteStream {
 
 	const builtExtensions = extenalExtensionDescriptions.map(extension => {
 		return fromLocal(extension.path, false, true)
-			.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
+			.pipe(rename(p => {
+				// No-op when dirname is not defined to prevent path join errors
+				if (typeof p.dirname === 'string') {
+					p.dirname = `extensions/${extension.name}/${p.dirname}`;
+				}
+			}));
 	});
 
 	return es.merge(builtExtensions);
