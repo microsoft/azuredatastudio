@@ -343,7 +343,7 @@ export class ProjectsController {
 
 			// Wait for the task to finish
 			await new Promise<void>((resolve) => {
-				const disposable = vscode.tasks.onDidEndTask(e => {
+				const disposable = vscode.tasks.onDidEndTaskProcess(e => {
 					if (e.execution === execution) {
 						disposable.dispose();
 						if (e.execution.task === vscodeTask) {
