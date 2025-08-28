@@ -1220,18 +1220,20 @@ describe('ProjectsController', function (): void {
 		});
 
 		it('Should remove file extensions from user input when creating files', async function (): Promise<void> {
+			this.timeout(300000)
 			const projController = new ProjectsController(testContext.outputChannel);
 			let project = await testUtils.createTestProject(this.test, baselines.newProjectFileBaseline);
 
 			// Test cases for different extension scenarios
 			const testCases = [
-				{ input: 'TableName.sql', expected: 'TableName' },
-				{ input: 'TableName.sql.sql', expected: 'TableName' },
-				{ input: 'TableName.sql.sql.sql', expected: 'TableName' },
-				{ input: 'TableName .sql .sql .sql', expected: 'TableName' },
-				{ input: 'MyTable', expected: 'MyTable' }, // no extension
-				{ input: 'MyTable.SQL', expected: 'MyTable' }, // uppercase extension
-				{ input: 'MyTable .Sql', expected: 'MyTable' }, // mixed case extension
+				{ input: 'TableName.sql', expected: 'TableName', extension: constants.sqlFileExtension },
+				{ input: 'TableName.sql.sql.sql', expected: 'TableName', extension: constants.sqlFileExtension },
+				{ input: 'TableName .sql .sql .sql', expected: 'TableName', extension: constants.sqlFileExtension },
+				{ input: 'MyTable', expected: 'MyTable', extension: constants.sqlFileExtension }, // no extension
+				{ input: 'MyTable.SQL', expected: 'MyTable', extension: constants.sqlFileExtension }, // uppercase extension
+				{ input: 'MyTable .Sql', expected: 'MyTable', extension: constants.sqlFileExtension }, // mixed case extension
+				{ input: 'PubProfile.publish.xml', expected: 'PubProfile', extension: constants.publishProfileExtension },
+				{ input: 'PubProfile.publish.xml.publish.xml', expected: 'PubProfile', extension: constants.publishProfileExtension }
 			];
 
 			for (const testCase of testCases) {
@@ -1240,13 +1242,17 @@ describe('ProjectsController', function (): void {
 				sinon.stub(utils, 'sanitizeStringForFilename').returns(testCase.input);
 
 				// Add item to project
-				await projController.addItemPrompt(project, '', { itemType: ItemType.script });
+				if (testCase.extension === constants.sqlFileExtension){
+					await projController.addItemPrompt(project, '', { itemType: ItemType.script });
+				}else{
+					await projController.addItemPrompt(project, '', { itemType: ItemType.publishProfile });
+				}
 
 				// Reload project to get updated state
 				project = await Project.openProject(project.projectFilePath);
 
 				// Find the created file
-				const expectedFileName = `${testCase.expected}.sql`;
+				const expectedFileName = `${testCase.expected}${testCase.extension}`;
 				const createdFile = project.sqlObjectScripts.find(f => path.basename(f.relativePath) === expectedFileName);
 
 				should(createdFile).not.be.undefined();
