@@ -1218,6 +1218,45 @@ describe('ProjectsController', function (): void {
 			should(project.sqlCmdVariables.size).equal(2, 'The project should still have 2 sqlcmd variables');
 			should(project.sqlCmdVariables.get(sqlcmdVarToUpdate.friendlyName)).equal(updatedValue, 'The value of the sqlcmd variable should have been updated');
 		});
+
+		it('Should remove file extensions from user input when creating files', async function (): Promise<void> {
+			const projController = new ProjectsController(testContext.outputChannel);
+			let project = await testUtils.createTestProject(this.test, baselines.newProjectFileBaseline);
+
+			// Test cases for different extension scenarios
+			const testCases = [
+				{ input: 'TableName.sql', expected: 'TableName' },
+				{ input: 'TableName.sql.sql', expected: 'TableName' },
+				{ input: 'TableName.sql.sql.sql', expected: 'TableName' },
+				{ input: 'TableName .sql .sql .sql', expected: 'TableName' },
+				{ input: 'MyTable', expected: 'MyTable' }, // no extension
+				{ input: 'MyTable.SQL', expected: 'MyTable' }, // uppercase extension
+				{ input: 'MyTable .Sql', expected: 'MyTable' }, // mixed case extension
+			];
+
+			for (const testCase of testCases) {
+				// Mock the user input
+				sinon.stub(vscode.window, 'showInputBox').resolves(testCase.input);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(testCase.input);
+
+				// Add item to project
+				await projController.addItemPrompt(project, '', { itemType: ItemType.script });
+
+				// Reload project to get updated state
+				project = await Project.openProject(project.projectFilePath);
+
+				// Find the created file
+				const expectedFileName = `${testCase.expected}.sql`;
+				const createdFile = project.sqlObjectScripts.find(f => path.basename(f.relativePath) === expectedFileName);
+
+				should(createdFile).not.be.undefined();
+				should(await utils.exists(path.join(project.projectFolderPath, expectedFileName))).be.true(`File ${expectedFileName} should exist on disk for input ${testCase.input}`);
+
+				// Clean up for next iteration
+				await project.deleteSqlObjectScript(createdFile!.relativePath);
+				sinon.restore();
+			}
+		});
 	});
 });
 

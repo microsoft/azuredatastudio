@@ -819,6 +819,11 @@ export class ProjectsController {
 			return; // user cancelled
 		}
 
+		// Check if itemObjectName contains the file extension, remove it if so
+		while (itemObjectName.toLowerCase().endsWith(fileExtension.toLowerCase())) {
+			itemObjectName = itemObjectName?.slice(0, -fileExtension.length).trim();
+		}
+
 		const relativeFilePath = path.join(relativePath, itemObjectName + fileExtension);
 
 		const telemetryProps: Record<string, string> = { itemType: itemType.type };
