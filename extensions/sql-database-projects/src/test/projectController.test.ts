@@ -1220,7 +1220,6 @@ describe('ProjectsController', function (): void {
 		});
 
 		it('Should remove file extensions from user input when creating files', async function (): Promise<void> {
-			this.timeout(300000)
 			const projController = new ProjectsController(testContext.outputChannel);
 			let project = await testUtils.createTestProject(this.test, baselines.newProjectFileBaseline);
 
@@ -1242,9 +1241,9 @@ describe('ProjectsController', function (): void {
 				sinon.stub(utils, 'sanitizeStringForFilename').returns(testCase.input);
 
 				// Add item to project
-				if (testCase.extension === constants.sqlFileExtension){
+				if (testCase.extension === constants.sqlFileExtension) {
 					await projController.addItemPrompt(project, '', { itemType: ItemType.script });
-				}else{
+				} else {
 					await projController.addItemPrompt(project, '', { itemType: ItemType.publishProfile });
 				}
 
@@ -1253,8 +1252,17 @@ describe('ProjectsController', function (): void {
 
 				// Find the created file
 				const expectedFileName = `${testCase.expected}${testCase.extension}`;
-				const createdFile = project.sqlObjectScripts.find(f => path.basename(f.relativePath) === expectedFileName);
 
+				// Find the file project entry
+				let fileProjectEntry = project.sqlObjectScripts;
+				if (testCase.extension === constants.publishProfileExtension) {
+					fileProjectEntry = project.publishProfiles;
+				}
+
+				// Get the created file
+				const createdFile = fileProjectEntry.find(f => path.basename(f.relativePath) === expectedFileName);
+
+				// Assert the created file exists
 				should(createdFile).not.be.undefined();
 				should(await utils.exists(path.join(project.projectFolderPath, expectedFileName))).be.true(`File ${expectedFileName} should exist on disk for input ${testCase.input}`);
 
