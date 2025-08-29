@@ -819,8 +819,8 @@ export class ProjectsController {
 			return; // user cancelled
 		}
 
-		// Check if itemObjectName contains the file extension, remove it if so
-		while (itemObjectName.toLowerCase().endsWith(fileExtension.toLowerCase())) {
+		// Check if itemObjectName contains the file extension, remove the last occurrence
+		if (itemObjectName.toLowerCase().endsWith(fileExtension.toLowerCase())) {
 			itemObjectName = itemObjectName?.slice(0, -fileExtension.length).trim();
 		}
 

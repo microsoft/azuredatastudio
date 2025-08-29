@@ -1226,13 +1226,12 @@ describe('ProjectsController', function (): void {
 			// Test cases for different extension scenarios
 			const testCases = [
 				{ input: 'TableName.sql', expected: 'TableName', extension: constants.sqlFileExtension },
-				{ input: 'TableName.sql.sql.sql', expected: 'TableName', extension: constants.sqlFileExtension },
-				{ input: 'TableName .sql .sql .sql', expected: 'TableName', extension: constants.sqlFileExtension },
+				{ input: 'TableName.sql.sql', expected: 'TableName.sql', extension: constants.sqlFileExtension },
 				{ input: 'MyTable', expected: 'MyTable', extension: constants.sqlFileExtension }, // no extension
 				{ input: 'MyTable.SQL', expected: 'MyTable', extension: constants.sqlFileExtension }, // uppercase extension
 				{ input: 'MyTable .Sql', expected: 'MyTable', extension: constants.sqlFileExtension }, // mixed case extension
 				{ input: 'PubProfile.publish.xml', expected: 'PubProfile', extension: constants.publishProfileExtension },
-				{ input: 'PubProfile.publish.xml.publish.xml', expected: 'PubProfile', extension: constants.publishProfileExtension }
+				{ input: 'PubProfile.publish.xml.publish.xml', expected: 'PubProfile.publish.xml', extension: constants.publishProfileExtension }
 			];
 
 			for (const testCase of testCases) {
