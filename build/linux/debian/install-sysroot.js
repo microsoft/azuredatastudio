@@ -16,7 +16,7 @@ const util = require("../../lib/util");
 const URL_PREFIX = 'https://msftelectron.blob.core.windows.net';
 const URL_PATH = 'sysroots/toolchain';
 function getSha(filename) {
-    const hash = (0, crypto_1.createHash)('sha1');
+    const hash = (0, crypto_1.createHash)('sha1'); // CodeQL [SM04514] This sha1 is needed to interoperate with external SHA-1 checksums.
     // Read file 1 MB at a time
     const fd = fs.openSync(filename, 'r');
     const buffer = Buffer.alloc(1024 * 1024);

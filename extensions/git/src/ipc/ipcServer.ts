@@ -30,7 +30,7 @@ export interface IIPCHandler {
 
 export async function createIPCServer(context?: string): Promise<IPCServer> {
 	const server = http.createServer();
-	const hash = crypto.createHash('sha1');
+	const hash = crypto.createHash('sha256');
 
 	if (!context) {
 		const buffer = await new Promise<Buffer>((c, e) => crypto.randomBytes(20, (err, buf) => err ? e(err) : c(buf)));

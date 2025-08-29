@@ -29,7 +29,7 @@ function findFiles(location, pattern, result) {
         }
     }
 }
-const shasum = crypto.createHash('sha1');
+const shasum = crypto.createHash('sha256');
 /**
  * Creating a sha hash of all the files that can cause packages to change/redownload.
  */
