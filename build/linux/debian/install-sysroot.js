@@ -74,10 +74,10 @@ async function getSysroot(arch) {
         fs.rmSync(tarball);
         throw new Error('Failed to download ' + url);
     }
-    // const sha = getSha(tarball);
-    // if (sha !== tarballSha) {
-    //     throw new Error(`Tarball sha1sum is wrong. Expected ${tarballSha}, actual ${sha}`);
-    // }
+    const sha = getSha(tarball);
+    if (sha !== tarballSha) {
+        throw new Error(`Tarball sha1sum is wrong. Expected ${tarballSha}, actual ${sha}`);
+    }
     const proc = (0, child_process_1.spawnSync)('tar', ['xf', tarball, '-C', sysroot]);
     if (proc.status) {
         throw new Error('Tarball extraction failed with code ' + proc.status);
