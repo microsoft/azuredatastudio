@@ -341,14 +341,15 @@ export class ProjectsController {
 			// Execute the task and wait for it to complete
 			const execution = await vscode.tasks.executeTask(vscodeTask);
 
-			// Wait for the task to finish
+			// Wait until the build task instance is finishes.
+			// `onDidEndTaskProcess` fires for every task in the workspace, so Filtering events to the exact TaskExecution
+			// object we kicked off (`e.execution === execution`), ensuring we don't resolve because some other task ended.
 			await new Promise<void>((resolve) => {
 				const disposable = vscode.tasks.onDidEndTaskProcess(e => {
 					if (e.execution === execution) {
+						// Once we get the matching event, dispose the listener to avoid leaks and resolve the promise.
 						disposable.dispose();
-						if (e.execution.task === vscodeTask) {
-							resolve();
-						}
+						resolve();
 					}
 				});
 			});
