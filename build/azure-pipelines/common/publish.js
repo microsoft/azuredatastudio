@@ -139,8 +139,7 @@ async function publish(commit, quality, platform, type, name, version, _isUpdate
     const size = stat.size;
     console.log('Size:', size);
     const stream = fs.createReadStream(file);
-    const [sha1hash, sha256hash] = await Promise.all([hashStream('sha1', stream), hashStream('sha256', stream)]);
-    console.log('SHA1:', sha1hash);
+    const sha256hash = await hashStream('sha256', stream);
     console.log('SHA256:', sha256hash);
     const blobName = commit + '/' + name;
     const storageAccount = process.env['AZURE_STORAGE_ACCOUNT_2'];
@@ -168,7 +167,7 @@ async function publish(commit, quality, platform, type, name, version, _isUpdate
             platform: platform,
             type: type,
             url: `${process.env['AZURE_CDN_URL']}/${quality}/${blobName}`,
-            hash: sha1hash,
+            hash: sha256hash,
             sha256hash,
             size
         };

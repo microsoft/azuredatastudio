@@ -149,8 +149,7 @@ async function main() {
     const size = stat.size;
     console.log('Size:', size);
     const stream = fs.createReadStream(filePath);
-    const [sha1hash, sha256hash] = await Promise.all([hashStream('sha1', stream), hashStream('sha256', stream)]);
-    console.log('SHA1:', sha1hash);
+    const sha256hash = await hashStream('sha256', stream);
     console.log('SHA256:', sha256hash);
     const blobName = commit + '/' + fileName;
     const storagePipelineOptions = { retryOptions: { retryPolicyType: storage_blob_1.StorageRetryPolicyType.EXPONENTIAL, maxTries: 6, tryTimeoutInMs: 10 * 60 * 1000 } };
@@ -213,7 +212,7 @@ async function main() {
         platform,
         type,
         url: assetUrl,
-        hash: sha1hash,
+        hash: sha256hash,
         mooncakeUrl,
         sha256hash,
         size
