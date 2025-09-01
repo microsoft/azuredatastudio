@@ -30,7 +30,7 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 	promptForFirewallRule(_: string, __: vscodeMssql.IConnectionInfo): Promise<boolean> {
 		throw new Error('Method not implemented.');
 	}
-	sendRequest<P, R, E>(_: RequestType<P, R, E>, __?: P): Promise<R> {
+	sendRequest<P, R, E>(_: RequestType<P, R, E, R>, __?: P): Promise<R> {
 		throw new Error('Method not implemented.');
 	}
 	promptForConnection(_?: boolean): Promise<vscodeMssql.IConnectionInfo | undefined> {

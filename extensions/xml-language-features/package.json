@@ -23,6 +23,7 @@
 		"build-preview": "webpack --mode development"
 	},
 	"dependencies": {
-		"tsxml": "^0.1.0"
+		"tsxml": "0.1.0"
 	}
 }
+

@@ -172,7 +172,7 @@ esbuild@0.17.14:
 fast-plist@0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/fast-plist/-/fast-plist-0.1.2.tgz#a45aff345196006d406ca6cdcd05f69051ef35b8"
-  integrity sha1-pFr/NFGWAG1AbKbNzQX2kFHvNbg=
+  integrity sha512-2HxzrqJhmMoxVzARjYFvkzkL2dCBB8sogU5sD8gqcZWv5UCivK9/cXM9KIPDRwU+eD3mbRDN/GhW8bO/4dtMfg==
 
 fill-range@^7.1.1:
   version "7.1.1"
@@ -228,12 +228,12 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
-typescript@^5.2.2:
+typescript@5.2.2:
   version "5.2.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.2.2.tgz#5ebb5e5a5b75f085f22bc3f8460fba308310fa78"
   integrity sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==
 
-vscode-grammar-updater@^1.1.0:
+vscode-grammar-updater@1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/vscode-grammar-updater/-/vscode-grammar-updater-1.1.0.tgz#030eacd8b8ba8f3f2fe43c9032601f839ba811c4"
   integrity sha512-rWcJXyEFK27Mh9bxfBTLaul0KiGQk0GMXj2qTDH9cy3UZVx5MrF035B03os1w4oIXwl/QDhdLnsBK0j2SNiL1A==

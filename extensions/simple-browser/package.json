@@ -66,14 +66,15 @@
     "watch-web": "npx webpack-cli --config extension-browser.webpack.config --mode none --watch --info-verbosity verbose"
   },
   "dependencies": {
-    "@vscode/extension-telemetry": "^0.8.4"
+    "@vscode/extension-telemetry": "0.8.4"
   },
   "devDependencies": {
-    "@types/vscode-webview": "^1.57.0",
-    "vscode-codicons": "^0.0.14"
+    "@types/vscode-webview": "1.57.0",
+    "vscode-codicons": "0.0.14"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/microsoft/vscode.git"
   }
 }
+
