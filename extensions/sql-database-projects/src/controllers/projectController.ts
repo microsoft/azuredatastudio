@@ -39,6 +39,7 @@ import { DeployService } from '../models/deploy/deployService';
 import { AddItemOptions, EntryType, GenerateProjectFromOpenApiSpecOptions, IDatabaseReferenceProjectEntry, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
 import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
+import { UpdateProjectFromDatabaseWithQuickpick } from '../dialogs/updateProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
 import { ISqlDbDeployProfile } from '../models/deploy/deployProfile';
 import { FileProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
@@ -1780,7 +1781,7 @@ export class ProjectsController {
 	/**
 	 * Display dialog for user to configure existing SQL Project with the changes/differences from a database
 	 */
-	public async updateProjectFromDatabase(context: azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo | dataworkspace.WorkspaceTreeItem): Promise<UpdateProjectFromDatabaseDialog> {
+	public async updateProjectFromDatabase(context: azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo | dataworkspace.WorkspaceTreeItem): Promise<UpdateProjectFromDatabaseDialog | undefined> {
 		let connection: azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined;
 		let project: Project | undefined;
 
@@ -1797,13 +1798,24 @@ export class ProjectsController {
 		} catch { }
 
 		const workspaceProjects = await utils.getSqlProjectsInWorkspace();
-		const updateProjectFromDatabaseDialog = this.getUpdateProjectFromDatabaseDialog(connection, project, workspaceProjects);
-
-		updateProjectFromDatabaseDialog.updateProjectFromDatabaseCallback = async (model) => await this.updateProjectFromDatabaseCallback(model);
-
-		await updateProjectFromDatabaseDialog.openDialog();
-
-		return updateProjectFromDatabaseDialog;
+		if (utils.getAzdataApi()) {
+			const updateProjectFromDatabaseDialog = this.getUpdateProjectFromDatabaseDialog(connection, project, workspaceProjects);
+			updateProjectFromDatabaseDialog.updateProjectFromDatabaseCallback = async (model) => await this.updateProjectFromDatabaseCallback(model);
+			await updateProjectFromDatabaseDialog.openDialog();
+			return updateProjectFromDatabaseDialog;
+		} else {
+			if (context) {
+				// The profile we get from VS Code is for the overall server connection and isn't updated based on the database node
+				// the command was launched from like it is in ADS. So get the actual database name from the MSSQL extension and update the connection info here.
+				const treeNodeContext = context as mssqlVscode.ITreeNodeInfo;
+				const databaseName = (await utils.getVscodeMssqlApi()).getDatabaseNameFromTreeNode(treeNodeContext);
+				if (connection !== undefined) {
+					(connection as mssqlVscode.IConnectionInfo).database = databaseName;
+				}
+			}
+			await UpdateProjectFromDatabaseWithQuickpick(connection as mssqlVscode.IConnectionInfo, (model: UpdateProjectDataModel) => this.updateProjectFromDatabaseCallback(model));
+			return undefined;
+		}
 	}
 
 	public getUpdateProjectFromDatabaseDialog(connection: azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined, project: Project | undefined, workspaceProjects: vscode.Uri[]): UpdateProjectFromDatabaseDialog {

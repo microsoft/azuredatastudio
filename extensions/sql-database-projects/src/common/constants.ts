@@ -370,6 +370,7 @@ export const compareActionRadioButtonLabel = localize('compareActionRadiButtonLa
 export const updateActionRadioButtonLabel = localize('updateActionRadiButtonLabel', "Apply all changes");
 export const actionLabel = localize('actionLabel', "Action");
 export const applyConfirmation: string = localize('applyConfirmation', "Are you sure you want to update the target project?");
+export const selectProjectFile: string = localize('selectProjectFile', "Select project file");
 
 //#endregion
 
