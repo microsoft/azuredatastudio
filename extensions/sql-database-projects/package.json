@@ -235,7 +235,7 @@
         },
         {
           "command": "sqlDatabaseProjects.updateProjectFromDatabase",
-          "when": "view == dataworkspace.views.main && azdataAvailable",
+          "when": "view == dataworkspace.views.main  && azdataAvailable",
           "group": "1_currentWorkspace@2"
         },
         {
@@ -309,8 +309,7 @@
           "command": "sqlDatabaseProjects.createProjectFromDatabase"
         },
         {
-          "command": "sqlDatabaseProjects.updateProjectFromDatabase",
-          "when": "false"
+          "command": "sqlDatabaseProjects.updateProjectFromDatabase"
         },
         {
           "command": "sqlDatabaseProjects.addDatabaseReference",
@@ -388,7 +387,7 @@
         },
         {
           "command": "sqlDatabaseProjects.updateProjectFromDatabase",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && azdataAvailable",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
           "group": "1_dbProjectsFirst@5"
         },
         {
@@ -495,6 +494,11 @@
           "command": "sqlDatabaseProjects.createProjectFromDatabase",
           "when": "!azdataAvailable && view == objectExplorer && viewItem =~ /\\btype=(disconnectedServer|Server|Database)\\b/",
           "group": "sqldbproj@1"
+        },
+        {
+          "command": "sqlDatabaseProjects.updateProjectFromDatabase",
+          "when": "!azdataAvailable && view == objectExplorer && viewItem =~ /\\btype=(disconnectedServer|Server|Database)\\b/",
+          "group": "sqldbproj@2"
         },
         {
           "command": "sqlDatabaseProjects.editSqlCmdVariable",
