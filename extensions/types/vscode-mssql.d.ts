@@ -425,6 +425,7 @@ declare module 'vscode-mssql' {
 	}
 
 	export interface ISchemaCompareService {
+		schemaCompare(operationId: string, sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, deploymentOptions: DeploymentOptions): Thenable<SchemaCompareResult>;
 		schemaCompareGetDefaultOptions(): Thenable<SchemaCompareOptionsResult>;
 	}
 
@@ -1144,6 +1145,59 @@ declare module 'vscode-mssql' {
 
 	export interface SchemaCompareOptionsResult extends ResultStatus {
 		defaultDeploymentOptions: DeploymentOptions;
+	}
+
+	export interface SchemaCompareResult extends ResultStatus {
+		operationId: string;
+		areEqual: boolean;
+		differences: DiffEntry[];
+	}
+
+	export interface DiffEntry {
+		updateAction: SchemaUpdateAction;
+		differenceType: SchemaDifferenceType;
+		name: string;
+		sourceValue: string[];
+		targetValue: string[];
+		parent: DiffEntry;
+		children: DiffEntry[];
+		sourceScript: string;
+		targetScript: string;
+		included: boolean;
+	}
+
+	export const enum SchemaUpdateAction {
+		Delete = 0,
+		Change = 1,
+		Add = 2
+	}
+
+	export const enum SchemaDifferenceType {
+		Object = 0,
+		Property = 1
+	}
+
+	export const enum SchemaCompareEndpointType {
+		Database = 0,
+		Dacpac = 1,
+		Project = 2,
+		// must be kept in-sync with SchemaCompareEndpointType in SQL Tools Service
+		// located at \src\Microsoft.SqlTools.ServiceLayer\SchemaCompare\Contracts\SchemaCompareRequest.cs
+	}
+
+	export interface SchemaCompareEndpointInfo {
+		endpointType: SchemaCompareEndpointType;
+		packageFilePath: string;
+		serverDisplayName: string;
+		serverName: string;
+		databaseName: string;
+		ownerUri: string;
+		connectionDetails: {};
+		connectionName?: string;
+		projectFilePath: string;
+		targetScripts: string[];
+		extractTarget: ExtractTarget;
+		dataSchemaProvider: string;
 	}
 
 	export interface SavePublishProfileParams {

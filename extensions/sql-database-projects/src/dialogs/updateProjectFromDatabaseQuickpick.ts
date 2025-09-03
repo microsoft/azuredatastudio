@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as mssql from 'mssql';
+import * as mssqlVscode from 'vscode-mssql';
 import * as constants from '../common/constants';
-import type * as azdata from 'azdata';
 import { getSqlProjectsInWorkspace, getVscodeMssqlApi } from '../common/utils';
 import { IConnectionInfo } from 'vscode-mssql';
 import { Project } from '../models/project';
@@ -114,11 +113,9 @@ export async function UpdateProjectFromDatabaseWithQuickpick(connectionInfo?: IC
 		? UpdateProjectAction.Compare
 		: UpdateProjectAction.Update;
 
-	// let connection = (await getAzdataApi()!.connection.getConnections(true)).filter(con => con.connectionId === serverDropdownValue.connection.connectionId)[0];
-
-	// 5. Create model using existing connection info
-	const connectionDetails: azdata.IConnectionProfile = {
-		id: connectionProfile.server + '_' + selectedDatabase,
+	// Create model using existing connection info
+	const connectionDetails = {
+		id: connectionUri,
 		userName: connectionProfile.user,
 		password: connectionProfile.password,
 		serverName: connectionProfile.server,
@@ -133,25 +130,25 @@ export async function UpdateProjectFromDatabaseWithQuickpick(connectionInfo?: IC
 		options: {},
 	};
 
-	const sourceEndpointInfo: mssql.SchemaCompareEndpointInfo = {
-		endpointType: mssql.SchemaCompareEndpointType.Database,
+	const sourceEndpointInfo: mssqlVscode.SchemaCompareEndpointInfo = {
+		endpointType: mssqlVscode.SchemaCompareEndpointType.Database,
 		databaseName: selectedDatabase,
 		serverDisplayName: connectionProfile.server,
 		serverName: connectionProfile.server,
 		connectionDetails: connectionDetails,
 		ownerUri: connectionUri,
 		projectFilePath: '',
-		extractTarget: mssql.ExtractTarget.schemaObjectType,
+		extractTarget: mssqlVscode.ExtractTarget.schemaObjectType,
 		targetScripts: [],
 		dataSchemaProvider: '',
 		packageFilePath: '',
 		connectionName: connectionProfile.server
 	};
 
-	const targetEndpointInfo: mssql.SchemaCompareEndpointInfo = {
-		endpointType: mssql.SchemaCompareEndpointType.Project,
+	const targetEndpointInfo: mssqlVscode.SchemaCompareEndpointInfo = {
+		endpointType: mssqlVscode.SchemaCompareEndpointType.Project,
 		projectFilePath: projectFilePath,
-		extractTarget: mssql.ExtractTarget.schemaObjectType,
+		extractTarget: mssqlVscode.ExtractTarget.schemaObjectType,
 		targetScripts: [],
 		dataSchemaProvider: project.getProjectTargetVersion(),
 		connectionDetails: connectionDetails,

@@ -1872,11 +1872,9 @@ export class ProjectsController {
 	 * @param source source for schema comparison
 	 * @param target target sql project for schema comparison to update
 	 */
-	private async schemaCompareAndUpdateProject(source: mssql.SchemaCompareEndpointInfo, target: mssql.SchemaCompareEndpointInfo): Promise<void> {
-		// Run schema comparison
-		const ext = vscode.extensions.getExtension(mssql.extension.name)!;
-		const service = (await ext.activate() as mssql.IExtension).schemaCompare;
-		const deploymentOptions = await service.schemaCompareGetDefaultOptions();
+	private async schemaCompareAndUpdateProject(source: mssql.SchemaCompareEndpointInfo | mssqlVscode.SchemaCompareEndpointInfo, target: mssql.SchemaCompareEndpointInfo | mssqlVscode.SchemaCompareEndpointInfo): Promise<void> {
+		// Run schema comparison - use the schema compare service
+		const service = await utils.getSchemaCompareService();
 		const operationId = UUID.generateUuid();
 
 		target.targetScripts = await this.getProjectScriptFiles(target.projectFilePath);
@@ -1884,10 +1882,22 @@ export class ProjectsController {
 
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.SchemaComparisonStarted);
 
-		// Perform schema comparison.  Results are cached in SqlToolsService under the operationId
-		const comparisonResult: mssql.SchemaCompareResult = await service.schemaCompare(
-			operationId, source, target, utils.getAzdataApi()!.TaskExecutionMode.execute, deploymentOptions.defaultDeploymentOptions
-		);
+		const deploymentOptions = await service.schemaCompareGetDefaultOptions();
+
+		// Perform schema comparison based on environment
+		let comparisonResult: mssql.SchemaCompareResult | mssqlVscode.SchemaCompareResult;
+
+		if (utils.getAzdataApi()) {
+			// Azure Data Studio environment
+			comparisonResult = await (service as mssql.ISchemaCompareService).schemaCompare(
+				operationId, source as mssql.SchemaCompareEndpointInfo, target as mssql.SchemaCompareEndpointInfo, utils.getAzdataApi()!.TaskExecutionMode.execute, deploymentOptions.defaultDeploymentOptions
+			);
+		} else {
+			// VS Code environment
+			comparisonResult = await (service as mssqlVscode.ISchemaCompareService).schemaCompare(
+				operationId, source as mssqlVscode.SchemaCompareEndpointInfo, target as mssqlVscode.SchemaCompareEndpointInfo, mssqlVscode.TaskExecutionMode.execute, deploymentOptions.defaultDeploymentOptions
+			);
+		}
 
 		if (!comparisonResult || !comparisonResult.success) {
 			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectController, 'SchemaComparisonFailed')
@@ -1910,7 +1920,7 @@ export class ProjectsController {
 		}
 
 		// Publish the changes (retrieved from the cache by operationId)
-		const publishResult = await this.schemaComparePublishProjectChanges(operationId, target.projectFilePath, target.extractTarget);
+		const publishResult = await this.schemaComparePublishProjectChanges(operationId, target.projectFilePath, target.extractTarget as mssql.ExtractTarget);
 
 		if (publishResult.success) {
 			void vscode.window.showInformationMessage(constants.applySuccess);
@@ -1940,12 +1950,23 @@ export class ProjectsController {
 	 * @returns
 	 */
 	public async schemaComparePublishProjectChanges(operationId: string, projectFilePath: string, folderStructure: mssql.ExtractTarget): Promise<mssql.SchemaComparePublishProjectResult> {
-		const ext = vscode.extensions.getExtension(mssql.extension.name)!;
-		const service = (await ext.activate() as mssql.IExtension).schemaCompare;
-
+		const service = await utils.getSchemaCompareService();
 		const projectPath = path.dirname(projectFilePath);
 
-		const result: mssql.SchemaComparePublishProjectResult = await service.schemaComparePublishProjectChanges(operationId, projectPath, folderStructure, utils.getAzdataApi()!.TaskExecutionMode.execute);
+		// Perform schema compare publish based on environment
+		let result: mssql.SchemaComparePublishProjectResult;
+
+		if (utils.getAzdataApi()) {
+			// Azure Data Studio environment
+			result = await (service as mssql.ISchemaCompareService).schemaComparePublishProjectChanges(
+				operationId, projectPath, folderStructure, utils.getAzdataApi()!.TaskExecutionMode.execute
+			);
+		} else {
+			// VS Code environment - cast to mssql interface since the methods should be compatible
+			result = await (service as mssql.ISchemaCompareService).schemaComparePublishProjectChanges(
+				operationId, projectPath, folderStructure, mssqlVscode.TaskExecutionMode.execute as any
+			);
+		}
 
 		if (!result.errorMessage) {
 			const project = await Project.openProject(projectFilePath);
