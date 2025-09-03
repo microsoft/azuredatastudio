@@ -1894,7 +1894,7 @@ export class ProjectsController {
 			);
 		} else {
 			// VS Code environment
-			comparisonResult = await (service as mssqlVscode.ISchemaCompareService).schemaCompare(
+			comparisonResult = await (service as mssqlVscode.ISchemaCompareService).compare(
 				operationId, source as mssqlVscode.SchemaCompareEndpointInfo, target as mssqlVscode.SchemaCompareEndpointInfo, mssqlVscode.TaskExecutionMode.execute, deploymentOptions.defaultDeploymentOptions
 			);
 		}
@@ -1949,7 +1949,7 @@ export class ProjectsController {
 	 * @param folderStructure folder structure to use when updating the target project
 	 * @returns
 	 */
-	public async schemaComparePublishProjectChanges(operationId: string, projectFilePath: string, folderStructure: mssql.ExtractTarget): Promise<mssql.SchemaComparePublishProjectResult> {
+	public async schemaComparePublishProjectChanges(operationId: string, projectFilePath: string, folderStructure: mssql.ExtractTarget | mssqlVscode.ExtractTarget): Promise<mssql.SchemaComparePublishProjectResult> {
 		const service = await utils.getSchemaCompareService();
 		const projectPath = path.dirname(projectFilePath);
 
@@ -1959,12 +1959,12 @@ export class ProjectsController {
 		if (utils.getAzdataApi()) {
 			// Azure Data Studio environment
 			result = await (service as mssql.ISchemaCompareService).schemaComparePublishProjectChanges(
-				operationId, projectPath, folderStructure, utils.getAzdataApi()!.TaskExecutionMode.execute
+				operationId, projectPath, folderStructure as mssql.ExtractTarget, utils.getAzdataApi()!.TaskExecutionMode.execute
 			);
 		} else {
-			// VS Code environment - cast to mssql interface since the methods should be compatible
-			result = await (service as mssql.ISchemaCompareService).schemaComparePublishProjectChanges(
-				operationId, projectPath, folderStructure, mssqlVscode.TaskExecutionMode.execute as any
+			// VS Code environment
+			result = await (service as mssqlVscode.ISchemaCompareService).publishProjectChanges(
+				operationId, projectPath, folderStructure as mssqlVscode.ExtractTarget, mssqlVscode.TaskExecutionMode.execute as any
 			);
 		}
 

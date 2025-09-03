@@ -425,8 +425,9 @@ declare module 'vscode-mssql' {
 	}
 
 	export interface ISchemaCompareService {
-		schemaCompare(operationId: string, sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, deploymentOptions: DeploymentOptions): Thenable<SchemaCompareResult>;
+		compare(operationId: string, sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, deploymentOptions: DeploymentOptions): Thenable<SchemaCompareResult>;
 		schemaCompareGetDefaultOptions(): Thenable<SchemaCompareOptionsResult>;
+		publishProjectChanges(operationId: string, targetProjectPath: string, targetFolderStructure: ExtractTarget, taskExecutionMode: TaskExecutionMode): Thenable<SchemaComparePublishProjectResult>;
 	}
 
 	export interface IDacFxService {
@@ -1198,6 +1199,12 @@ declare module 'vscode-mssql' {
 		targetScripts: string[];
 		extractTarget: ExtractTarget;
 		dataSchemaProvider: string;
+	}
+
+	export interface SchemaComparePublishProjectResult extends ResultStatus {
+		changedFiles: string[];
+		addedFiles: string[];
+		deletedFiles: string[];
 	}
 
 	export interface SavePublishProfileParams {
