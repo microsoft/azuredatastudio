@@ -13,6 +13,14 @@ import { UpdateProjectDataModel, UpdateProjectAction } from '../models/api/updat
 
 /**
  * Create flow for update Project from existing database using only VS Code-native APIs such as QuickPick
+ *
+ * This helper drives a small, synchronous UX flow that:
+ *  1) Prompts (or reuses) a connection
+ *  2) Prompts for a database (if needed)
+ *  3) Lets the user select an existing .sqlproj in the workspace (or browse to one)
+ *  4) Asks whether the user wants to Compare or Update the project
+ *  5) Constructs an UpdateProjectDataModel and passes it to the optional callback
+ *
  * @param connectionInfo Optional connection info to use instead of prompting the user for a connection
  * @param updateProjectFromDatabaseCallback Optional callback function to update the project from the user inputs
  */
@@ -21,6 +29,7 @@ export async function UpdateProjectFromDatabaseWithQuickpick(connectionInfo?: IC
 	const vscodeMssqlApi = await getVscodeMssqlApi();
 
 	// Prompt 1a. Select connection (if not provided)
+	// If connectionInfo was passed in, reuse it; otherwise show the native mssql connection picker.
 	let connectionProfile: IConnectionInfo | undefined = connectionInfo ?? await vscodeMssqlApi.promptForConnection(true);
 	if (!connectionProfile) {
 		// User cancelled
@@ -35,7 +44,7 @@ export async function UpdateProjectFromDatabaseWithQuickpick(connectionInfo?: IC
 		selectedDatabase = connectionProfile.database;
 		connectionUri = await vscodeMssqlApi.connect(connectionProfile);
 	} else {
-		// Need to get list of databases
+		// Need to get list of databases from the server and prompt the user
 		connectionUri = await vscodeMssqlApi.connect(connectionProfile);
 		dbs = (await vscodeMssqlApi.listDatabases(connectionUri))
 			.filter(db => !constants.systemDbs.includes(db));
@@ -114,7 +123,8 @@ export async function UpdateProjectFromDatabaseWithQuickpick(connectionInfo?: IC
 		? UpdateProjectAction.Compare
 		: UpdateProjectAction.Update;
 
-	// Create model using existing connection info
+	// Build the connectionDetails object expected by the schema-compare endpoints.
+	// This is a lightweight mapping that mirrors the shape used by the mssql/vscode-mssql APIs.
 	const connectionDetails = {
 		id: connectionUri,
 		userName: connectionProfile.user,
@@ -131,6 +141,7 @@ export async function UpdateProjectFromDatabaseWithQuickpick(connectionInfo?: IC
 		options: {},
 	};
 
+	// Construct the source endpoint (the database)
 	const sourceEndpointInfo: mssqlVscode.SchemaCompareEndpointInfo = {
 		endpointType: mssqlVscode.SchemaCompareEndpointType.Database,
 		databaseName: selectedDatabase,
@@ -146,6 +157,7 @@ export async function UpdateProjectFromDatabaseWithQuickpick(connectionInfo?: IC
 		connectionName: connectionProfile.server
 	};
 
+	// Construct the target endpoint (the selected project)
 	const targetEndpointInfo: mssqlVscode.SchemaCompareEndpointInfo = {
 		endpointType: mssqlVscode.SchemaCompareEndpointType.Project,
 		projectFilePath: projectFilePath,
@@ -165,8 +177,8 @@ export async function UpdateProjectFromDatabaseWithQuickpick(connectionInfo?: IC
 		targetEndpointInfo: targetEndpointInfo,
 		action: selectedAction
 	};
-
-	// Update the project using the callback
+	// Invoke the caller-provided callback with the collected model. The callback is responsible
+	//  for running the compare or update operation; this function only collects and returns inputs.
 	if (updateProjectFromDatabaseCallback) {
 		await updateProjectFromDatabaseCallback(model);
 	}
