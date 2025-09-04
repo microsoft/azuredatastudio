@@ -1843,7 +1843,13 @@ export class ProjectsController {
 	 */
 	public async updateProjectFromDatabaseApiCall(model: UpdateProjectDataModel): Promise<void> {
 		if (model.action === UpdateProjectAction.Compare) {
-			await vscode.commands.executeCommand(constants.schemaCompareRunComparisonCommand, model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
+			if (utils.getAzdataApi()) {
+				// ADS environment
+				await vscode.commands.executeCommand(constants.schemaCompareRunComparisonCommand, model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
+			} else {
+				// Vs Code environment
+				await vscode.commands.executeCommand(constants.mssqlSchemaCompareRunComparisonCommand, model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
+			}
 		} else if (model.action === UpdateProjectAction.Update) {
 			await vscode.window.showWarningMessage(constants.applyConfirmation, { modal: true }, constants.yesString).then(async (result) => {
 				if (result === constants.yesString) {
