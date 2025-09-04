@@ -1850,7 +1850,7 @@ export class ProjectsController {
 				await vscode.commands.executeCommand(constants.schemaCompareRunComparisonCommand, model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
 			} else {
 				// Vs Code environment
-				await vscode.commands.executeCommand(constants.mssqlSchemaCompareRunComparisonCommand, model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
+				await vscode.commands.executeCommand(constants.mssqlSchemaCompareCommand, model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
 			}
 		} else if (model.action === UpdateProjectAction.Update) {
 			await vscode.window.showWarningMessage(constants.applyConfirmation, { modal: true }, constants.yesString).then(async (result) => {

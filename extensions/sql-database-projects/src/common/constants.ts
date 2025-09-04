@@ -87,7 +87,7 @@ export const at = localize('at', "at");
 export const revealFileInOsCommand = 'revealFileInOS';
 export const schemaCompareStartCommand = 'schemaCompare.start';
 export const schemaCompareRunComparisonCommand = 'schemaCompare.runComparison';
-export const mssqlSchemaCompareRunComparisonCommand = 'mssql.schemaCompare.runComparison';
+export const mssqlSchemaCompareCommand = 'mssql.schemaCompare';
 export const vscodeOpenCommand = 'vscode.open';
 export const refreshDataWorkspaceCommand = 'dataworkspace.refresh';
 
