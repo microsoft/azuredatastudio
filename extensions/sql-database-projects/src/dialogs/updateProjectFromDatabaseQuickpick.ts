@@ -33,6 +33,7 @@ export async function UpdateProjectFromDatabaseWithQuickpick(connectionInfo?: IC
 	let selectedDatabase: string;
 	if (connectionProfile.database && connectionProfile.database !== constants.master) {
 		selectedDatabase = connectionProfile.database;
+		connectionUri = await vscodeMssqlApi.connect(connectionProfile);
 	} else {
 		// Need to get list of databases
 		connectionUri = await vscodeMssqlApi.connect(connectionProfile);
