@@ -338,8 +338,22 @@ export class ProjectsController {
 			// Check if the dotnet core is installed and if not, prompt the user to install it
 			// If the user does not have .NET Core installed, we will throw an error and stops building the project
 			await this.netCoreTool.verifyNetCoreInstallation()
-			// If vscodeTask is defined, run it, otherwise run the dotnet command directly
-			await vscode.tasks.executeTask(vscodeTask);
+
+			// Execute the task and wait for it to complete
+			const execution = await vscode.tasks.executeTask(vscodeTask);
+
+			// Wait until the build task instance is finishes.
+			// `onDidEndTaskProcess` fires for every task in the workspace, so Filtering events to the exact TaskExecution
+			// object we kicked off (`e.execution === execution`), ensuring we don't resolve because some other task ended.
+			await new Promise<void>((resolve) => {
+				const disposable = vscode.tasks.onDidEndTaskProcess(e => {
+					if (e.execution === execution) {
+						// Once we get the matching event, dispose the listener to avoid leaks and resolve the promise.
+						disposable.dispose();
+						resolve();
+					}
+				});
+			});
 
 			// If the build was successful, we will get the path to the built dacpac
 			const timeToBuild = new Date().getTime() - startTime.getTime();
@@ -818,6 +832,11 @@ export class ProjectsController {
 
 		if (!itemObjectName) {
 			return; // user cancelled
+		}
+
+		// Check if itemObjectName contains the file extension, remove the last occurrence
+		if (itemObjectName.toLowerCase().endsWith(fileExtension.toLowerCase())) {
+			itemObjectName = itemObjectName?.slice(0, -fileExtension.length).trim();
 		}
 
 		const relativeFilePath = path.join(relativePath, itemObjectName + fileExtension);
