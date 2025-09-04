@@ -125,7 +125,7 @@ export async function UpdateProjectFromDatabaseWithQuickpick(connectionInfo?: IC
 		providerName: 'MSSQL',
 		groupId: '',
 		groupFullName: '',
-		authenticationType: connectionProfile.authenticationType || 'SqlLogin',
+		authenticationType: connectionProfile.authenticationType,
 		savePassword: false,
 		saveProfile: false,
 		options: {},
