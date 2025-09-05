@@ -1193,7 +1193,7 @@ declare module 'vscode-mssql' {
 		serverName: string;
 		databaseName: string;
 		ownerUri: string;
-		connectionDetails: {};
+		connectionDetails: ConnectionDetails;
 		connectionName?: string;
 		projectFilePath: string;
 		targetScripts: string[];
