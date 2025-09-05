@@ -126,6 +126,7 @@ export async function UpdateProjectFromDatabaseWithQuickpick(connectionInfo?: IC
 	// Build the connectionDetails object expected by the schema-compare endpoints.
 	// This is a lightweight mapping that mirrors the shape used by the mssql/vscode-mssql APIs.
 	const connectionDetails = {
+		id: (connectionProfile as any).id,
 		userName: connectionProfile.user,
 		password: connectionProfile.password,
 		serverName: connectionProfile.server,
