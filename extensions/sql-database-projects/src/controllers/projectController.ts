@@ -715,7 +715,11 @@ export class ProjectsController {
 
 				try {
 					TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked);
-					await vscode.commands.executeCommand(constants.schemaCompareStartCommand, sourceParam, targetParam, undefined);
+					if (utils.getAzdataApi()) {
+						await vscode.commands.executeCommand(constants.schemaCompareStartCommand, sourceParam, targetParam, undefined);
+					} else {
+						await vscode.commands.executeCommand(constants.mssqlSchemaCompareCommand, sourceParam, targetParam, undefined);
+					}
 				} catch (e) {
 					throw new Error(constants.buildFailedCannotStartSchemaCompare);
 				}
