@@ -703,22 +703,27 @@ export class ProjectsController {
 	 */
 	public async schemaCompare(source: dataworkspace.WorkspaceTreeItem | azdataType.IConnectionProfile, targetParam: any = undefined): Promise<void> {
 		try {
-			// check if schema compare extension is installed
-			if (vscode.extensions.getExtension(constants.schemaCompareExtensionId)) {
+			// check if schema compare service is available
+			const service = await utils.getSchemaCompareService();
+			if (service) {
 				let sourceParam;
-
-				if (source as dataworkspace.WorkspaceTreeItem) {
-					sourceParam = (await this.getProjectFromContext(source as dataworkspace.WorkspaceTreeItem)).projectFilePath;
-				} else {
-					sourceParam = source as azdataType.IConnectionProfile;
-				}
 
 				try {
 					TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked);
 					if (utils.getAzdataApi()) {
+						// ADS Environment
+						if (source as dataworkspace.WorkspaceTreeItem) {
+							sourceParam = (await this.getProjectFromContext(source as dataworkspace.WorkspaceTreeItem)).projectFilePath;
+						} else {
+							sourceParam = source as azdataType.IConnectionProfile;
+						}
 						await vscode.commands.executeCommand(constants.schemaCompareStartCommand, sourceParam, targetParam, undefined);
 					} else {
-						await vscode.commands.executeCommand(constants.mssqlSchemaCompareCommand, sourceParam, targetParam, undefined);
+						// Vscode Environment
+						if (source as dataworkspace.WorkspaceTreeItem) {
+							sourceParam = source;
+						}
+						await vscode.commands.executeCommand(constants.mssqlSchemaCompareCommand, sourceParam, undefined, undefined);
 					}
 				} catch (e) {
 					throw new Error(constants.buildFailedCannotStartSchemaCompare);
