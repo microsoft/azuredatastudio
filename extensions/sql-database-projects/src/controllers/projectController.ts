@@ -707,22 +707,19 @@ export class ProjectsController {
 			const service = await utils.getSchemaCompareService();
 			if (service) {
 				let sourceParam;
-
+				if (source as dataworkspace.WorkspaceTreeItem) {
+					sourceParam = (await this.getProjectFromContext(source as dataworkspace.WorkspaceTreeItem)).projectFilePath;
+				} else {
+					sourceParam = source as azdataType.IConnectionProfile;
+				}
 				try {
 					TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked);
 					if (utils.getAzdataApi()) {
 						// ADS Environment
-						if (source as dataworkspace.WorkspaceTreeItem) {
-							sourceParam = (await this.getProjectFromContext(source as dataworkspace.WorkspaceTreeItem)).projectFilePath;
-						} else {
-							sourceParam = source as azdataType.IConnectionProfile;
-						}
+
 						await vscode.commands.executeCommand(constants.schemaCompareStartCommand, sourceParam, targetParam, undefined);
 					} else {
 						// Vscode Environment
-						if (source as dataworkspace.WorkspaceTreeItem) {
-							sourceParam = source;
-						}
 						await vscode.commands.executeCommand(constants.mssqlSchemaCompareCommand, sourceParam, undefined, undefined);
 					}
 				} catch (e) {
