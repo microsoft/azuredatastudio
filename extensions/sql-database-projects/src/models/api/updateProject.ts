@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as mssql from 'mssql';
+import * as mssqlVscode from 'vscode-mssql';
 
 export interface UpdateProjectDataModel {
-	sourceEndpointInfo: mssql.SchemaCompareEndpointInfo;
-	targetEndpointInfo: mssql.SchemaCompareEndpointInfo;
+	sourceEndpointInfo: mssql.SchemaCompareEndpointInfo | mssqlVscode.SchemaCompareEndpointInfo;
+	targetEndpointInfo: mssql.SchemaCompareEndpointInfo | mssqlVscode.SchemaCompareEndpointInfo;
 	action: UpdateProjectAction;
 }
 

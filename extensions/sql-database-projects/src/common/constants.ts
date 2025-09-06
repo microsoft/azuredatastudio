@@ -87,6 +87,7 @@ export const at = localize('at', "at");
 export const revealFileInOsCommand = 'revealFileInOS';
 export const schemaCompareStartCommand = 'schemaCompare.start';
 export const schemaCompareRunComparisonCommand = 'schemaCompare.runComparison';
+export const mssqlSchemaCompareCommand = 'mssql.schemaCompare';
 export const vscodeOpenCommand = 'vscode.open';
 export const refreshDataWorkspaceCommand = 'dataworkspace.refresh';
 
@@ -370,6 +371,7 @@ export const compareActionRadioButtonLabel = localize('compareActionRadiButtonLa
 export const updateActionRadioButtonLabel = localize('updateActionRadiButtonLabel', "Apply all changes");
 export const actionLabel = localize('actionLabel', "Action");
 export const applyConfirmation: string = localize('applyConfirmation', "Are you sure you want to update the target project?");
+export const selectProjectFile: string = localize('selectProjectFile', "Select project file");
 
 //#endregion
 
