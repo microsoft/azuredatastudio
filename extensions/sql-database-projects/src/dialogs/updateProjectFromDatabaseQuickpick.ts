@@ -17,14 +17,15 @@ import { UpdateProjectDataModel, UpdateProjectAction } from '../models/api/updat
  * This helper drives a small, synchronous UX flow that:
  *  1) Prompts (or reuses) a connection
  *  2) Prompts for a database (if needed)
- *  3) Lets the user select an existing .sqlproj in the workspace (or browse to one)
+ *  3) Lets the user select an existing .sqlproj in the workspace (or browse to one) if needed
  *  4) Asks whether the user wants to Compare or Update the project
  *  5) Constructs an UpdateProjectDataModel and passes it to the optional callback
  *
  * @param connectionInfo Optional connection info to use instead of prompting the user for a connection
+ * @param projectFilePath Optional project file path to use instead of prompting the user to select one
  * @param updateProjectFromDatabaseCallback Optional callback function to update the project from the user inputs
  */
-export async function UpdateProjectFromDatabaseWithQuickpick(connectionInfo?: IConnectionInfo, updateProjectFromDatabaseCallback?: (model: UpdateProjectDataModel) => Promise<void>
+export async function UpdateProjectFromDatabaseWithQuickpick(connectionInfo?: IConnectionInfo, projectFilePath?: string, updateProjectFromDatabaseCallback?: (model: UpdateProjectDataModel) => Promise<void>
 ): Promise<void> {
 	const vscodeMssqlApi = await getVscodeMssqlApi();
 
@@ -59,49 +60,48 @@ export async function UpdateProjectFromDatabaseWithQuickpick(connectionInfo?: IC
 		selectedDatabase = dbSelection;
 	}
 
-	// Prompt 2. Browse and Select existing project file - first show workspace projects, then browse option
-	let projectFilePath: string;
+	// Prompt 2. Browse and Select existing project file, when projectFilePath is not available
+	if (!projectFilePath) {
+		// Get workspace projects
+		const workspaceProjects = await getSqlProjectsInWorkspace();
+		const projectOptions: string[] = [constants.browseEllipsisWithIcon];
 
-	// Get workspace projects
-	const workspaceProjects = await getSqlProjectsInWorkspace();
-	const projectOptions: string[] = [constants.browseEllipsisWithIcon];
-
-	// Add workspace projects to the list
-	workspaceProjects.forEach(projectUri => {
-		projectOptions.push(projectUri.fsPath);
-	});
-
-	const projectSelection = await vscode.window.showQuickPick(
-		projectOptions,
-		{ title: constants.selectProjectFile, ignoreFocusOut: true });
-
-	if (!projectSelection) {
-		// User cancelled
-		return undefined;
-	}
-
-	if (projectSelection === constants.browseEllipsisWithIcon) {
-		// Show file browser
-		const projectFileUri = await vscode.window.showOpenDialog({
-			canSelectFiles: true,
-			canSelectFolders: false,
-			canSelectMany: false,
-			openLabel: constants.selectString,
-			title: constants.selectProjectFile,
-			filters: {
-				'SQL Projects': ['sqlproj']
-			}
+		// Add workspace projects to the list
+		workspaceProjects.forEach(projectUri => {
+			projectOptions.push(projectUri.fsPath);
 		});
 
-		if (!projectFileUri || projectFileUri.length === 0) {
+		const projectSelection = await vscode.window.showQuickPick(
+			projectOptions,
+			{ title: constants.selectProjectFile, ignoreFocusOut: true });
+
+		if (!projectSelection) {
 			// User cancelled
 			return undefined;
 		}
 
-		projectFilePath = projectFileUri[0].fsPath;
-	} else {
-		// User selected a workspace project
-		projectFilePath = projectSelection;
+		if (projectSelection === constants.browseEllipsisWithIcon) {
+			// Show file browser
+			const projectFileUri = await vscode.window.showOpenDialog({
+				canSelectFiles: true,
+				canSelectFolders: false,
+				canSelectMany: false,
+				openLabel: constants.selectString,
+				title: constants.selectProjectFile,
+				filters: {
+					'SQL Projects': ['sqlproj']
+				}
+			});
+
+			if (!projectFileUri || projectFileUri.length === 0) {
+				// User cancelled
+				return undefined;
+			}
+			projectFilePath = projectFileUri[0].fsPath;
+		} else {
+			// User selected a workspace project
+			projectFilePath = projectSelection;
+		}
 	}
 
 	const project = await Project.openProject(projectFilePath);

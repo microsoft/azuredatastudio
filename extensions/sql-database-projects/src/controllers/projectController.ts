@@ -1829,18 +1829,26 @@ export class ProjectsController {
 			await updateProjectFromDatabaseDialog.openDialog();
 			return updateProjectFromDatabaseDialog;
 		} else {
+			let projectFilePath: string | undefined;
 			if (context) {
 				// VS Code's connection/profile may only represent the server-level connection and won't reflect
 				// the database selected in the MSSQL tree node that the user invoked the command from.
 				// In ADS the context can include the database info, but in VS Code we need to ask the MSSQL
 				// extension for the actual database name for this tree node and then update the connection object.
-				const treeNodeContext = context as mssqlVscode.ITreeNodeInfo;
-				const databaseName = (await utils.getVscodeMssqlApi()).getDatabaseNameFromTreeNode(treeNodeContext);
 				if (connection !== undefined) {
+					const treeNodeContext = context as mssqlVscode.ITreeNodeInfo;
+					const databaseName = (await utils.getVscodeMssqlApi()).getDatabaseNameFromTreeNode(treeNodeContext);
 					(connection as mssqlVscode.IConnectionInfo).database = databaseName;
+				} else {
+					// Check if it's a WorkspaceTreeItem by checking for the expected properties
+					const workspaceItem = context as dataworkspace.WorkspaceTreeItem;
+					if (workspaceItem.element && workspaceItem.treeDataProvider) {
+						const project = await this.getProjectFromContext(workspaceItem);
+						projectFilePath = project.projectFilePath;
+					}
 				}
 			}
-			await UpdateProjectFromDatabaseWithQuickpick(connection as mssqlVscode.IConnectionInfo, (model: UpdateProjectDataModel) => this.updateProjectFromDatabaseCallback(model));
+			await UpdateProjectFromDatabaseWithQuickpick(connection as mssqlVscode.IConnectionInfo, projectFilePath, (model: UpdateProjectDataModel) => this.updateProjectFromDatabaseCallback(model));
 			return undefined;
 		}
 	}
