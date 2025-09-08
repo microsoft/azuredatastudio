@@ -23,7 +23,6 @@ import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
-import { ShellCommandOptions } from '../tools/shellExecutionHelper';
 import { BuildHelper } from '../tools/buildHelper';
 import { readPublishProfile, promptForSavingProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
@@ -40,6 +39,7 @@ import { DeployService } from '../models/deploy/deployService';
 import { AddItemOptions, EntryType, GenerateProjectFromOpenApiSpecOptions, IDatabaseReferenceProjectEntry, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
 import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
+import { UpdateProjectFromDatabaseWithQuickpick } from '../dialogs/updateProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
 import { ISqlDbDeployProfile } from '../models/deploy/deployProfile';
 import { FileProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
@@ -213,7 +213,7 @@ export class ProjectsController {
 
 		utils.throwIfFailed(result);
 
-		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
+		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId, creationParams.configureDefaultBuild ?? false);
 
 		return newProjFilePath;
 	}
@@ -222,15 +222,17 @@ export class ProjectsController {
 	 * Adds the template files for the provided project type
 	 * @param newProjFilePath path to project to add template files to
 	 * @param projectTypeId project type id
+	 * @param configureDefaultBuild whether to configure the default build task in tasks.json
+	 *
 	 */
-	private async addTemplateFiles(newProjFilePath: string, projectTypeId: string): Promise<void> {
+	private async addTemplateFiles(newProjFilePath: string, projectTypeId: string, configureDefaultBuild: boolean): Promise<void> {
+		const project = await Project.openProject(newProjFilePath);
 		if (projectTypeId === constants.emptySqlDatabaseProjectTypeId || newProjFilePath === '') {
+			await this.addTasksJsonFile(project, configureDefaultBuild);
 			return;
 		}
 
 		if (projectTypeId === constants.edgeSqlDatabaseProjectTypeId) {
-			const project = await Project.openProject(newProjFilePath);
-
 			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.table), 'DataTable.sql', new Map([['OBJECT_NAME', 'DataTable']]));
 			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.dataSource), 'EdgeHubInputDataSource.sql', new Map([['OBJECT_NAME', 'EdgeHubInputDataSource'], ['LOCATION', 'edgehub://']]));
 			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.dataSource), 'SqlOutputDataSource.sql', new Map([['OBJECT_NAME', 'SqlOutputDataSource'], ['LOCATION', 'sqlserver://tcp:.,1433']]));
@@ -239,6 +241,17 @@ export class ProjectsController {
 			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStream), 'SqlOutputStream.sql', new Map([['OBJECT_NAME', 'SqlOutputStream'], ['DATA_SOURCE_NAME', 'SqlOutputDataSource'], ['LOCATION', 'TSQLStreaming.dbo.DataTable'], ['OPTIONS', '']]));
 			await this.addFileToProjectFromTemplate(project, templates.get(ItemType.externalStreamingJob), 'EdgeStreamingJob.sql', new Map([['OBJECT_NAME', 'EdgeStreamingJob']]));
 		}
+
+		await this.addTasksJsonFile(project, configureDefaultBuild);
+	}
+
+	/**
+	 * Adds a tasks.json file to the project
+	 * @param project project to add the tasks.json file to
+	 * @param configureDefaultBuild whether to configure the default build task in tasks.json
+	 */
+	private async addTasksJsonFile(project: ISqlProject, configureDefaultBuild: boolean): Promise<void> {
+		await this.addFileToProjectFromTemplate(project, templates.get(ItemType.tasks), '.vscode/tasks.json', new Map([['ConfigureDefaultBuild', configureDefaultBuild.toString()]]));
 	}
 
 	private async addFileToProjectFromTemplate(project: ISqlProject, itemType: templates.ProjectScriptType, relativePath: string, expansionMacros: Map<string, string>): Promise<string> {
@@ -254,6 +267,7 @@ export class ProjectsController {
 				await project.addPostDeploymentScript(relativePath);
 				break;
 			case ItemType.publishProfile:
+			case ItemType.tasks: // tasks.json is not added to the build
 				await project.addNoneItem(relativePath);
 				break;
 			default: // a normal SQL object script
@@ -269,16 +283,18 @@ export class ProjectsController {
 	/**
 	 * Builds a project, producing a dacpac
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 * @param codeAnalysis whether to run code analysis
 	 * @returns path of the built dacpac
 	 */
-	public async buildProject(treeNode: dataworkspace.WorkspaceTreeItem): Promise<string>;
+	public async buildProject(treeNode: dataworkspace.WorkspaceTreeItem, codeAnalysis?: boolean): Promise<string>;
 	/**
 	 * Builds a project, producing a dacpac
 	 * @param project Project to be built
+	 * @param codeAnalysis whether to run code analysis
 	 * @returns path of the built dacpac
 	 */
-	public async buildProject(project: Project): Promise<string>;
-	public async buildProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<string> {
+	public async buildProject(project: Project, codeAnalysis?: boolean): Promise<string>;
+	public async buildProject(context: Project | dataworkspace.WorkspaceTreeItem, codeAnalysis: boolean = false): Promise<string> {
 		const project: Project = await this.getProjectFromContext(context);
 
 		const startTime = new Date();
@@ -301,11 +317,9 @@ export class ProjectsController {
 			}
 		}
 
-		const options: ShellCommandOptions = {
-			commandTitle: 'Build',
-			workingDirectory: project.projectFolderPath,
-			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath, project.sqlProjStyle)
-		};
+		// Get the build arguments from buildhelper method and create a new vscode.task
+		const buildArgs: string[] = this.buildHelper.constructBuildArguments(this.buildHelper.extensionBuildDirPath, project.sqlProjStyle);
+		const vscodeTask: vscode.Task = await this.createVsCodeTask(project, codeAnalysis, buildArgs);
 
 		try {
 			const crossPlatCompatible: boolean = await Project.checkPromptCrossPlatStatus(project, true /* blocking prompt */);
@@ -321,9 +335,28 @@ export class ProjectsController {
 		}
 
 		try {
-			await this.netCoreTool.runDotnetCommand(options);
-			const timeToBuild = new Date().getTime() - startTime.getTime();
+			// Check if the dotnet core is installed and if not, prompt the user to install it
+			// If the user does not have .NET Core installed, we will throw an error and stops building the project
+			await this.netCoreTool.verifyNetCoreInstallation()
 
+			// Execute the task and wait for it to complete
+			const execution = await vscode.tasks.executeTask(vscodeTask);
+
+			// Wait until the build task instance is finishes.
+			// `onDidEndTaskProcess` fires for every task in the workspace, so Filtering events to the exact TaskExecution
+			// object we kicked off (`e.execution === execution`), ensuring we don't resolve because some other task ended.
+			await new Promise<void>((resolve) => {
+				const disposable = vscode.tasks.onDidEndTaskProcess(e => {
+					if (e.execution === execution) {
+						// Once we get the matching event, dispose the listener to avoid leaks and resolve the promise.
+						disposable.dispose();
+						resolve();
+					}
+				});
+			});
+
+			// If the build was successful, we will get the path to the built dacpac
+			const timeToBuild = new Date().getTime() - startTime.getTime();
 			const currentBuildIndex = this.buildInfo.findIndex(b => b.startDate === currentBuildTimeInfo);
 			this.buildInfo[currentBuildIndex].status = Status.success;
 			this.buildInfo[currentBuildIndex].timeToCompleteAction = utils.timeConversion(timeToBuild);
@@ -334,6 +367,7 @@ export class ProjectsController {
 				.send();
 
 			return project.dacpacOutputPath;
+
 		} catch (err) {
 			const timeToFailureBuild = new Date().getTime() - startTime.getTime();
 
@@ -355,6 +389,51 @@ export class ProjectsController {
 			}
 			return '';
 		}
+	}
+
+	/**
+	 * Creates a VS Code task for building the project
+	 * @param project Project to be built
+	 * @param codeAnalysis Whether to run code analysis
+	 * @param buildArguments Arguments to pass to the build command
+	 * @returns A VS Code task for building the project
+	 * */
+	private async createVsCodeTask(project: Project, codeAnalysis: boolean, buildArguments: string[]): Promise<vscode.Task> {
+		let vscodeTask: vscode.Task | undefined = undefined;
+		const label = codeAnalysis
+			? constants.buildWithCodeAnalysisTaskName
+			: constants.buildTaskName;
+
+		// Create an array of arguments instead of a single command string
+		const args: string[] = [constants.build, utils.getNonQuotedPath(project.projectFilePath)];
+
+		if (codeAnalysis) {
+			args.push(constants.runCodeAnalysisParam);
+		}
+
+		// Adding build arguments to the args
+		args.push(...buildArguments);
+
+		// Task definition with required args
+		const taskDefinition: vscode.TaskDefinition = {
+			type: constants.sqlProjTaskType,
+			label: label,
+			command: constants.dotnet,
+			args: args,
+			problemMatcher: constants.problemMatcher
+		};
+
+		// Create a new task with the definition and shell executable
+		vscodeTask = new vscode.Task(
+			taskDefinition,
+			vscode.TaskScope.Workspace,
+			taskDefinition.label,
+			taskDefinition.type,
+			new vscode.ShellExecution(taskDefinition.command, args, { cwd: project.projectFolderPath }),
+			taskDefinition.problemMatcher
+		);
+
+		return vscodeTask;
 	}
 
 	//#region Publish
@@ -624,19 +703,25 @@ export class ProjectsController {
 	 */
 	public async schemaCompare(source: dataworkspace.WorkspaceTreeItem | azdataType.IConnectionProfile, targetParam: any = undefined): Promise<void> {
 		try {
-			// check if schema compare extension is installed
-			if (vscode.extensions.getExtension(constants.schemaCompareExtensionId)) {
+			// check if schema compare service is available
+			const service = await utils.getSchemaCompareService();
+			if (service) {
 				let sourceParam;
-
 				if (source as dataworkspace.WorkspaceTreeItem) {
 					sourceParam = (await this.getProjectFromContext(source as dataworkspace.WorkspaceTreeItem)).projectFilePath;
 				} else {
 					sourceParam = source as azdataType.IConnectionProfile;
 				}
-
 				try {
 					TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked);
-					await vscode.commands.executeCommand(constants.schemaCompareStartCommand, sourceParam, targetParam, undefined);
+					if (utils.getAzdataApi()) {
+						// ADS Environment
+
+						await vscode.commands.executeCommand(constants.schemaCompareStartCommand, sourceParam, targetParam, undefined);
+					} else {
+						// Vscode Environment
+						await vscode.commands.executeCommand(constants.mssqlSchemaCompareCommand, sourceParam, undefined, undefined);
+					}
 				} catch (e) {
 					throw new Error(constants.buildFailedCannotStartSchemaCompare);
 				}
@@ -753,6 +838,11 @@ export class ProjectsController {
 
 		if (!itemObjectName) {
 			return; // user cancelled
+		}
+
+		// Check if itemObjectName contains the file extension, remove the last occurrence
+		if (itemObjectName.toLowerCase().endsWith(fileExtension.toLowerCase())) {
+			itemObjectName = itemObjectName?.slice(0, -fileExtension.length).trim();
 		}
 
 		const relativeFilePath = path.join(relativePath, itemObjectName + fileExtension);
@@ -1451,7 +1541,8 @@ export class ProjectsController {
 				newProjName: projectInfo.projectName,
 				folderUri: vscode.Uri.file(projectInfo.outputFolder),
 				projectTypeId: constants.emptySqlDatabaseProjectTypeId,
-				sdkStyle: !!options?.isSDKStyle
+				sdkStyle: !!options?.isSDKStyle,
+				configureDefaultBuild: true
 			});
 
 			const project = await Project.openProject(newProjFilePath);
@@ -1615,7 +1706,8 @@ export class ProjectsController {
 				folderUri: vscode.Uri.file(newProjFolderUri),
 				projectTypeId: model.sdkStyle ? constants.emptySqlDatabaseSdkProjectTypeId : constants.emptySqlDatabaseProjectTypeId,
 				sdkStyle: model.sdkStyle,
-				targetPlatform: targetPlatform
+				targetPlatform: targetPlatform,
+				configureDefaultBuild: true
 			});
 
 			model.filePath = path.dirname(newProjFilePath);
@@ -1714,7 +1806,7 @@ export class ProjectsController {
 	/**
 	 * Display dialog for user to configure existing SQL Project with the changes/differences from a database
 	 */
-	public async updateProjectFromDatabase(context: azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo | dataworkspace.WorkspaceTreeItem): Promise<UpdateProjectFromDatabaseDialog> {
+	public async updateProjectFromDatabase(context: azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo | dataworkspace.WorkspaceTreeItem): Promise<UpdateProjectFromDatabaseDialog | undefined> {
 		let connection: azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined;
 		let project: Project | undefined;
 
@@ -1731,13 +1823,34 @@ export class ProjectsController {
 		} catch { }
 
 		const workspaceProjects = await utils.getSqlProjectsInWorkspace();
-		const updateProjectFromDatabaseDialog = this.getUpdateProjectFromDatabaseDialog(connection, project, workspaceProjects);
-
-		updateProjectFromDatabaseDialog.updateProjectFromDatabaseCallback = async (model) => await this.updateProjectFromDatabaseCallback(model);
-
-		await updateProjectFromDatabaseDialog.openDialog();
-
-		return updateProjectFromDatabaseDialog;
+		if (utils.getAzdataApi()) {
+			const updateProjectFromDatabaseDialog = this.getUpdateProjectFromDatabaseDialog(connection, project, workspaceProjects);
+			updateProjectFromDatabaseDialog.updateProjectFromDatabaseCallback = async (model) => await this.updateProjectFromDatabaseCallback(model);
+			await updateProjectFromDatabaseDialog.openDialog();
+			return updateProjectFromDatabaseDialog;
+		} else {
+			let projectFilePath: string | undefined;
+			if (context) {
+				// VS Code's connection/profile may only represent the server-level connection and won't reflect
+				// the database selected in the MSSQL tree node that the user invoked the command from.
+				// In ADS the context can include the database info, but in VS Code we need to ask the MSSQL
+				// extension for the actual database name for this tree node and then update the connection object.
+				if (connection !== undefined) {
+					const treeNodeContext = context as mssqlVscode.ITreeNodeInfo;
+					const databaseName = (await utils.getVscodeMssqlApi()).getDatabaseNameFromTreeNode(treeNodeContext);
+					(connection as mssqlVscode.IConnectionInfo).database = databaseName;
+				} else {
+					// Check if it's a WorkspaceTreeItem by checking for the expected properties
+					const workspaceItem = context as dataworkspace.WorkspaceTreeItem;
+					if (workspaceItem.element && workspaceItem.treeDataProvider) {
+						const project = await this.getProjectFromContext(workspaceItem);
+						projectFilePath = project.projectFilePath;
+					}
+				}
+			}
+			await UpdateProjectFromDatabaseWithQuickpick(connection as mssqlVscode.IConnectionInfo, projectFilePath, (model: UpdateProjectDataModel) => this.updateProjectFromDatabaseCallback(model));
+			return undefined;
+		}
 	}
 
 	public getUpdateProjectFromDatabaseDialog(connection: azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined, project: Project | undefined, workspaceProjects: vscode.Uri[]): UpdateProjectFromDatabaseDialog {
@@ -1765,7 +1878,13 @@ export class ProjectsController {
 	 */
 	public async updateProjectFromDatabaseApiCall(model: UpdateProjectDataModel): Promise<void> {
 		if (model.action === UpdateProjectAction.Compare) {
-			await vscode.commands.executeCommand(constants.schemaCompareRunComparisonCommand, model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
+			if (utils.getAzdataApi()) {
+				// ADS environment
+				await vscode.commands.executeCommand(constants.schemaCompareRunComparisonCommand, model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
+			} else {
+				// Vs Code environment
+				await vscode.commands.executeCommand(constants.mssqlSchemaCompareCommand, model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
+			}
 		} else if (model.action === UpdateProjectAction.Update) {
 			await vscode.window.showWarningMessage(constants.applyConfirmation, { modal: true }, constants.yesString).then(async (result) => {
 				if (result === constants.yesString) {
@@ -1794,11 +1913,9 @@ export class ProjectsController {
 	 * @param source source for schema comparison
 	 * @param target target sql project for schema comparison to update
 	 */
-	private async schemaCompareAndUpdateProject(source: mssql.SchemaCompareEndpointInfo, target: mssql.SchemaCompareEndpointInfo): Promise<void> {
-		// Run schema comparison
-		const ext = vscode.extensions.getExtension(mssql.extension.name)!;
-		const service = (await ext.activate() as mssql.IExtension).schemaCompare;
-		const deploymentOptions = await service.schemaCompareGetDefaultOptions();
+	private async schemaCompareAndUpdateProject(source: mssql.SchemaCompareEndpointInfo | mssqlVscode.SchemaCompareEndpointInfo, target: mssql.SchemaCompareEndpointInfo | mssqlVscode.SchemaCompareEndpointInfo): Promise<void> {
+		// Run schema comparison - use the schema compare service
+		const service = await utils.getSchemaCompareService();
 		const operationId = UUID.generateUuid();
 
 		target.targetScripts = await this.getProjectScriptFiles(target.projectFilePath);
@@ -1806,10 +1923,22 @@ export class ProjectsController {
 
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.SchemaComparisonStarted);
 
-		// Perform schema comparison.  Results are cached in SqlToolsService under the operationId
-		const comparisonResult: mssql.SchemaCompareResult = await service.schemaCompare(
-			operationId, source, target, utils.getAzdataApi()!.TaskExecutionMode.execute, deploymentOptions.defaultDeploymentOptions
-		);
+		const deploymentOptions = await service.schemaCompareGetDefaultOptions();
+
+		// Perform schema comparison based on environment
+		let comparisonResult: mssql.SchemaCompareResult | mssqlVscode.SchemaCompareResult;
+
+		if (utils.getAzdataApi()) {
+			// Azure Data Studio environment
+			comparisonResult = await (service as mssql.ISchemaCompareService).schemaCompare(
+				operationId, source as mssql.SchemaCompareEndpointInfo, target as mssql.SchemaCompareEndpointInfo, utils.getAzdataApi()!.TaskExecutionMode.execute, deploymentOptions.defaultDeploymentOptions
+			);
+		} else {
+			// VS Code environment
+			comparisonResult = await (service as mssqlVscode.ISchemaCompareService).compare(
+				operationId, source as mssqlVscode.SchemaCompareEndpointInfo, target as mssqlVscode.SchemaCompareEndpointInfo, mssqlVscode.TaskExecutionMode.execute, deploymentOptions.defaultDeploymentOptions
+			);
+		}
 
 		if (!comparisonResult || !comparisonResult.success) {
 			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectController, 'SchemaComparisonFailed')
@@ -1832,7 +1961,7 @@ export class ProjectsController {
 		}
 
 		// Publish the changes (retrieved from the cache by operationId)
-		const publishResult = await this.schemaComparePublishProjectChanges(operationId, target.projectFilePath, target.extractTarget);
+		const publishResult = await this.schemaComparePublishProjectChanges(operationId, target.projectFilePath, target.extractTarget as mssql.ExtractTarget);
 
 		if (publishResult.success) {
 			void vscode.window.showInformationMessage(constants.applySuccess);
@@ -1861,13 +1990,24 @@ export class ProjectsController {
 	 * @param folderStructure folder structure to use when updating the target project
 	 * @returns
 	 */
-	public async schemaComparePublishProjectChanges(operationId: string, projectFilePath: string, folderStructure: mssql.ExtractTarget): Promise<mssql.SchemaComparePublishProjectResult> {
-		const ext = vscode.extensions.getExtension(mssql.extension.name)!;
-		const service = (await ext.activate() as mssql.IExtension).schemaCompare;
-
+	public async schemaComparePublishProjectChanges(operationId: string, projectFilePath: string, folderStructure: mssql.ExtractTarget | mssqlVscode.ExtractTarget): Promise<mssql.SchemaComparePublishProjectResult> {
+		const service = await utils.getSchemaCompareService();
 		const projectPath = path.dirname(projectFilePath);
 
-		const result: mssql.SchemaComparePublishProjectResult = await service.schemaComparePublishProjectChanges(operationId, projectPath, folderStructure, utils.getAzdataApi()!.TaskExecutionMode.execute);
+		// Perform schema compare publish based on environment
+		let result: mssql.SchemaComparePublishProjectResult;
+
+		if (utils.getAzdataApi()) {
+			// Azure Data Studio environment
+			result = await (service as mssql.ISchemaCompareService).schemaComparePublishProjectChanges(
+				operationId, projectPath, folderStructure as mssql.ExtractTarget, utils.getAzdataApi()!.TaskExecutionMode.execute
+			);
+		} else {
+			// VS Code environment
+			result = await (service as mssqlVscode.ISchemaCompareService).publishProjectChanges(
+				operationId, projectPath, folderStructure as mssqlVscode.ExtractTarget, mssqlVscode.TaskExecutionMode.execute as any
+			);
+		}
 
 		if (!result.errorMessage) {
 			const project = await Project.openProject(projectFilePath);
@@ -1962,4 +2102,5 @@ export interface NewProjectParams {
 	sdkStyle: boolean;
 	projectGuid?: string;
 	targetPlatform?: SqlTargetPlatform;
+	configureDefaultBuild?: boolean;
 }

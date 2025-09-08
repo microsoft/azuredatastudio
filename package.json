@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.53.0",
-  "distro": "bb67314c194f30903f188c763d70a9405ca3f985",
+  "distro": "46a82de8b3a0078fb54585b264fdd6fe9e41d33b",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -117,7 +117,7 @@
     "rxjs": "5.4.0",
     "sanitize-html": "1.19.1",
     "semver-umd": "^5.5.7",
-    "slickgrid": "github:Microsoft/SlickGrid.ADS#2.3.45",
+    "slickgrid": "github:Microsoft/SlickGrid.ADS#2.3.50",
     "tas-client-umd": "0.1.8",
     "turndown": "^7.0.0",
     "turndown-plugin-gfm": "^1.0.2",
@@ -277,9 +277,9 @@
     "windows-foreground-love": "0.5.0"
   },
   "resolutions": {
-    "elliptic": "^6.5.3",
     "nwmatcher": "^1.4.4",
     "gridstack/node-sass": "^7.0.0",
-    "node-sass": "^7.0.0"
+    "node-sass": "^7.0.0",
+    "tar-fs": "^2.1.3"
   }
 }

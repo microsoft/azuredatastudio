@@ -64,6 +64,7 @@ describe('ProjectsController', function (): void {
 					newProjName: 'TestProjectName',
 					folderUri: vscode.Uri.file(projFileDir),
 					projectTypeId: constants.emptySqlDatabaseProjectTypeId,
+					configureDefaultBuild: true,
 					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
 					targetPlatform: projTargetPlatform,
 					sdkStyle: false
@@ -82,6 +83,7 @@ describe('ProjectsController', function (): void {
 					newProjName: 'TestProjectName',
 					folderUri: vscode.Uri.file(projFileDir),
 					projectTypeId: constants.edgeSqlDatabaseProjectTypeId,
+					configureDefaultBuild: true,
 					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
 					sdkStyle: true
 				});
@@ -207,6 +209,41 @@ describe('ProjectsController', function (): void {
 					// reload project
 					project = await Project.openProject(project.projectFilePath);
 					await verifyFolderAdded(constants.reservedProjectFolders[i], projController, project, <BaseProjectTreeItem>node);
+				}
+			});
+
+			it('Should create .vscode/tasks.json with isDefault=true when configureDefaultBuild is true', async function (): Promise<void> {
+				const projController = new ProjectsController(testContext.outputChannel);
+				const projFileDir = await testUtils.generateTestFolderPath(this.test);
+
+				// Act: create a new project with configureDefaultBuild: true
+				const projFilePath = await projController.createNewProject({
+					newProjName: 'TestProjectWithTasks',
+					folderUri: vscode.Uri.file(projFileDir),
+					projectTypeId: constants.emptySqlDatabaseProjectTypeId,
+					configureDefaultBuild: true,
+					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
+					targetPlatform: SqlTargetPlatform.sqlAzure,
+					sdkStyle: false
+				});
+
+				const project = await Project.openProject(projFilePath);
+				// Path to the expected tasks.json file
+				const tasksJsonPath = path.join(projFileDir, project.projectFileName, '.vscode', 'tasks.json');
+
+				// Assert: tasks.json exists
+				const exists = await utils.exists(tasksJsonPath);
+				should(exists).be.true('.vscode/tasks.json should be created when configureDefaultBuild is true');
+
+				// If exists, check if isDefault is true in any build task
+				if (exists) {
+					const tasksJsonContent = await fs.readFile(tasksJsonPath, 'utf-8');
+					const tasksJson = JSON.parse(tasksJsonContent);
+
+					should(tasksJson.tasks).be.Array().and.have.length(1);
+					const task = tasksJson.tasks[0];
+					should(task.group).not.be.undefined();
+					should(task.group.isDefault).equal('true', 'The build task should have isDefault: true');
 				}
 			});
 
@@ -1180,6 +1217,58 @@ describe('ProjectsController', function (): void {
 			project = await Project.openProject(project.projectFilePath);
 			should(project.sqlCmdVariables.size).equal(2, 'The project should still have 2 sqlcmd variables');
 			should(project.sqlCmdVariables.get(sqlcmdVarToUpdate.friendlyName)).equal(updatedValue, 'The value of the sqlcmd variable should have been updated');
+		});
+
+		it('Should remove file extensions from user input when creating files', async function (): Promise<void> {
+			const projController = new ProjectsController(testContext.outputChannel);
+			let project = await testUtils.createTestProject(this.test, baselines.newProjectFileBaseline);
+
+			// Test cases for different extension scenarios
+			const testCases = [
+				{ input: 'TableName.sql', expected: 'TableName', extension: constants.sqlFileExtension },
+				{ input: 'TableName.sql.sql', expected: 'TableName.sql', extension: constants.sqlFileExtension },
+				{ input: 'MyTable', expected: 'MyTable', extension: constants.sqlFileExtension }, // no extension
+				{ input: 'MyTable.SQL', expected: 'MyTable', extension: constants.sqlFileExtension }, // uppercase extension
+				{ input: 'MyTable .Sql', expected: 'MyTable', extension: constants.sqlFileExtension }, // mixed case extension
+				{ input: 'PubProfile.publish.xml', expected: 'PubProfile', extension: constants.publishProfileExtension },
+				{ input: 'PubProfile.publish.xml.publish.xml', expected: 'PubProfile.publish.xml', extension: constants.publishProfileExtension }
+			];
+
+			for (const testCase of testCases) {
+				// Mock the user input
+				sinon.stub(vscode.window, 'showInputBox').resolves(testCase.input);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(testCase.input);
+
+				// Add item to project
+				if (testCase.extension === constants.sqlFileExtension) {
+					await projController.addItemPrompt(project, '', { itemType: ItemType.script });
+				} else {
+					await projController.addItemPrompt(project, '', { itemType: ItemType.publishProfile });
+				}
+
+				// Reload project to get updated state
+				project = await Project.openProject(project.projectFilePath);
+
+				// Find the created file
+				const expectedFileName = `${testCase.expected}${testCase.extension}`;
+
+				// Find the file project entry
+				let fileProjectEntry = project.sqlObjectScripts;
+				if (testCase.extension === constants.publishProfileExtension) {
+					fileProjectEntry = project.publishProfiles;
+				}
+
+				// Get the created file
+				const createdFile = fileProjectEntry.find(f => path.basename(f.relativePath) === expectedFileName);
+
+				// Assert the created file exists
+				should(createdFile).not.be.undefined();
+				should(await utils.exists(path.join(project.projectFolderPath, expectedFileName))).be.true(`File ${expectedFileName} should exist on disk for input ${testCase.input}`);
+
+				// Clean up for next iteration
+				await project.deleteSqlObjectScript(createdFile!.relativePath);
+				sinon.restore();
+			}
 		});
 	});
 });

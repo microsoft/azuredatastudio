@@ -24,6 +24,7 @@ class NewProjectDialogModel {
 	location: string = '';
 	targetPlatform?: string;
 	sdkStyleProject?: boolean;
+	configureDefaultBuild: boolean = false;
 }
 
 export async function openSpecificProjectNewProjectDialog(projectType: IProjectType, workspaceService: WorkspaceService): Promise<vscode.Uri | undefined> {
@@ -90,7 +91,7 @@ export class NewProjectDialog extends DialogBase {
 				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId })
 				.send();
 
-			this.projectUri = await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId, this.model.targetPlatform, this.model.sdkStyleProject);
+			this.projectUri = await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId, this.model.targetPlatform, this.model.sdkStyleProject, this.model.configureDefaultBuild);
 			this.newProjectDialogComplete?.resolve();
 		}
 		catch (err) {
