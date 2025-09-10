@@ -6,6 +6,10 @@ All notable changes to the SQL Database Projects extension will be documented in
 
 ## [Unreleased]
 
+## [1.5.4] - 2025-09-11
+
+- Adds support for updating a SQL project from an existing database with 'Update project from database' option.
+
 ## [1.5.3] - 2025-06-18
 
 - Adds support for SQL project build as a VS Code task.
