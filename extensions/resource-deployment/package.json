@@ -524,25 +524,26 @@
     ]
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^3.0.1",
-    "axios": "^1.8.2",
-    "linux-release-info": "^2.0.0",
-    "promisify-child-process": "^3.1.1",
-    "semver": "^7.5.2",
+    "@microsoft/ads-extension-telemetry": "3.0.1",
+    "axios": "1.8.2",
+    "linux-release-info": "2.0.0",
+    "promisify-child-process": "3.1.1",
+    "semver": "7.5.2",
     "sudo-prompt": "9.1.1",
-    "vscode-nls": "^4.0.0",
-    "yamljs": "^0.3.0"
+    "vscode-nls": "4.0.0",
+    "yamljs": "0.3.0"
   },
   "devDependencies": {
-    "@types/mocha": "^7.0.2",
-    "@types/semver": "^7.3.1",
-    "@types/sinon": "^9.0.8",
+    "@types/mocha": "7.0.2",
+    "@types/semver": "7.3.1",
+    "@types/sinon": "9.0.8",
     "@types/yamljs": "0.2.30",
-    "@microsoft/azdata-test": "^3.0.4",
-    "mocha": "^9.2.2",
-    "should": "^13.2.3",
-    "sinon": "^9.2.0",
-    "typemoq": "^2.1.0",
-    "@microsoft/vscodetestcover": "^1.2.2"
+    "@microsoft/azdata-test": "3.0.4",
+    "mocha": "9.2.2",
+    "should": "13.2.3",
+    "sinon": "9.2.0",
+    "typemoq": "2.1.0",
+    "@microsoft/vscodetestcover": "1.2.2"
   }
 }
+

@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-tsxml@^0.1.0:
+tsxml@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/tsxml/-/tsxml-0.1.0.tgz#d73f14a0d844af51edc0b98bdb52634a41b9b0d4"
-  integrity sha1-1z8UoNhEr1HtwLmL21JjSkG5sNQ=
+  integrity sha512-jBHz0P3aWGjGDEnpSHYis126DtigXBGd/Gmy27/v2E50KX2a72sGDf2yK4U9IuOrnq4TsoQ+xWFLWOCyHX+ljg==
