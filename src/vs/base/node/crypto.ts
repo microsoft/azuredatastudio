@@ -10,7 +10,7 @@ import { once } from 'vs/base/common/functional';
 export async function checksum(path: string, sha1hash: string | undefined): Promise<void> {
 	const checksumPromise = new Promise<string | undefined>((resolve, reject) => {
 		const input = fs.createReadStream(path);
-		const hash = crypto.createHash('sha1');
+		const hash = crypto.createHash('sha1'); // CodeQL [SM04514] Used by the update service to verify ADS update packages from Microsoft
 		input.pipe(hash);
 
 		const done = once((err?: Error, result?: string) => {

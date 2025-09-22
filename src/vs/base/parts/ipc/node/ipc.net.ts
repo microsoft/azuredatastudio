@@ -773,7 +773,7 @@ export function createRandomIPCHandle(): string {
 }
 
 export function createStaticIPCHandle(directoryPath: string, type: string, version: string): string {
-	const scope = createHash('md5').update(directoryPath).digest('hex');
+	const scope = createHash('md5').update(directoryPath).digest('hex'); // CodeQL [SM04514] The hash is just creating consistent, short identifiers for IPC socket names.
 
 	// Windows: use named pipe
 	if (process.platform === 'win32') {
