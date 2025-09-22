@@ -82,9 +82,17 @@ async function getSysroot(arch) {
         // Uncomment the following line to enforce SHA verification:
         // throw new Error(`Tarball sha1sum is wrong. Expected ${tarballSha}, actual ${sha}`);
     }
-    const proc = (0, child_process_1.spawnSync)('tar', ['xf', tarball, '-C', sysroot]);
+    // Check file size and type before extraction
+    const stats = fs.statSync(tarball);
+    console.log(`Downloaded file size: ${stats.size} bytes`);
+    // Try to identify file type
+    const fileTypeCheck = (0, child_process_1.spawnSync)('file', [tarball]);
+    console.log(`File type: ${fileTypeCheck.stdout?.toString().trim()}`);
+    const proc = (0, child_process_1.spawnSync)('tar', ['xvf', tarball, '-C', sysroot]);
     if (proc.status) {
-        throw new Error('Tarball extraction failed with code ' + proc.status);
+        console.error(`Tar stderr: ${proc.stderr?.toString()}`);
+        console.error(`Tar stdout: ${proc.stdout?.toString()}`);
+        throw new Error(`Tarball extraction failed with code ${proc.status}. Stderr: ${proc.stderr?.toString()}`);
     }
     fs.rmSync(tarball);
     fs.writeFileSync(stamp, url);
