@@ -1,0 +1,1 @@
+curl -O https://msftelectron.blob.core.windows.net/sysroots/toolchain/dcd5767244034c6f9b42b64a85423d6cb849fa1e/debian_bullseye_amd64_sysroot.tar.xz
