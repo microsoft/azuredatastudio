@@ -33,6 +33,10 @@ export interface IOSStatistics {
 	loadavg: number[];
 }
 
+export interface INativeHostOptions {
+	readonly targetWindowId?: number;
+}
+
 export interface ICommonNativeHostService {
 
 	readonly _serviceBrand: undefined;
@@ -162,7 +166,7 @@ export interface ICommonNativeHostService {
 	exit(code: number): Promise<void>;
 
 	// Development
-	openDevTools(options?: OpenDevToolsOptions): Promise<void>;
+	openDevTools(options?: Partial<OpenDevToolsOptions> & INativeHostOptions): Promise<void>;
 	toggleDevTools(): Promise<void>;
 	sendInputEvent(event: MouseInputEvent): Promise<void>;
 

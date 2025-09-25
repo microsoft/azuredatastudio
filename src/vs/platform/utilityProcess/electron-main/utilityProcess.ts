@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { BrowserWindow, Details, MessageChannelMain, app, utilityProcess, UtilityProcess as ElectronUtilityProcess, ForkOptions } from 'electron';
+import { BrowserWindow, Details, MessageChannelMain, app, utilityProcess, UtilityProcess as ElectronUtilityProcess } from 'electron';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { Emitter, Event } from 'vs/base/common/event';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -72,10 +72,11 @@ export interface IUtilityProcessConfiguration {
 	readonly parentLifecycleBound?: number;
 
 	/**
-	 * Allow the utility process to force heap allocations inside
-	 * the V8 sandbox.
+	 * HTTP 401 and 407 requests created via electron:net module
+	 * will be redirected to the main process and can be handled
+	 * via the app#login event.
 	 */
-	readonly forceAllocationsToV8Sandbox?: boolean;
+	readonly respondToAuthRequestsFromMainProcess?: boolean;
 }
 
 export interface IWindowUtilityProcessConfiguration extends IUtilityProcessConfiguration {
@@ -227,7 +228,7 @@ export class UtilityProcess extends Disposable {
 		const args = this.configuration.args ?? [];
 		const execArgv = this.configuration.execArgv ?? [];
 		const allowLoadingUnsignedLibraries = this.configuration.allowLoadingUnsignedLibraries;
-		const forceAllocationsToV8Sandbox = this.configuration.forceAllocationsToV8Sandbox;
+		const respondToAuthRequestsFromMainProcess = this.configuration.respondToAuthRequestsFromMainProcess;
 		const stdio = 'pipe';
 		const env = this.createEnv(configuration);
 
@@ -239,9 +240,9 @@ export class UtilityProcess extends Disposable {
 			env,
 			execArgv,
 			allowLoadingUnsignedLibraries,
-			forceAllocationsToV8Sandbox,
+			respondToAuthRequestsFromMainProcess,
 			stdio
-		} as ForkOptions & { forceAllocationsToV8Sandbox?: Boolean });
+		});
 
 		// Register to events
 		this.registerListeners(this.process, this.configuration, serviceName);

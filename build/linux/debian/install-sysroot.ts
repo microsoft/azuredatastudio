@@ -13,11 +13,11 @@ import { DebianArchString } from './types';
 import * as util from '../../lib/util';
 
 // Based on https://source.chromium.org/chromium/chromium/src/+/main:build/linux/sysroot_scripts/install-sysroot.py.
-const URL_PREFIX = 'https://msftelectron.blob.core.windows.net';
+const URL_PREFIX = 'https://msftelectronbuild.z5.web.core.windows.net';
 const URL_PATH = 'sysroots/toolchain';
 
 function getSha(filename: fs.PathLike): string {
-	const hash = createHash('sha1'); // CodeQL [SM04514] This sha1 is needed to interoperate with external SHA-1 checksums.
+	const hash = createHash('sha256');
 	// Read file 1 MB at a time
 	const fd = fs.openSync(filename, 'r');
 	const buffer = Buffer.alloc(1024 * 1024);
@@ -32,7 +32,7 @@ function getSha(filename: fs.PathLike): string {
 }
 
 type SysrootDictEntry = {
-	Sha1Sum: string;
+	Sha256Sum: string;
 	SysrootDir: string;
 	Tarball: string;
 };
@@ -48,9 +48,9 @@ export async function getSysroot(arch: DebianArchString): Promise<string> {
 	const sysrootArch = arch === 'armhf' ? 'bullseye_arm' : `bullseye_${arch}`;
 	const sysrootDict: SysrootDictEntry = sysrootInfo[sysrootArch];
 	const tarballFilename = sysrootDict['Tarball'];
-	const tarballSha = sysrootDict['Sha1Sum'];
+	const tarballSha = sysrootDict['Sha256Sum'];
 	const sysroot = path.join(tmpdir(), sysrootDict['SysrootDir']);
-	const url = [URL_PREFIX, URL_PATH, tarballSha, tarballFilename].join('/');
+	const url = [URL_PREFIX, URL_PATH, tarballSha].join('/');
 	const stamp = path.join(sysroot, '.stamp');
 	if (fs.existsSync(stamp) && fs.readFileSync(stamp).toString() === url) {
 		return sysroot;

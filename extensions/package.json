@@ -14,6 +14,12 @@
     "esbuild": "0.17.14",
     "vscode-grammar-updater": "^1.1.0"
   },
+  "overrides": {
+    "node-gyp-build": "4.8.1",
+    "@parcel/watcher@2.1.0": {
+      "node-addon-api": "7.1.0"
+    }
+  },
   "resolutions": {
     "node-gyp-build": "4.8.1"
   }

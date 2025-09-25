@@ -6,7 +6,7 @@
 import { Event } from 'vs/base/common/event';
 import { workbenchInstantiationService as browserWorkbenchInstantiationService, ITestInstantiationService, TestEncodingOracle, TestEnvironmentService, TestFileDialogService, TestFilesConfigurationService, TestFileService, TestLifecycleService, TestTextFileService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { ISharedProcessService } from 'vs/platform/ipc/electron-sandbox/services';
-import { INativeHostService, IOSProperties, IOSStatistics } from 'vs/platform/native/common/native';
+import { INativeHostOptions, INativeHostService, IOSProperties, IOSStatistics } from 'vs/platform/native/common/native';
 import { VSBuffer, VSBufferReadable, VSBufferReadableStream } from 'vs/base/common/buffer';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
@@ -135,7 +135,7 @@ export class TestNativeHostService implements INativeHostService {
 	async closeWindowById(): Promise<void> { }
 	async quit(): Promise<void> { }
 	async exit(code: number): Promise<void> { }
-	async openDevTools(options?: Electron.OpenDevToolsOptions | undefined): Promise<void> { }
+	async openDevTools(options?: Partial<Electron.OpenDevToolsOptions> & INativeHostOptions | undefined): Promise<void> { }
 	async toggleDevTools(): Promise<void> { }
 	async resolveProxy(url: string): Promise<string | undefined> { return undefined; }
 	async findFreePort(startPort: number, giveUpAfter: number, timeout: number, stride?: number): Promise<number> { return -1; }
