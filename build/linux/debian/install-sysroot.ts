@@ -13,7 +13,7 @@ import { DebianArchString } from './types';
 import * as util from '../../lib/util';
 
 // Based on https://source.chromium.org/chromium/chromium/src/+/main:build/linux/sysroot_scripts/install-sysroot.py.
-const URL_PREFIX = 'https://msftelectron.blob.core.windows.net';
+const URL_PREFIX = 'https://msftelectronbuild.z5.web.core.windows.net/';
 const URL_PATH = 'sysroots/toolchain';
 
 function getSha(filename: fs.PathLike): string {
