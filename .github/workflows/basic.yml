@@ -18,7 +18,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 20.17
       - uses: actions/setup-python@v5
@@ -88,7 +88,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 20.17
       - uses: actions/setup-python@v5
@@ -157,7 +157,7 @@ jobs:
   #   steps:
   #     - uses: actions/checkout@v4
 
-  #     - uses: actions/setup-node@v4
+  #     - uses: actions/setup-node@v5
   #       with:
   #         node-version: 18.15
 
