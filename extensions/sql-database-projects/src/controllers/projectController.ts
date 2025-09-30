@@ -539,7 +539,8 @@ export class ProjectsController {
 
 			return publishDatabaseDialog.waitForClose();
 		} else {
-			return this.publishDatabase(project);
+			// return this.publishDatabase(project);
+			return await vscode.commands.executeCommand(constants.mssqlPublishProjectCommand, project.projectFilePath);
 		}
 	}
 
