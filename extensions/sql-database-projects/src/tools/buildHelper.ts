@@ -200,9 +200,6 @@ export class BuildHelper {
 			args.push(`/p:NETCoreTargetsPath=${buildDirPath}`);
 		}
 
-		// Adding verbose flag
-		args.push(constants.detailedVerbose);
-
 		return args;
 	}
 }
