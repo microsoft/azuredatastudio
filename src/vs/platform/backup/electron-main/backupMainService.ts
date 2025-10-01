@@ -410,6 +410,6 @@ export class BackupMainService implements IBackupMainService {
 			key = folderUri.toString().toLowerCase();
 		}
 
-		return createHash('md5').update(key).digest('hex');
+		return createHash('md5').update(key).digest('hex'); // CodeQL [SM04514] The hash doesn't need cryptographic strength - it just needs to create consistent, unique identifiers for backup folders.
 	}
 }

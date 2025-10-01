@@ -13,7 +13,7 @@ const https = require("https");
 const path = require("path");
 const util = require("../../lib/util");
 // Based on https://source.chromium.org/chromium/chromium/src/+/main:build/linux/sysroot_scripts/install-sysroot.py.
-const URL_PREFIX = 'https://msftelectron.blob.core.windows.net';
+const URL_PREFIX = 'https://msftelectronbuild.z5.web.core.windows.net/';
 const URL_PATH = 'sysroots/toolchain';
 function getSha(filename) {
     const hash = (0, crypto_1.createHash)('sha1'); // CodeQL [SM04514] This sha1 is needed to interoperate with external SHA-1 checksums.

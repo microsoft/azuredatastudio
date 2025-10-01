@@ -29,7 +29,7 @@ export function getWorkspaceIdentifier(configPath: URI): IWorkspaceIdentifier {
 			configPathStr = configPathStr.toLowerCase(); // sanitize for platform file system
 		}
 
-		return createHash('md5').update(configPathStr).digest('hex');
+		return createHash('md5').update(configPathStr).digest('hex'); // CodeQL [SM04514] The MD5 usage here is perfectly safe since it's only used to generate deterministic, unique identifiers from paths - not for security.
 	}
 
 	return {
@@ -50,7 +50,7 @@ export function getSingleFolderWorkspaceIdentifier(folderUri: URI, folderStat?: 
 
 		// Remote: produce a hash from the entire URI
 		if (folderUri.scheme !== Schemas.file) {
-			return createHash('md5').update(folderUri.toString()).digest('hex');
+			return createHash('md5').update(folderUri.toString()).digest('hex'); // CodeQL [SM04514] The MD5 usage here is perfectly safe since it's only used to generate deterministic, unique identifiers from paths - not for security.
 		}
 
 		// Local: we use the ctime as extra salt to the
@@ -77,7 +77,7 @@ export function getSingleFolderWorkspaceIdentifier(folderUri: URI, folderStat?: 
 			}
 		}
 
-		return createHash('md5').update(folderUri.fsPath).update(ctime ? String(ctime) : '').digest('hex');
+		return createHash('md5').update(folderUri.fsPath).update(ctime ? String(ctime) : '').digest('hex'); // CodeQL [SM04514] The MD5 usage here is perfectly safe since it's only used to generate deterministic, unique identifiers from paths - not for security.
 	}
 
 	const folderId = getFolderId();
