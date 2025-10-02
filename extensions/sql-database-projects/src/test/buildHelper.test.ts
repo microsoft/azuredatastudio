@@ -19,7 +19,7 @@ describe('BuildHelper: Build Helper tests', function (): void {
 
 		// Check that it returns an array
 		should(resultArgs).be.Array();
-		should(resultArgs.length).equal(4); // 4 arguments for legacy projects
+		should(resultArgs.length).equal(3); // 3 arguments for legacy projects
 
 		// Check individual arguments
 		should(resultArgs[0]).equal('/p:NetCoreBuild=true');
@@ -31,8 +31,6 @@ describe('BuildHelper: Build Helper tests', function (): void {
 			should(resultArgs[1]).equal('/p:SystemDacpacsLocation="dummy/dll path"');
 			should(resultArgs[2]).equal('/p:NETCoreTargetsPath="dummy/dll path"');
 		}
-
-		should(resultArgs[3]).equal('-v:detailed');
 	});
 
 	it('Should get correct build arguments for SDK-style projects', function (): void {
@@ -42,7 +40,7 @@ describe('BuildHelper: Build Helper tests', function (): void {
 
 		// Check that it returns an array
 		should(resultArgs).be.Array();
-		should(resultArgs.length).equal(3); // 3 arguments for SDK projects (no NETCoreTargetsPath)
+		should(resultArgs.length).equal(2); // 2 arguments for SDK projects (no NETCoreTargetsPath)
 
 		// Check individual arguments
 		should(resultArgs[0]).equal('/p:NetCoreBuild=true');
@@ -52,8 +50,6 @@ describe('BuildHelper: Build Helper tests', function (): void {
 		} else {
 			should(resultArgs[1]).equal('/p:SystemDacpacsLocation="dummy/dll path"');
 		}
-
-		should(resultArgs[2]).equal('-v:detailed');
 	});
 
 	it('Should get correct build folder', async function (): Promise<void> {
