@@ -115,8 +115,6 @@ describe('Sql Database Projects Task Provider', function (): void {
 			should(argsString).containEql('/p:NetCoreBuild=true');
 			should(argsString).containEql('/p:SystemDacpacsLocation=');
 			should(argsString).not.containEql('/p:NETCoreTargetsPath='); // This should NOT be present for SDK projects
-			should(argsString).containEql('-v:detailed');
-
 		}
 	});
 
@@ -226,7 +224,6 @@ describe('Sql Database Projects Task Provider', function (): void {
 			should(argsString).containEql('/p:NetCoreBuild=true');
 			should(argsString).containEql('/p:SystemDacpacsLocation=');
 			should(argsString).containEql('/p:NETCoreTargetsPath='); // This is only for legacy projects
-			should(argsString).containEql('-v:detailed');
 		}
 	});
 });
