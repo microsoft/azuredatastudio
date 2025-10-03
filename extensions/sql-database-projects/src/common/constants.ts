@@ -31,7 +31,6 @@ export const sqlProjTaskType = 'sqlproj-build';
 export const dotnet = 'dotnet';
 export const build = 'build';
 export const runCodeAnalysisParam = '/p:RunSqlCodeAnalysis=true';
-export const detailedVerbose = '-v:detailed';
 
 //#endregion
 
