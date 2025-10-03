@@ -4322,71 +4322,6 @@
 					"flags": ""
 				},
 				{
-					"extensionId": "92",
-					"extensionName": "azure-cosmosdb-ads-extension",
-					"displayName": "Azure Cosmos DB",
-					"shortDescription": "This extension provides support for Azure Cosmos DB for MongoDB/NoSQL and MongoDB databases",
-					"publisher": {
-						"displayName": "Microsoft",
-						"publisherId": "Microsoft",
-						"publisherName": "Microsoft"
-					},
-					"versions": [
-						{
-							"version": "0.4.8",
-							"lastUpdated": "7/23/2025",
-							"assetUri": "",
-							"fallbackAssetUri": "fallbackAssetUri",
-							"files": [
-								{
-									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.4.8.vsix"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Azure/azure-cosmosdb-ads-extension/main/resources/catalog/CosmosDBExtension.png"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Azure/azure-cosmosdb-ads-extension/main/README.md"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://raw.githubusercontent.com/Azure/azure-cosmosdb-ads-extension/main/CHANGELOG.md"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Azure/azure-cosmosdb-ads-extension/main/package.json"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Azure/azure-cosmosdb-ads-extension/main/LICENSE"
-								}
-							],
-							"properties": [
-								{
-									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
-									"value": ""
-								},
-								{
-									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": "*"
-								},
-								{
-									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.39.0"
-								},
-								{
-									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Azure/azure-cosmosdb-ads-extension"
-								}
-							]
-						}
-					],
-					"statistics": [],
-					"flags": "preview"
-				},
-				{
 					"extensionId": "93",
 					"extensionName": "azuredatastudio-mysql",
 					"displayName": "MySQL",
@@ -5255,7 +5190,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 86
+							"count": 85
 						}
 					]
 				}
