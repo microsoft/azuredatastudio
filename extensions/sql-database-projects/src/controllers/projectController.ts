@@ -202,7 +202,8 @@ export class ProjectsController {
 		let result: azdataType.ResultStatus | mssqlVscode.ResultStatus;
 
 		const sqlProjectsService = await utils.getSqlProjectsService();
-		const microsoftBuildSqlSDKStyleDefaultVersion = '1.0.0'; // default version of Microsoft.Build.Sql for SDK style projects, update in README when updating this
+		// default version of Microsoft.Build.Sql for SDK style projects, update in README when updating this, and buildHelper.cs for legacy projects SDK support
+		const microsoftBuildSqlSDKStyleDefaultVersion = '2.0.0';
 		if (utils.getAzdataApi()) {
 			const projectStyle = creationParams.sdkStyle ? mssql.ProjectType.SdkStyle : mssql.ProjectType.LegacyStyle;
 			result = await (sqlProjectsService as mssql.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform, microsoftBuildSqlSDKStyleDefaultVersion);
