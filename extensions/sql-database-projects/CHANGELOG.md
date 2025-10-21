@@ -6,6 +6,11 @@ All notable changes to the SQL Database Projects extension will be documented in
 
 ## [Unreleased]
 
+## [1.5.5] - 2025-11-18
+
+- Adds support for targeting SQL Server 2025 in SQL projects.
+- Fixed excessive build output by removing the verbosity parameter from the dotnet build command, preventing output from exceeding terminal scroll limits.
+
 ## [1.5.4] - 2025-09-11
 
 - Adds support for updating a SQL project from an existing database with 'Update project from database' option.
