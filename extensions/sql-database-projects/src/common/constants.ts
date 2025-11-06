@@ -31,7 +31,6 @@ export const sqlProjTaskType = 'sqlproj-build';
 export const dotnet = 'dotnet';
 export const build = 'build';
 export const runCodeAnalysisParam = '/p:RunSqlCodeAnalysis=true';
-export const detailedVerbose = '-v:detailed';
 
 //#endregion
 
@@ -636,6 +635,7 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[SqlTargetPlatform.sqlServer2017, '140'],
 	[SqlTargetPlatform.sqlServer2019, '150'],
 	[SqlTargetPlatform.sqlServer2022, '160'],
+	[SqlTargetPlatform.sqlServer2025, '170'],
 	[SqlTargetPlatform.sqlAzure, 'AzureV12'],
 	[SqlTargetPlatform.sqlDW, 'Dw'],
 	[SqlTargetPlatform.sqlDwServerless, 'Serverless'],
@@ -649,13 +649,14 @@ export const onPremServerVersionToTargetPlatform: Map<number, SqlTargetPlatform>
 	[13, SqlTargetPlatform.sqlServer2016],
 	[14, SqlTargetPlatform.sqlServer2017],
 	[15, SqlTargetPlatform.sqlServer2019],
-	[16, SqlTargetPlatform.sqlServer2022]
+	[16, SqlTargetPlatform.sqlServer2022],
+	[17, SqlTargetPlatform.sqlServer2025]
 ]);
 
 // DW is special since the system dacpac folder has a different name from the target platform
 export const AzureDwFolder = 'AzureDw';
 
-export const defaultTargetPlatform = SqlTargetPlatform.sqlServer2022;
+export const defaultTargetPlatform = SqlTargetPlatform.sqlServer2025;
 export const defaultDSP = targetPlatformToVersion.get(defaultTargetPlatform)!;
 
 /**
