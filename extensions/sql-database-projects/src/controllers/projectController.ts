@@ -22,7 +22,7 @@ import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewPro
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ImportDataModel } from '../models/api/import';
-import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
+import { NetCoreTool, DotNetError, DBProjectConfigurationKey } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
 import { readPublishProfile, promptForSavingProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
@@ -202,7 +202,8 @@ export class ProjectsController {
 		let result: azdataType.ResultStatus | mssqlVscode.ResultStatus;
 
 		const sqlProjectsService = await utils.getSqlProjectsService();
-		const microsoftBuildSqlSDKStyleDefaultVersion = '1.0.0'; // default version of Microsoft.Build.Sql for SDK style projects, update in README when updating this
+		// default version of Microsoft.Build.Sql for SDK style projects, update in README when updating this, and buildHelper.cs for legacy projects SDK support
+		const microsoftBuildSqlSDKStyleDefaultVersion = '2.0.0';
 		if (utils.getAzdataApi()) {
 			const projectStyle = creationParams.sdkStyle ? mssql.ProjectType.SdkStyle : mssql.ProjectType.LegacyStyle;
 			result = await (sqlProjectsService as mssql.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform, microsoftBuildSqlSDKStyleDefaultVersion);
@@ -518,13 +519,14 @@ export class ProjectsController {
 	 * Builds and publishes a project
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async publishProject(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void>;
+	public async publishProject(treeNode: dataworkspace.WorkspaceTreeItem, usePreview?: boolean): Promise<void>;
 	/**
 	 * Builds and publishes a project
 	 * @param project Project to be built and published
+	 * @param usePreview Whether to use the preview publish dialog/flow
 	 */
-	public async publishProject(project: Project): Promise<void>;
-	public async publishProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
+	public async publishProject(project: Project, usePreview?: boolean): Promise<void>;
+	public async publishProject(context: Project | dataworkspace.WorkspaceTreeItem, usePreview?: boolean): Promise<void> {
 		const project: Project = await this.getProjectFromContext(context);
 		if (utils.getAzdataApi()) {
 			let publishDatabaseDialog = this.getPublishDialog(project);
@@ -539,8 +541,13 @@ export class ProjectsController {
 
 			return publishDatabaseDialog.waitForClose();
 		} else {
-			// return this.publishDatabase(project);
-			return await vscode.commands.executeCommand(constants.mssqlPublishProjectCommand, project.projectFilePath);
+			// If usePreview is explicitly true, use preview flow; otherwise check setting
+			const shouldUsePreview = usePreview === true || (usePreview !== false && vscode.workspace.getConfiguration(DBProjectConfigurationKey).get(constants.enablePreviewFeaturesKey));
+			if (shouldUsePreview) {
+				return await vscode.commands.executeCommand(constants.mssqlPublishProjectCommand, project.projectFilePath);
+			} else {
+				return this.publishDatabase(project);
+			}
 		}
 	}
 

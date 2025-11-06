@@ -1,9 +1,9 @@
 {
-  "name": "sql-database-projects-vscode",
+  "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "Enables users to develop and publish database schemas for MSSQL Databases",
   "version": "1.5.5",
-  "publisher": "ms-mssql",
+  "publisher": "Microsoft",
   "preview": false,
   "engines": {
     "vscode": "^1.30.1",
@@ -26,10 +26,11 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
-	"extensionDependencies": [
-		"ms-mssql.mssql",
-		"ms-mssql.data-workspace-vscode"
-	],
+  "extensionDependencies": [
+    "Microsoft.mssql",
+    "Microsoft.schema-compare",
+    "Microsoft.data-workspace"
+  ],
   "capabilities": {
     "virtualWorkspaces": false,
     "untrustedWorkspaces": {
@@ -44,10 +45,30 @@
       {
         "title": "%sqlDatabaseProjects.Settings%",
         "properties": {
-					"sqlDatabaseProjects.enablePreviewFeatures": {
-						"type": "boolean",
-						"description": "%sqlDatabaseProjects.enablePreviewFeatures%"
-					}
+          "sqlDatabaseProjects.dotnetSDK Location": {
+            "type": "string",
+            "description": "%sqlDatabaseProjects.dotnetInstallLocation%"
+          },
+          "sqlDatabaseProjects.netCoreDoNotAsk": {
+            "type": "boolean",
+            "description": "%sqlDatabaseProjects.netCoreDoNotAsk%"
+          },
+          "sqlDatabaseProjects.nodejsDoNotAsk": {
+            "type": "boolean",
+            "description": "%sqlDatabaseProjects.nodejsDoNotAsk%"
+          },
+          "sqlDatabaseProjects.autorestSqlVersion": {
+            "type": "string",
+            "description": "%sqlDatabaseProjects.autorestSqlVersion%"
+          },
+          "sqlDatabaseProjects.collapseProjectNodes": {
+            "type": "boolean",
+            "description": "%sqlDatabaseProjects.collapseProjectNodes%"
+          },
+          "sqlDatabaseProjects.microsoftBuildSqlVersion": {
+            "type": "string",
+            "description": "%sqlDatabaseProjects.microsoftBuildSqlVersion%"
+          }
         }
       }
     ],
@@ -120,6 +141,11 @@
       {
         "command": "sqlDatabaseProjects.publish",
         "title": "%sqlDatabaseProjects.publish%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.publishPreview",
+        "title": "%sqlDatabaseProjects.publishPreview%",
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
@@ -277,6 +303,10 @@
           "when": "false"
         },
         {
+          "command": "sqlDatabaseProjects.publishPreview",
+          "when": "!azdataAvailable && (config.workbench.enablePreviewFeatures || config.sqlDatabaseProjects.enablePreviewFeatures)"
+        },
+        {
           "command": "sqlDatabaseProjects.properties",
           "when": "false"
         },
@@ -357,6 +387,11 @@
         {
           "command": "sqlDatabaseProjects.publish",
           "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
+          "group": "1_dbProjectsFirst@3"
+        },
+        {
+          "command": "sqlDatabaseProjects.publishPreview",
+          "when": "!azdataAvailable && view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && (config.workbench.enablePreviewFeatures || config.sqlDatabaseProjects.enablePreviewFeatures)",
           "group": "1_dbProjectsFirst@3"
         },
         {
@@ -487,6 +522,40 @@
         {
           "command": "sqlDatabaseProjects.addSqlCmdVariable",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.sqlcmdVariablesRoot"
+        }
+      ],
+      "objectExplorer/item/context": [
+        {
+          "command": "sqlDatabaseProjects.createProjectFromDatabase",
+          "when": "nodeType =~ /^(Database|Server)$/ && connectionProvider == MSSQL && mssql:engineedition != 11",
+          "group": "export@1"
+        },
+        {
+          "command": "sqlDatabaseProjects.updateProjectFromDatabase",
+          "when": "nodeType =~ /^(Database|Server)$/ && connectionProvider == MSSQL && mssql:engineedition != 11",
+          "group": "export@2"
+        }
+      ],
+      "dataExplorer/context": [
+        {
+          "command": "sqlDatabaseProjects.createProjectFromDatabase",
+          "when": "nodeType =~ /^(Database|Server)$/ && connectionProvider == MSSQL && mssql:engineedition != 11",
+          "group": "export@1"
+        },
+        {
+          "command": "sqlDatabaseProjects.updateProjectFromDatabase",
+          "when": "nodeType =~ /^(Database|Server)$/ && connectionProvider == MSSQL && mssql:engineedition != 11",
+          "group": "export@2"
+        }
+      ],
+      "dashboard/toolbar": [
+        {
+          "command": "sqlDatabaseProjects.createProjectFromDatabase",
+          "when": "connectionProvider == 'MSSQL' && mssql:engineedition != 11"
+        },
+        {
+          "command": "sqlDatabaseProjects.updateProjectFromDatabase",
+          "when": "connectionProvider == 'MSSQL' && mssql:engineedition != 11"
         }
       ]
     },

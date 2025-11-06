@@ -63,7 +63,8 @@ export default class MainController implements vscode.Disposable {
 
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.build', async (node: WorkspaceTreeItem) => { return this.projectsController.buildProject(node, false); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.buildWithCodeAnalysis', async (node: WorkspaceTreeItem) => { return this.projectsController.buildProject(node, true); }));
-		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.publish', async (node: WorkspaceTreeItem) => { return this.projectsController.publishProject(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.publish', async (node: WorkspaceTreeItem) => { return this.projectsController.publishProject(node, false); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.publishPreview', async (node: WorkspaceTreeItem) => { return this.projectsController.publishProject(node, true); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.schemaCompare', async (node: WorkspaceTreeItem) => { return this.projectsController.schemaCompare(node); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.schemaComparePublishProjectChanges', async (operationId: string, projectFilePath: string, folderStructure: mssql.ExtractTarget): Promise<mssql.SchemaComparePublishProjectResult> => { return await this.projectsController.schemaComparePublishProjectChanges(operationId, projectFilePath, folderStructure); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.updateProjectFromDatabase', async (node: azdataType.IConnectionProfile | vscodeMssql.ITreeNodeInfo | WorkspaceTreeItem) => { await this.projectsController.updateProjectFromDatabase(node); }));
