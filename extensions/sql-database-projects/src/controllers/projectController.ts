@@ -519,14 +519,14 @@ export class ProjectsController {
 	 * Builds and publishes a project
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async publishProject(treeNode: dataworkspace.WorkspaceTreeItem, usePreview?: boolean): Promise<void>;
+	public async publishProject(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void>;
 	/**
 	 * Builds and publishes a project
 	 * @param project Project to be built and published
 	 * @param usePreview Whether to use the preview publish dialog/flow
 	 */
-	public async publishProject(project: Project, usePreview?: boolean): Promise<void>;
-	public async publishProject(context: Project | dataworkspace.WorkspaceTreeItem, usePreview?: boolean): Promise<void> {
+	public async publishProject(project: Project): Promise<void>;
+	public async publishProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project: Project = await this.getProjectFromContext(context);
 		if (utils.getAzdataApi()) {
 			let publishDatabaseDialog = this.getPublishDialog(project);
@@ -541,8 +541,8 @@ export class ProjectsController {
 
 			return publishDatabaseDialog.waitForClose();
 		} else {
-			// If usePreview is explicitly true, use preview flow; otherwise check setting
-			const shouldUsePreview = usePreview === true || (usePreview !== false && vscode.workspace.getConfiguration(DBProjectConfigurationKey).get(constants.enablePreviewFeaturesKey));
+			// If preview feature is enabled, use preview flow
+			const shouldUsePreview = vscode.workspace.getConfiguration(DBProjectConfigurationKey).get(constants.enablePreviewFeaturesKey);
 			if (shouldUsePreview) {
 				return await vscode.commands.executeCommand(constants.mssqlPublishProjectCommand, project.projectFilePath);
 			} else {
