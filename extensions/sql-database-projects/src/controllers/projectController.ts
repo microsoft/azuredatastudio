@@ -22,7 +22,7 @@ import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewPro
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ImportDataModel } from '../models/api/import';
-import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
+import { NetCoreTool, DotNetError, DBProjectConfigurationKey } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
 import { readPublishProfile, promptForSavingProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
@@ -523,6 +523,7 @@ export class ProjectsController {
 	/**
 	 * Builds and publishes a project
 	 * @param project Project to be built and published
+	 * @param usePreview Whether to use the preview publish dialog/flow
 	 */
 	public async publishProject(project: Project): Promise<void>;
 	public async publishProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
@@ -540,7 +541,13 @@ export class ProjectsController {
 
 			return publishDatabaseDialog.waitForClose();
 		} else {
-			return this.publishDatabase(project);
+			// If preview feature is enabled, use preview flow
+			const shouldUsePreview = vscode.workspace.getConfiguration(DBProjectConfigurationKey).get(constants.enablePreviewFeaturesKey);
+			if (shouldUsePreview) {
+				return await vscode.commands.executeCommand(constants.mssqlPublishProjectCommand, project.projectFilePath);
+			} else {
+				return this.publishDatabase(project);
+			}
 		}
 	}
 
