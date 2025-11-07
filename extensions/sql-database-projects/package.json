@@ -300,11 +300,11 @@
         },
         {
           "command": "sqlDatabaseProjects.publish",
-          "when": "!config.sqlDatabaseProjects.enablePreviewFeatures"
+          "when": "false"
         },
         {
           "command": "sqlDatabaseProjects.publishDialog",
-          "when": "!azdataAvailable && config.sqlDatabaseProjects.enablePreviewFeatures"
+          "when": "false"
         },
         {
           "command": "sqlDatabaseProjects.properties",
