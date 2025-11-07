@@ -144,8 +144,8 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.publishPreview",
-        "title": "%sqlDatabaseProjects.publishPreview%",
+        "command": "sqlDatabaseProjects.publishDialog",
+        "title": "%sqlDatabaseProjects.publishDialog%",
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
@@ -300,11 +300,11 @@
         },
         {
           "command": "sqlDatabaseProjects.publish",
-          "when": "false"
+          "when": "!config.sqlDatabaseProjects.enablePreviewFeatures"
         },
         {
-          "command": "sqlDatabaseProjects.publishPreview",
-          "when": "!azdataAvailable && (config.workbench.enablePreviewFeatures || config.sqlDatabaseProjects.enablePreviewFeatures)"
+          "command": "sqlDatabaseProjects.publishDialog",
+          "when": "!azdataAvailable && config.sqlDatabaseProjects.enablePreviewFeatures"
         },
         {
           "command": "sqlDatabaseProjects.properties",
@@ -386,12 +386,12 @@
         },
         {
           "command": "sqlDatabaseProjects.publish",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && (azdataAvailable || !config.sqlDatabaseProjects.enablePreviewFeatures)",
           "group": "1_dbProjectsFirst@3"
         },
         {
-          "command": "sqlDatabaseProjects.publishPreview",
-          "when": "!azdataAvailable && view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && (config.workbench.enablePreviewFeatures || config.sqlDatabaseProjects.enablePreviewFeatures)",
+          "command": "sqlDatabaseProjects.publishDialog",
+          "when": "!azdataAvailable && view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && config.sqlDatabaseProjects.enablePreviewFeatures",
           "group": "1_dbProjectsFirst@3"
         },
         {
