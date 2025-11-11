@@ -542,7 +542,10 @@ export class ProjectsController {
 			return publishDatabaseDialog.waitForClose();
 		} else {
 			// If preview feature is enabled, use preview flow
-			const shouldUsePreview = vscode.workspace.getConfiguration(DBProjectConfigurationKey).get(constants.enablePreviewFeaturesKey);
+			const shouldUsePreview =
+				vscode.workspace.getConfiguration(DBProjectConfigurationKey).get<boolean>(constants.enablePreviewFeaturesKey) ||
+				vscode.workspace.getConfiguration(constants.mssqlConfigSectionKey).get<boolean>(constants.mssqlEnableExperimentalFeaturesKey);
+
 			if (shouldUsePreview) {
 				return await vscode.commands.executeCommand(constants.mssqlPublishProjectCommand, project.projectFilePath);
 			} else {

@@ -386,12 +386,12 @@
         },
         {
           "command": "sqlDatabaseProjects.publish",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && (azdataAvailable || !config.sqlDatabaseProjects.enablePreviewFeatures)",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && (azdataAvailable || !(config.sqlDatabaseProjects.enablePreviewFeatures || config.mssql.enableExperimentalFeatures))",
           "group": "1_dbProjectsFirst@3"
         },
         {
           "command": "sqlDatabaseProjects.publishDialog",
-          "when": "!azdataAvailable && view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && config.sqlDatabaseProjects.enablePreviewFeatures",
+          "when": "!azdataAvailable && view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ && (config.sqlDatabaseProjects.enablePreviewFeatures || config.mssql.enableExperimentalFeatures)",
           "group": "1_dbProjectsFirst@3"
         },
         {

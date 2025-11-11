@@ -680,6 +680,8 @@ export enum PublishTargetType {
 export const CollapseProjectNodesKey = 'collapseProjectNodes';
 export const microsoftBuildSqlVersionKey = 'microsoftBuildSqlVersion';
 export const enablePreviewFeaturesKey = 'enablePreviewFeatures';
+export const mssqlConfigSectionKey = 'mssql';
+export const mssqlEnableExperimentalFeaturesKey = 'enableExperimentalFeatures';
 
 //#endregion
 
