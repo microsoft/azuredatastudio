@@ -17,7 +17,6 @@
 		"**/markdown-basics/**",
 		"**/markdown-language-features/**",
 		"**/merge-conflict/**",
-		"**/microsoft-authentication/**",
 		"**/powershell/**",
 		"**/python/**",
 		"**/r/**",

@@ -62,7 +62,6 @@ steps:
           compile-extension:markdown-language-features-server \
           compile-extension:markdown-language-features \
           compile-extension-media \
-          compile-extension:microsoft-authentication \
           compile-extension:vscode-api-tests \
           compile-extension:vscode-colorize-tests \
           compile-extension:vscode-test-resolver

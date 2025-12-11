@@ -188,7 +188,6 @@ const VSCODEExtensions = [
 	"markdown-math",
 	"media-preview",
 	"merge-conflict",
-	"microsoft-authentication",
 	"powershell",
 	"python",
 	"r",
