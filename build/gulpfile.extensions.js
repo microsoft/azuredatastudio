@@ -60,7 +60,6 @@ const compilations = [
 	'markdown-math/tsconfig.json',
 	'media-preview/tsconfig.json',
 	'merge-conflict/tsconfig.json',
-	'microsoft-authentication/tsconfig.json',
 	'notebook-renderers/tsconfig.json',
 	'npm/tsconfig.json',
 	'php-language-features/tsconfig.json',

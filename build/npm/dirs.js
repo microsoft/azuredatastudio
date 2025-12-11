@@ -39,7 +39,6 @@ const dirs = [
 	'extensions/markdown-math',
 	'extensions/media-preview',
 	'extensions/merge-conflict',
-	'extensions/microsoft-authentication',
 	'extensions/mssql',
 	'extensions/notebook',
 	'extensions/notebook-renderers',
