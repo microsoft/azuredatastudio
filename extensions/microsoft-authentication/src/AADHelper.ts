@@ -15,7 +15,7 @@ import { UriEventHandler } from './UriEventHandler';
 import TelemetryReporter from '@vscode/extension-telemetry';
 import { Environment } from '@azure/ms-rest-azure-env';
 
-const redirectUrl = 'https://vscode-redirect.azurewebsites.net/';
+const redirectUrl = 'https://vscode.dev/redirect';
 const defaultActiveDirectoryEndpointUrl = 'https://login.microsoftonline.com/';
 const DEFAULT_CLIENT_ID = 'aebc6443-996d-45c2-90f0-388ff96faa56';
 const DEFAULT_TENANT = 'organizations';
