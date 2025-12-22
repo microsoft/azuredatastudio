@@ -27,8 +27,13 @@ jobs:
 
       - name: Install openssl-dev
         run: |
+          TEMP_DIR=$(mktemp -d)
+          cd "$TEMP_DIR"
           wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
+          echo "fcadc659174561b7a925e4f17e9de7451f4fb556a032fea1ed2ff800ed3a285e  libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb" | sha256sum -c -
           sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
+          cd -
+          rm -rf "$TEMP_DIR"
 
       # TODO: rename azure-pipelines/linux/xvfb.init to github-actions
       - name: Setup Build Environment
