@@ -57,6 +57,29 @@ export async function executeCommand(command: string, cwd?: string): Promise<str
 }
 
 /**
+ * Executes a command safely without shell interpolation by using execFile.
+ * @param command The command/executable to run
+ * @param args Array of arguments to pass to the command
+ * @param cwd Optional working directory
+ * @returns The stdout output of the command
+ */
+export async function executeCommandWithArgs(command: string, args: string[], cwd?: string): Promise<string> {
+	return new Promise<string>((resolve, reject) => {
+		cp.execFile(command, args, { maxBuffer: 500 * 1024, cwd: cwd }, (error: Error | null, stdout: string, stderr: string) => {
+			if (error) {
+				reject(error);
+				return;
+			}
+			if (stderr && stderr.length > 0) {
+				reject(new Error(stderr));
+				return;
+			}
+			resolve(stdout);
+		});
+	});
+}
+
+/**
  * Gets all the projects of the specified extension in the folder
  * @param folder
  * @param projectExtension project extension to filter on

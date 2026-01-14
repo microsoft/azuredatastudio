@@ -203,7 +203,7 @@ export async function getSettingsFile(projectFolder: string): Promise<string | u
 export async function addSqlNugetReferenceToProjectFile(projectFolder: string): Promise<void> {
 	// clear the output channel prior to adding the nuget reference
 	outputChannel.clear();
-	let addNugetCommmand = await utils.executeCommand(`dotnet add "${projectFolder}" package ${constants.sqlExtensionPackageName} --prerelease`);
+	let addNugetCommmand = await utils.executeCommandWithArgs('dotnet', ['add', projectFolder, 'package', constants.sqlExtensionPackageName, '--prerelease']);
 	outputChannel.appendLine(constants.dotnetResult(addNugetCommmand));
 	outputChannel.show(true);
 	TelemetryReporter.sendActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.addSQLNugetPackage);
