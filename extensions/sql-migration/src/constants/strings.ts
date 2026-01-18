@@ -1352,6 +1352,12 @@ export function MIGRATION_INPROGRESS_WARNING(count: number) {
 }
 export const FEEDBACK_ISSUE_TITLE = localize('sql.migration.feedback.issue.title', "Feedback on the migration experience");
 
+// Retirement banner
+export const RETIREMENT_BANNER_MESSAGE = localize('sql.migration.dashboard.retirement.banner.message', 'Azure SQL Migration extension will retire on Feb 28, 2026.');
+export const RETIREMENT_BANNER_READ_MORE = localize('sql.migration.dashboard.retirement.banner.readMore', ' Read more');
+export const RETIREMENT_BANNER_READ_MORE_ARIA = localize('sql.migration.dashboard.retirement.banner.readMore.aria', 'Read more about the Azure SQL Migration extension retirement.');
+export const RETIREMENT_BANNER_DONT_SHOW = localize('sql.migration.dashboard.retirement.banner.dontShow', "Don't show again");
+
 //Migration cutover dialog
 export const BREADCRUMB_MIGRATIONS = localize('sql.migration.details.breadcrumb.migrations', 'Migrations');
 export const MIGRATION_CUTOVER = localize('sql.migration.cutover', "Migration cutover");

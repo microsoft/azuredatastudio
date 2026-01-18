@@ -34,6 +34,7 @@ interface StatusCard {
 }
 
 export const DashboardTabId = 'DashboardTab';
+export const deprecationReadMore = 'https://aka.ms/DMS-ADS-extension-retirement';
 
 const maxWidth = 800;
 const BUTTON_CSS = {
@@ -61,6 +62,22 @@ export class DashboardTab extends TabBase<DashboardTab> {
 		this.title = loc.DESKTOP_DASHBOARD_TAB_TITLE;
 		this.id = DashboardTabId;
 		this.icon = IconPathHelper.sqlMigrationLogo;
+	}
+
+	private async _showRetirementNotificationOnce(): Promise<void> {
+		const storageKey = 'sqlMigration.retirementPrompt.hide.v1';
+		const alreadyHidden = this.context?.globalState.get<boolean>(storageKey, false);
+		if (alreadyHidden) { return; }
+
+		const ok = loc.OK;
+		const readMore = (loc.RETIREMENT_BANNER_READ_MORE).trim();
+		const dontShow = loc.RETIREMENT_BANNER_DONT_SHOW;
+		const selection = await vscode.window.showInformationMessage(loc.RETIREMENT_BANNER_MESSAGE, ok, readMore, dontShow);
+		if (selection === readMore) {
+			void vscode.env.openExternal(vscode.Uri.parse(deprecationReadMore));
+		} else if (selection === dontShow) {
+			await this.context?.globalState.update(storageKey, true);
+		}
 	}
 
 	public async create(
@@ -134,6 +151,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 	}
 
 	protected async initialize(view: azdata.ModelView): Promise<void> {
+		void this._showRetirementNotificationOnce();
 		const container = view.modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'column',
@@ -167,9 +185,9 @@ export class DashboardTab extends TabBase<DashboardTab> {
 					linear-gradient(0deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 100%)`,
 				'background-repeat': 'no-repeat',
 				'background-position': '91.06% 100%',
-				'margin-bottom': '20px'
 			}
 		});
+		container.addItem(this._createRetirementBanner(view));
 
 		const tasksContainer = await this._createTasks(view);
 		header.addItem(tasksContainer, {
@@ -210,6 +228,38 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			}
 		});
 		return header;
+	}
+
+	private _createRetirementBanner(view: azdata.ModelView): azdata.Component {
+		const bannerContainer = view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'row',
+				width: "98%",
+				justifyContent: 'center',
+				alignItems: 'center',
+			})
+			.withProps({ CSSStyles: { ...styles.RETIREMENT_BANNER } })
+			.component();
+
+		const message = view.modelBuilder.text()
+			.withProps({
+				value: loc.RETIREMENT_BANNER_MESSAGE,
+			})
+			.withProps({ CSSStyles: { ...styles.RETIREMENT_MESSAGE } })
+			.component();
+
+		const link = view.modelBuilder.hyperlink()
+			.withProps({
+				label: loc.RETIREMENT_BANNER_READ_MORE,
+				ariaLabel: loc.RETIREMENT_BANNER_READ_MORE_ARIA,
+				url: deprecationReadMore,
+				showLinkIcon: true,
+				CSSStyles: { ...styles.RETIREMENT_MESSAGE_LINK }
+			})
+			.component();
+
+		bannerContainer.addItems([message, link], { flex: '0 0 auto' });
+		return bannerContainer;
 	}
 
 	private async _createTasks(view: azdata.ModelView): Promise<azdata.Component> {
