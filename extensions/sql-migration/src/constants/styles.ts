@@ -147,3 +147,28 @@ export const VIEW_DETAILS_GENERATE_TEMPLATE_LINK = {
 	'text-decoration': 'none',
 	'display': 'none',
 }
+
+// Retirement banner styles
+export const RETIREMENT_BANNER = {
+	'width': '100%',
+	'padding': '10px',
+	'background-color': '#ffcc00',
+	'border-radius': '4px',
+	'margin': '4px 0px 4px 0px'
+};
+
+export const RETIREMENT_MESSAGE = {
+	'color': '#000',
+	'text-align': 'center',
+	'font-size': '16px',
+	'font-weight': 'bold'
+};
+
+export const RETIREMENT_MESSAGE_LINK = {
+	'color': '#0078D4',
+	'text-align': 'center',
+	'font-size': '16px',
+	'font-weight': 'normal',
+	'margin-left': '5px',
+	'text-decoration': 'none'
+};
