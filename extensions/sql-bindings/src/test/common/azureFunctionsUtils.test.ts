@@ -404,7 +404,7 @@ describe('AzureFunctionUtils', function (): void {
 				sinon.stub(fs.promises, 'writeFile').resolves();
 				sinon.stub(azureFunctionsUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'testConnectionStringName', 'testConnectionString').resolves((true));
 				// addSqlNugetReferenceToProjectFile stub
-				sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
+				sinon.stub(utils, 'executeCommandWithArgs').resolves('downloaded nuget package');
 
 				let result = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(fileUri);
 
@@ -430,7 +430,7 @@ describe('AzureFunctionUtils', function (): void {
 				sinon.stub(fs.promises, 'writeFile').resolves();
 				sinon.stub(azureFunctionsUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'testConnectionStringName', 'testConnectionString').resolves((true));
 				// addSqlNugetReferenceToProjectFile stub
-				sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
+				sinon.stub(utils, 'executeCommandWithArgs').resolves('downloaded nuget package');
 
 				let result = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(fileUri, connectionInfo);
 
@@ -481,7 +481,7 @@ describe('AzureFunctionUtils', function (): void {
 				sinon.stub(fs.promises, 'writeFile').resolves();
 				sinon.stub(azureFunctionsUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'testConnectionStringName', 'testConnectionString').resolves((true));
 				// addSqlNugetReferenceToProjectFile stub
-				sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
+				sinon.stub(utils, 'executeCommandWithArgs').resolves('downloaded nuget package');
 
 				let result = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(fileUri, connectionInfo);
 
@@ -496,7 +496,7 @@ describe('AzureFunctionUtils', function (): void {
 				let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves({ label: 'test1' }); // user chooses existing setting name
 
 				// addSqlNugetReferenceToProjectFile stub
-				sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
+				sinon.stub(utils, 'executeCommandWithArgs').resolves('downloaded nuget package');
 				let connectionInfo: IConnectionInfo = createTestCredentials(); // create test connectionInfo
 
 				let result = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(fileUri, connectionInfo);
@@ -520,7 +520,7 @@ describe('AzureFunctionUtils', function (): void {
 				sinon.stub(fs.promises, 'writeFile').resolves();
 				sinon.stub(azureFunctionsUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'testConnectionStringName', 'testConnectionString').resolves((true));
 				// addSqlNugetReferenceToProjectFile stub
-				sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
+				sinon.stub(utils, 'executeCommandWithArgs').resolves('downloaded nuget package');
 
 				let result = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(fileUri);
 
@@ -626,7 +626,7 @@ describe('AzureFunctionUtils', function (): void {
 			sinon.stub(fs.promises, 'writeFile').resolves();
 			sinon.stub(azureFunctionsUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'testConnectionStringName', 'testConnectionString').resolves((true));
 			// addSqlNugetReferenceToProjectFile stub
-			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
+			sinon.stub(utils, 'executeCommandWithArgs').resolves('downloaded nuget package');
 
 			let result = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(fileUri, connectionInfo);
 
@@ -660,7 +660,7 @@ describe('AzureFunctionUtils', function (): void {
 			sinon.stub(fs.promises, 'writeFile').resolves();
 			sinon.stub(azureFunctionsUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'testConnectionStringName', 'testConnectionString').resolves((true));
 			// addSqlNugetReferenceToProjectFile stub
-			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
+			sinon.stub(utils, 'executeCommandWithArgs').resolves('downloaded nuget package');
 
 			let result = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(fileUri, connectionInfo);
 

@@ -87,7 +87,7 @@ describe('AzureFunctionsService', () => {
 			// fails if we dont set writeFile stub
 			sinon.stub(fs.promises, 'writeFile').resolves();
 			sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').resolves((true));
-			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
+			sinon.stub(utils, 'executeCommandWithArgs').resolves('downloaded nuget package');
 
 			should(connectionInfo.database).equal('my_db', 'Initial ConnectionInfo database should be my_db');
 			await azureFunctionService.createAzureFunction(tableTestNode);
@@ -121,7 +121,7 @@ describe('AzureFunctionsService', () => {
 				// fails if we dont set writeFile stub
 				sinon.stub(fs.promises, 'writeFile').resolves();
 				sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').resolves((true));
-				sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
+				sinon.stub(utils, 'executeCommandWithArgs').resolves('downloaded nuget package');
 
 				showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage'); // error message spy to be used for checking tests
 			});
@@ -212,7 +212,7 @@ describe('AzureFunctionsService', () => {
 				// fails if we dont set writeFile stub
 				sinon.stub(fs.promises, 'writeFile').resolves();
 				sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').resolves((true));
-				sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
+				sinon.stub(utils, 'executeCommandWithArgs').resolves('downloaded nuget package');
 
 				showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage'); // error message spy to be used for checking tests
 			});
