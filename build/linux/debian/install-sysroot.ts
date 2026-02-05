@@ -84,8 +84,9 @@ export async function getSysroot(arch: DebianArchString): Promise<string> {
 		throw new Error('Failed to download ' + url);
 	}
 	const sha = getSha(tarball);
-	if (sha !== tarballSha) {
-		throw new Error(`Tarball sha1sum is wrong. Expected ${tarballSha}, actual ${sha}`);
+	const expectedShas = [tarballSha, "c94127bd36a6d16b2b67e39112152ed221c7980f" /* SHA from internal MSFT build */];
+	if (!expectedShas.includes(sha)) {
+		throw new Error(`Tarball sha1sum is wrong. Actual: ${sha}. Expected one of ${expectedShas.join(', ')}.`);
 	}
 
 	const proc = spawnSync('tar', ['xf', tarball, '-C', sysroot]);
