@@ -5,14 +5,14 @@
 /extensions/arc/ @swells
 /extensions/azcli/ @swells
 /extensions/azurecore/ @kburtram @aasimkhan30 @caohai @laurenastrid1 @lewis-sanchez @benjin
-/extensions/dacpac/ @kisantia
+/extensions/dacpac/ @llali @zijchen @ssreerama
 /extensions/import @aasimkhan30
-/extensions/machine-learning @llali
+/extensions/machine-learning @llali @zijchen @ssreerama
 /extensions/notebook @azure-data-studio-notebook-devs
-/extensions/schema-compare/ @kisantia
+/extensions/schema-compare/ @llali @zijchen @ssreerama
 /extensions/sql-bindings/ @vasubhog @Charles-Gagnon @chlafreniere @MaddyDev
-/extensions/sql-database-projects/ @ssreerama @chlafreniere @llali @zijchen
+/extensions/sql-database-projects/ @ssreerama @llali @zijchen
 /extensions/sql-migration @akshika898 @JyotikaGargg @shilpimitra @Shiwani-K @radheyshah
-/extensions/mssql/config.json @kburtram
+/extensions/mssql/config.json @kburtram @benjin @lewis-sanchez
 
 /src/sql/**/notebook @azure-data-studio-notebook-devs
