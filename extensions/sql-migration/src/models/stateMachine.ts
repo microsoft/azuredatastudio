@@ -8,12 +8,12 @@ import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as contracts from '../service/contracts';
 import * as features from '../service/features';
-import { GetOrCreateMigrationArcSqlServerInstanceResponse, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView, ArcSqlServer, ArcSqlServerInstanceRequest, createOrUpdateMigrationArcSqlServerInstance, getMigrationArcSqlServerInstance, registerArcResourceProvider } from '../api/azure';
+import { GetOrCreateMigrationArcSqlServerInstanceResponse, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView, ArcSqlServer, ArcSqlServerInstanceRequest, ArcSqlServerInstanceDatabaseRequest, createOrUpdateMigrationArcSqlServerInstance, getMigrationArcSqlServerInstance, registerArcResourceProvider, createArcSqlServerInstanceDatabase, getArcSqlServerInstanceDatabases, ArcSqlServerDatabase, updateArcSqlServerInstanceDatabase } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
-import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBackupFileNameWithoutFolder, MigrationTargetType, SourceInfrastructureType, getSqlServerName, getSqlServerEdition } from '../api/utils';
+import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBackupFileNameWithoutFolder, MigrationTargetType, SourceInfrastructureType, getSqlServerName, getSqlServerEdition, ArcSqlServerInstanceDatabaseState } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendation/skuRecommendationPage';
 import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getTrustServerCertificateValue, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel } from './loginMigrationModel';
@@ -212,6 +212,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _arcResourceResourceGroup!: azurecore.azureResource.AzureResourceResourceGroup;
 	public _sourceArcSqlServers!: ArcSqlServer[];
 	public _arcSqlServer!: ArcSqlServer;
+	public _arcSqlServerDatabasesForMigrationMap: Map<string, ArcSqlServerDatabase> = new Map();
 	public _arcRpRegistrationStatus!: number;
 
 	public _subscriptions!: azurecore.azureResource.AzureResourceSubscription[];
@@ -1180,6 +1181,76 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		}
 	}
 
+	public async createOrUpdateArcSqlServerInstanceDatabaseWithTargetInfo() {
+		try {
+			const sqlServerInstanceDatabasesList = await getArcSqlServerInstanceDatabases(
+				this._arcResourceAzureAccount,
+				this._arcResourceSubscription,
+				this._arcSqlServer.id,
+			);
+			let nonArcDatabases: SourceDatabaseInfo[] = [];
+			let existingArcDatabasesForMigration: ArcSqlServerDatabase[] = [];
+
+			if (sqlServerInstanceDatabasesList) {
+				const sqlServerInstanceDatabaseNamesList = sqlServerInstanceDatabasesList.data?.value.map((db: { name: string }) => db.name);
+				nonArcDatabases = this._databaseInfosForMigration.filter(dbName => !sqlServerInstanceDatabaseNamesList.includes(dbName));
+				existingArcDatabasesForMigration = sqlServerInstanceDatabasesList.data?.value.filter((db: { name: string }) => this._databaseInfosForMigration?.some(userDb => userDb.databaseName === db.name)) ?? [];
+
+			} else {
+				nonArcDatabases = this._databaseInfosForMigration;
+			}
+
+			for (let i = 0; i < existingArcDatabasesForMigration.length; i++) {
+				const requestBody: ArcSqlServerInstanceDatabaseRequest = {
+					properties: {
+						migration: {
+							jobs: [{
+								targetType: this._targetType,
+								targetUri: this._targetServerInstance.id
+							}]
+						}
+					}
+				}
+				const database = await updateArcSqlServerInstanceDatabase(
+					this._arcResourceAzureAccount,
+					this._arcResourceSubscription,
+					existingArcDatabasesForMigration[i].id,
+					requestBody,
+				);
+				this._arcSqlServerDatabasesForMigrationMap.set(existingArcDatabasesForMigration[i].name, database);
+			}
+
+			for (let i = 0; i < nonArcDatabases.length; i++) {
+				const dbState = Object.keys(ArcSqlServerInstanceDatabaseState).find(
+					(value) => value.toLowerCase() === nonArcDatabases[i].databaseState.toString().toLowerCase()
+				);
+				const requestBody: ArcSqlServerInstanceDatabaseRequest = {
+					location: this._arcResourceLocation.name,
+					properties: {
+						state: dbState ?? ArcSqlServerInstanceDatabaseState.OFFLINE,
+						sizeMB: Number(nonArcDatabases[i].databaseSizeInMB),
+						migration: {
+							jobs: [{
+								targetType: this._targetType,
+								targetUri: this._targetServerInstance.id
+							}]
+						}
+					}
+				}
+				const database = await createArcSqlServerInstanceDatabase(
+					this._arcResourceAzureAccount,
+					this._arcResourceSubscription,
+					this._arcSqlServer.id,
+					nonArcDatabases[i].databaseName,
+					requestBody,
+				);
+				this._arcSqlServerDatabasesForMigrationMap.set(nonArcDatabases[i].databaseName, database);
+			}
+		} catch (error) {
+			logError(TelemetryViews.MigrationWizardTargetSelectionPage, 'ErrorCreatingOrUpdatingArcSqlServerInstanceDatabase', error);
+		}
+	}
+
 	public async getArcSqlServerInstance(fullInstanceName: string): Promise<GetOrCreateMigrationArcSqlServerInstanceResponse | void> {
 		try {
 			return await getMigrationArcSqlServerInstance(
@@ -1328,6 +1399,19 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					requestBody,
 					this._sessionId);
 
+				const arcDatabaseId = this._arcSqlServerDatabasesForMigrationMap.get(this._databasesForMigration[i])?.id;
+				if (arcDatabaseId) {
+					const requestBody: ArcSqlServerInstanceDatabaseRequest = {
+						properties: {
+							migration: {
+								jobs: [{
+									id: response.databaseMigration.id,
+								}]
+							}
+						}
+					}
+					await updateArcSqlServerInstanceDatabase(this._arcResourceAzureAccount, this._arcResourceSubscription, arcDatabaseId, requestBody);
+				}
 				response.databaseMigration.properties.sourceDatabaseName = this._databasesForMigration[i];
 				response.databaseMigration.properties.backupConfiguration = requestBody.properties.backupConfiguration!;
 				response.databaseMigration.properties.offlineConfiguration = requestBody.properties.offlineConfiguration!;
